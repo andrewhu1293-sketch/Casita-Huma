@@ -734,6 +734,16 @@ nav.bar button[aria-current="page"]{opacity:1;font-weight:600}
 nav.bar button[aria-current="page"]::before{display:block;content:"";position:absolute;z-index:-1;top:4px;left:50%;width:50px;height:34px;margin-left:-25px;border-radius:999px;background:var(--rose);border:0;box-shadow:none}
 nav.bar button img,nav.bar button[aria-current="page"] img{width:28px;height:28px;transform:none}
 nav.bar .badge{font-size:.56rem;padding:0 5px;line-height:1.5}
+/* ducks peek over the top edge of each game card again */
+.games{padding-top:66px}
+.games .game .pic,.games .game.wide .pic{position:absolute;left:50%;top:-64px;transform:translateX(-50%);height:106px;margin:0;flex:none;pointer-events:none;z-index:1}
+.games .game .pic img{height:106px}
+.game .g-top{position:absolute;top:12px;left:14px;right:14px;margin:0;z-index:2}
+.game .g-top .gbadge{margin-left:auto;transform:rotate(5deg)}
+.game,.game.wide,.game:nth-child(odd),.game:nth-child(even){padding-top:50px}
+.game h3{margin-top:0}
+.game .sub{margin-bottom:4px} .game .meta{margin-bottom:16px}
+
 /* welcome tour */
 #tour{position:fixed;inset:0;z-index:90;animation:fadeup .25s ease-out both}
 #tour.out{opacity:0;transition:opacity .3s}
