@@ -1121,6 +1121,32 @@ const TOWN = (()=>{
   return `<svg class="town" viewBox="0 0 1000 140" aria-hidden="true">${defs}${items.map(([dx,html])=>g(dx,html)).join("")}</svg>`;
 })();
 function planetTop(){ return `<div class="planet-top" aria-hidden="true">${TOWN}</div>`; }
+/* a little Duckoo walks from one house to the next along the planet, once a minute */
+const WALKS = [[-168,-64],[-64,-168],[80,166],[166,80]];
+let walkN = 0;
+function duckWalk(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
+  const svg = document.querySelector("svg.town"); if(!svg || svg.querySelector(".walker")) return;
+  const R=500, CX=500, CY=600, [from,to] = WALKS[walkN++ % WALKS.length];
+  const ns="http://www.w3.org/2000/svg", g=document.createElementNS(ns,"g"), inner=document.createElementNS(ns,"g"), img=document.createElementNS(ns,"image");
+  g.setAttribute("class","walker"); img.setAttribute("href", duck(walkN%2?"traveler":"suitcasekid")); img.setAttribute("width","32"); img.setAttribute("height","37"); img.setAttribute("x","-16"); img.setAttribute("y","-37");
+  if(to<from) img.setAttribute("transform","scale(-1 1)");
+  inner.appendChild(img); g.appendChild(inner); svg.appendChild(g);
+  const dur = 7000, t0 = performance.now();
+  const step = now => {
+    if(!g.isConnected) return;
+    const k = Math.min(1,(now-t0)/dur), e = k<.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2;
+    const dx = from + (to-from)*e, a = Math.asin(dx/R), x = CX+R*Math.sin(a), y = CY-R*Math.cos(a)+1;
+    const appear = Math.min(1, k/.08, (1-k)/.08), ph = (now-t0)/170;
+    const hop = Math.abs(Math.sin(ph))*2.6*(appear>=1?1:appear), sway = Math.sin(ph)*8*(appear>=1?1:appear);
+    g.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(a*180/Math.PI).toFixed(2)})`);
+    inner.setAttribute("transform",`translate(0 ${(-hop).toFixed(2)}) rotate(${sway.toFixed(1)}) scale(${(.45+.55*appear).toFixed(3)})`);
+    inner.setAttribute("opacity", appear.toFixed(2));
+    if(k<1) requestAnimationFrame(step); else g.remove();
+  };
+  requestAnimationFrame(step);
+}
+setTimeout(()=>{ duckWalk(); setInterval(duckWalk, 60000); }, 5000);
 /* ---------- UI shell ---------- */
 let tab = "play", walletTab = "avail", andrewOpen = false;
 function badge(){ const n=W().filter(w=>!w.usedAt).length; const b=$("#wbadge"); b.textContent=n; b.hidden=!n; }
