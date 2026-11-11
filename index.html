@@ -987,6 +987,22 @@ h3.hx-ch span{display:grid;place-items:center;width:30px;height:30px;border-radi
 .nseg button[aria-pressed="true"]{background:var(--cd);color:#fff}
 .nwho{margin:0 4px 10px}
 .thwrap .card.npriv{background:#fff9e8;border:1.5px dashed var(--cd)!important}
+/* V70: kiss hearts on the planet + psychedelic celebration */
+.kissheart{fill:#d14735;animation:kissup 2.4s ease-out both;transform-box:fill-box;transform-origin:50% 50%}
+@keyframes kissup{0%{opacity:0;transform:translateY(6px) scale(.4)}20%{opacity:1;transform:translateY(0) scale(1.2)}100%{opacity:0;transform:translateY(-34px) scale(.9)}}
+html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infinite}
+@keyframes psyHue{from{filter:hue-rotate(0) saturate(2.4) contrast(1.15)}to{filter:hue-rotate(360deg) saturate(2.4) contrast(1.15)}}
+@keyframes psyWob{0%,100%{transform:none}25%{transform:skewX(2deg) scale(1.01)}75%{transform:skewX(-2deg) scale(.99)}}
+.psy-layer{position:fixed;inset:0;z-index:9999;pointer-events:none;display:grid;place-items:center;overflow:hidden;animation:psyIn .35s ease-out both}
+.psy-layer.out{animation:psyOut .5s ease-in both}
+.psy-swirl{position:absolute;left:50%;top:50%;width:260vmax;height:260vmax;margin:-130vmax 0 0 -130vmax;background:repeating-conic-gradient(#ff2d55 0 10deg,#ffcc00 10deg 20deg,#34c759 20deg 30deg,#00c7ff 30deg 40deg,#af52de 40deg 50deg);mix-blend-mode:difference;opacity:.55;animation:psySpin 1.2s linear infinite}
+.psy-txt{position:relative;text-align:center;animation:psyPulse .45s ease-in-out infinite alternate}
+.psy-txt b{display:block;font-family:var(--f-display);font-weight:400;font-size:clamp(3.4rem,18vw,6rem);line-height:.9;text-transform:uppercase;color:#fff;text-shadow:4px 4px 0 #d14735,-4px -4px 0 #00c7ff,0 0 30px #fff}
+.psy-txt span{display:inline-block;margin-top:10px;background:#fff;color:#4a2a1a;font-weight:700;border-radius:999px;padding:6px 16px}
+@keyframes psySpin{to{transform:rotate(360deg)}}
+@keyframes psyPulse{from{transform:scale(.94) rotate(-3deg)}to{transform:scale(1.08) rotate(3deg)}}
+@keyframes psyIn{from{opacity:0}to{opacity:1}} @keyframes psyOut{to{opacity:0}}
+@media (prefers-reduced-motion: reduce){.psy-swirl,.psy-txt{animation:none}}
 /* V64: fight manual */
 .fman{margin-top:4px}
 .fm-lead{margin:0 0 12px;font-size:.9rem;color:var(--ink2);opacity:.8}
@@ -1262,6 +1278,8 @@ Object.assign(T.en,{calHerT:"Indiana's calendar",calAndrewT:"Andrew's calendar",
 Object.assign(T.es,{calHerT:"Calendario de Indiana",calAndrewT:"Calendario de Andrew",calPrep:"Sus días especiales, para que te prepares.",calEmpty:"Todavía no hay fechas especiales.",herBday:"Cumpleaños de Indiana"});
 Object.assign(T.en,{nShared:"Shared",nMine:"Just mine",nSharedD:"You and {o} both see these.",nMineD:"Only you see these. Nobody gets a notification.",nTextPhP:"What I want to think about, bring up later or work on myself…",nSaveP:"Save privately",nSavedP:"Saved in your private notes",nEmptyP:"Your private notebook is empty."});
 Object.assign(T.es,{nShared:"De los dos",nMine:"Solo mías",nSharedD:"Las ven tú y {o}.",nMineD:"Solo las ves tú. No le llega aviso a nadie.",nTextPhP:"Lo que quiero pensar, hablar después o trabajar en mí…",nSaveP:"Guardar en privado",nSavedP:"Guardada en tus notas privadas",nEmptyP:"Tu libreta privada está vacía."});
+Object.assign(T.en,{psyT:"{n} coupons!",psyS:"Psychedelic celebration 🌈",psyTest:"Try the 5-coupon celebration",psyTestD:"Every 5 coupons won, the app goes psychedelic for a few seconds."});
+Object.assign(T.es,{psyT:"¡{n} cupones!",psyS:"Celebración psicodélica 🌈",psyTest:"Probar la celebración de 5 cupones",psyTestD:"Cada 5 cupones ganados, la app se pone psicodélica unos segundos."});
 /* V63 labels */
 Object.assign(T.en,{renewS:"New tries",backS:"You can play again",weeksS:"weeks",sec_wait:"Wait and Win for Andrew",sec_wait_s:"Pick special dates and the gift Andrew opens on each one. He can't see the gift until that day.",wName:"Special date",wNamePh:"e.g. Our anniversary",wDate:"Date",wGift:"His gift that day",wGiftPh:"e.g. A dinner I cook just for you",waitA_s:"Gifts Indiana chose for special days. Each one opens on its day.",waitA_empty:"Indiana hasn't chosen any special dates yet.",secretGift:"Secret gift"});
 Object.assign(T.es,{renewS:"Nuevos intentos",backS:"Vuelves a jugar",weeksS:"semanas",sec_wait:"Espera y gana para Andrew",sec_wait_s:"Elige fechas especiales y el regalo que Andrew abre ese día. Él no ve el regalo hasta ese día.",wName:"Fecha especial",wNamePh:"ej. Nuestro aniversario",wDate:"Fecha",wGift:"Su regalo ese día",wGiftPh:"ej. Una cena que cocino solo para ti",waitA_s:"Regalos que Indiana eligió para días especiales. Cada uno se abre en su día.",waitA_empty:"Indiana todavía no ha elegido fechas especiales.",secretGift:"Regalo secreto"});
@@ -1340,35 +1358,77 @@ const TOWN = (()=>{
   return `<svg class="town" viewBox="0 0 1000 140" aria-hidden="true">${items.map(([dx,html])=>g(dx,html)).join("")}</svg>`;
 })();
 function planetTop(){ return `<div class="planet-top" aria-hidden="true">${TOWN}</div>`; }
-/* a little Duckoo walks from one house to the next along the planet, once a minute */
+/* a little Duckoo walks from one house to the next along the planet, once a minute.
+   V70: every other time two Duckoos leave their houses, meet, kiss, and walk home together */
 const WALKS = [[-168,-64],[-64,-168],[80,166],[166,80]];
 let walkN = 0;
+const PR=500, PCX=500, PCY=600;
+function planetPos(dx){ const a=Math.asin(Math.max(-1,Math.min(1,dx/PR))); return {x:PCX+PR*Math.sin(a), y:PCY-PR*Math.cos(a)+1, deg:a*180/Math.PI}; }
+function makeWalker(svg, name){
+  const ns="http://www.w3.org/2000/svg", g=document.createElementNS(ns,"g"), inner=document.createElementNS(ns,"g"), flip=document.createElementNS(ns,"g"), img=document.createElementNS(ns,"image");
+  g.setAttribute("class","walker"); img.setAttribute("href", duck(name)); img.setAttribute("width","32"); img.setAttribute("height","37"); img.setAttribute("x","-16"); img.setAttribute("y","-37");
+  flip.appendChild(img); inner.appendChild(flip); g.appendChild(inner); svg.appendChild(g);
+  return {g, set(dx, o){ const p=planetPos(dx); g.setAttribute("transform",`translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${p.deg.toFixed(2)})`);
+    inner.setAttribute("transform",`translate(0 ${(-(o.hop||0)).toFixed(2)}) rotate(${(o.rot||0).toFixed(1)}) scale(${(o.sc??1).toFixed(3)})`);
+    flip.setAttribute("transform", o.left ? "scale(-1 1)" : ""); inner.setAttribute("opacity",(o.op??1).toFixed(2)); }};
+}
+const ease = k => k<.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2;
 function duckWalk(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
   const svg = document.querySelector("svg.town"); if(!svg || svg.querySelector(".walker")) return;
-  const R=500, CX=500, CY=600, [from,to] = WALKS[walkN++ % WALKS.length];
-  const ns="http://www.w3.org/2000/svg", g=document.createElementNS(ns,"g"), inner=document.createElementNS(ns,"g"), img=document.createElementNS(ns,"image");
-  g.setAttribute("class","walker"); img.setAttribute("href", duck(["traveler","suitcasekid","pancake","caveman","apron","ketchup"][walkN%6])); img.setAttribute("width","32"); img.setAttribute("height","37"); img.setAttribute("x","-16"); img.setAttribute("y","-37");
-  if(to<from) img.setAttribute("transform","scale(-1 1)");
-  inner.appendChild(img); g.appendChild(inner); svg.appendChild(g);
+  const n = walkN++;
+  if(n%2===0) return duckKiss(svg);
+  const [from,to] = WALKS[(n>>1) % WALKS.length], w = makeWalker(svg, ["traveler","suitcasekid","pancake","caveman","apron","ketchup"][(n>>1)%6]);
   const dur = 7000, t0 = performance.now();
   const step = now => {
-    if(!g.isConnected) return;
-    const k = Math.min(1,(now-t0)/dur), e = k<.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2;
-    const dx = from + (to-from)*e, a = Math.asin(dx/R), x = CX+R*Math.sin(a), y = CY-R*Math.cos(a)+1;
-    const appear = Math.min(1, k/.08, (1-k)/.08), ph = (now-t0)/170;
-    const hop = Math.abs(Math.sin(ph))*2.6*(appear>=1?1:appear), sway = Math.sin(ph)*8*(appear>=1?1:appear);
-    g.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(a*180/Math.PI).toFixed(2)})`);
-    inner.setAttribute("transform",`translate(0 ${(-hop).toFixed(2)}) rotate(${sway.toFixed(1)}) scale(${(.45+.55*appear).toFixed(3)})`);
-    inner.setAttribute("opacity", appear.toFixed(2));
-    if(k<1) requestAnimationFrame(step); else g.remove();
+    if(!w.g.isConnected) return;
+    const k = Math.min(1,(now-t0)/dur), e = ease(k), appear = Math.min(1, k/.08, (1-k)/.08), ph=(now-t0)/170;
+    w.set(from+(to-from)*e, {hop:Math.abs(Math.sin(ph))*2.6*appear, rot:Math.sin(ph)*8*appear, sc:.45+.55*appear, op:appear, left:to<from});
+    if(k<1) requestAnimationFrame(step); else w.g.remove();
+  };
+  requestAnimationFrame(step);
+}
+function duckKiss(svg){
+  const pairs=[["richman","richwoman"],["farmer","gardener"],["bellboy","apron"],["caveman","lemonade"],["traveler","peach"]], [na,nb]=pairs[(walkN>>1)%pairs.length];
+  const A=makeWalker(svg,na), B=makeWalker(svg,nb), ns="http://www.w3.org/2000/svg";
+  const aFrom=-168, bFrom=80, meet=-104, home=-168;   // A walks right, B walks left, they meet left of centre, kiss, then walk home together to A's house
+  const T1=4200, T2=2600, T3=3400, total=T1+T2+T3, t0=performance.now(); let hearts=false;
+  const step = now => {
+    if(!A.g.isConnected) return;
+    const t=now-t0, ph=t/170;
+    if(t<T1){ const k=t/T1, e=ease(k), ap=Math.min(1,k/.1);
+      A.set(aFrom+(meet-9-aFrom)*e, {hop:Math.abs(Math.sin(ph))*2.6, rot:Math.sin(ph)*8, sc:.45+.55*ap, op:ap});
+      B.set(bFrom+(meet+9-bFrom)*e, {hop:Math.abs(Math.sin(ph+1))*2.6, rot:Math.sin(ph+1)*8, sc:.45+.55*ap, op:ap, left:true});
+    } else if(t<T1+T2){ const k=(t-T1)/T2, lean=Math.sin(Math.min(1,k*1.6)*Math.PI/2)*(k>.8?1-(k-.8)/.2:1), close=6*lean;
+      A.set(meet-9+close, {rot:14*lean, hop:1.5*lean}); B.set(meet+9-close, {rot:-14*lean, hop:1.5*lean, left:true});
+      if(!hearts && k>.35){ hearts=true; const p=planetPos(meet);
+        for(let i=0;i<5;i++){ const h=document.createElementNS(ns,"text"); h.textContent="♥"; h.setAttribute("class","kissheart"); h.setAttribute("x",(p.x+(i-2)*7).toFixed(1)); h.setAttribute("y",(p.y-40).toFixed(1));
+          h.style.animationDelay=(i*.18)+"s"; h.setAttribute("font-size",String(10+((i*7)%6))); svg.appendChild(h); setTimeout(()=>h.remove(),2600); } }
+    } else { const k=Math.min(1,(t-T1-T2)/T3), e=ease(k), fade=Math.min(1,(1-k)/.1), x=meet+(home-meet)*e;
+      A.set(x-8, {hop:Math.abs(Math.sin(ph))*2.4*fade, rot:Math.sin(ph)*7, sc:.45+.55*fade, op:fade, left:true});
+      B.set(x+8, {hop:Math.abs(Math.sin(ph+1))*2.4*fade, rot:Math.sin(ph+1)*7, sc:.45+.55*fade, op:fade, left:true});
+      if(k>=1){ A.g.remove(); B.g.remove(); return; } }
+    requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
 }
 setTimeout(()=>{ duckWalk(); setInterval(duckWalk, 60000); }, 5000);
 /* ---------- UI shell ---------- */
 let tab = "play", walletTab = "avail", andrewOpen = false;
-function badge(){ const n=W().filter(w=>!w.usedAt).length; const b=$("#wbadge"); b.textContent=n; b.hidden=!n; }
+function badge(){ const n=W().filter(w=>!w.usedAt).length; const b=$("#wbadge"); b.textContent=n; b.hidden=!n; checkPsy(); }
+/* V70: every 5 coupons won, the whole app goes psychedelic for under 5 seconds */
+function checkPsy(){ const won=W().filter(w=>w.from!=="welcome").length, m=Math.floor(won/5)*5; S.psy ||= {};
+  if(m>=5 && m>(S.psy[me()]||0)){ S.psy[me()]=m; save(); setTimeout(()=>psychedelic(m),1400); } }
+function psychedelic(n){
+  if(document.querySelector(".psy-layer")) return;
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches, root=document.documentElement;
+  const d=document.createElement("div"); d.className="psy-layer"; d.setAttribute("role","status");
+  d.innerHTML=`<div class="psy-swirl"></div><div class="psy-txt"><b>${t("psyT",{n})}</b><span>${t("psyS")}</span></div>`;
+  document.body.appendChild(d); if(!calm) root.classList.add("psy");
+  sfx("win"); setTimeout(()=>sfx("coin"),300); setTimeout(()=>sfx("egg"),900); confetti(120); setTimeout(()=>confetti(90),1600);
+  if(navigator.vibrate) navigator.vibrate([80,60,80,60,160]);
+  setTimeout(()=>{ d.classList.add("out"); root.classList.remove("psy"); }, 4300); setTimeout(()=>d.remove(), 4800);
+}
 function toast(msg){ const d=document.createElement("div"); d.className="toast"; d.textContent=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),3800); }
 function openSheet(html){ $("#panel").innerHTML = `<button class="x" type="button" data-close aria-label="${t("close")}">×</button>`+html; $("#sheet").hidden=false; $("#panel").scrollTop=0; }
 function closeSheet(){ $("#sheet").hidden=true; $("#panel").innerHTML=""; render(); }
@@ -2210,6 +2270,7 @@ function renderAndrew(){
     <div class="card"><h4>${t("aDate")}</h4><div class="field"><input id="aDate" type="date" value="${esc(S.testDate)}"></div><p class="hint">${t("aDateNote")}</p>
       <h4 style="margin-top:14px">${t("aWorker")}</h4><div class="field"><input id="aWorker" type="text" value="${esc(S.worker)}" placeholder="https://…workers.dev/judge"></div><p class="hint">${t("aWorkerNote")}</p>
       <button class="btn small" type="button" id="aSave">${t("save")}</button></div>
+    <div class="card"><h4>🌈 ${t("psyTest")}</h4><p class="hint">${t("psyTestD")}</p><button class="btn small" type="button" data-psytest>${t("psyTest")}</button></div>
     <div class="card"><h4>${t("aWipeT")}</h4><p class="hint">${t("aWipeD")}</p><button class="btn small" type="button" id="aWipe">${t("aWipeBtn")}</button></div>
     </section>
     </div>
@@ -2534,6 +2595,7 @@ function triesHTML(){
       <span class="tb4-chip date"><small>${t(left?"renewS":"backS")}</small><b>${nextReset()}</b></span>
     </div></div>`;
 }
+document.addEventListener("click", e=>{ if(e.target.closest("[data-psytest]")) psychedelic(5); });
 document.addEventListener("click", e=>{ if(e.target.closest("[data-renew]")) toast(t("renewToast",{n:Math.max(0,triesLeft()),d:nextReset()})); });
 document.addEventListener("click", e=>{ if(e.target.closest("[data-gowallet]")){ tab="wallet"; walletTab="avail"; render(); window.scrollTo(0,0); } });
 function stkCardHTML(){
