@@ -746,14 +746,14 @@ nav.bar .badge{font-size:.56rem;padding:0 5px;line-height:1.5}
 
 /* V55: title in a floating cloud */
 .cloud-title{position:relative;display:flex;justify-content:center;margin:24px auto 0;width:max-content;max-width:100%;padding:22px 38px 18px;animation:cloudfloat 5.5s ease-in-out infinite}
-.cloud-title svg.cl{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:0}
-.cloud-title svg.cl path{fill:var(--card);stroke:var(--red);stroke-width:2.5;stroke-linejoin:round}
-.cloud-title svg.cl .shade{fill:none;stroke:var(--rose);stroke-width:5;stroke-linecap:round;opacity:.9}
-.cloud-title h2.sec.mini{position:relative;z-index:1;margin:0;font-size:clamp(2.4rem,11vw,2.9rem);line-height:.9;white-space:nowrap}
-.cloud-title .puff{position:absolute;z-index:0;border:2.5px solid var(--red);background:var(--card);border-radius:50%}
-.cloud-title .puff.p1{width:16px;height:16px;left:-14px;bottom:8px;animation:puff 5.5s ease-in-out infinite}
-.cloud-title .puff.p2{width:9px;height:9px;left:-28px;bottom:2px;animation:puff 5.5s ease-in-out .4s infinite}
-.cloud-title .puff.p3{width:12px;height:12px;right:-16px;top:10px;animation:puff 5.5s ease-in-out .8s infinite}
+.cloud-title svg.cl{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:0;filter:drop-shadow(0 2px 5px rgba(160,90,100,.18))}
+.cloud-title svg.cl .cl-body{fill:url(#clG)}
+.cloud-title svg.cl .cl-sh{fill:#e2b3bc;opacity:.55}
+.cloud-title h2.sec.mini{position:relative;z-index:1;margin:0;text-shadow:0 2px 0 #fff;font-size:clamp(2.4rem,11vw,2.9rem);line-height:.9;white-space:nowrap}
+.cloud-title .puff{position:absolute;z-index:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 35%,#f8eef0 60%,#e9cdd3 100%);box-shadow:0 3px 0 rgba(226,179,188,.55)}
+.cloud-title .puff.p1{width:20px;height:20px;left:-14px;bottom:8px;animation:puff 5.5s ease-in-out infinite}
+.cloud-title .puff.p2{width:12px;height:12px;left:-28px;bottom:2px;animation:puff 5.5s ease-in-out .4s infinite}
+.cloud-title .puff.p3{width:15px;height:15px;right:-16px;top:10px;animation:puff 5.5s ease-in-out .8s infinite}
 @keyframes cloudfloat{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-6px) rotate(.6deg)}}
 @keyframes puff{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-3px,-4px) scale(1.15)}}
 /* V55: the pink is a little planet with houses and trees */
@@ -803,6 +803,11 @@ main#view.home::before{display:none}
 .thwrap .phrase small{color:var(--ink-soft)!important}
 .thwrap .empty{color:var(--cd)}
 
+.agrp{display:block}
+.agrp[hidden]{display:none!important}
+.thwrap .agrp .card h4{font-size:1.6rem}
+.thwrap .agrp .card + .card{margin-top:0}
+#aLock{display:block;margin:6px auto 0}
 /* welcome tour */
 #tour{position:fixed;inset:0;z-index:90;animation:fadeup .25s ease-out both}
 #tour.out{opacity:0;transition:opacity .3s}
@@ -991,10 +996,11 @@ const HOSTED = /^https?:$/.test(location.protocol) && !/(^|\.)(claude\.ai|claude
 
 /* ---------- state ---------- */
 const fresh = () => ({lang:"es", wallet:[{uid:"w1",cid:"besitos",at:Date.now(),from:"welcome",usedAt:null}], weeks:{}, months:{}, claimed:{}, tripUnlocked:false,
-  her:{coupons:[],questions:[]}, deep:[], finish:[], testDate:"", worker:"", andrew:false, player:"her", aWallet:[], aWeeks:{}});
+  her:{coupons:[],questions:[]}, deep:[], finish:[], testDate:"", worker:"", andrew:false, player:"her", aWallet:[{uid:"wa1",cid:"besitos",at:Date.now(),from:"welcome",usedAt:null}], aWelcome:true, aWeeks:{}});
 let S;
 try{ S = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY)||"null")||{}); }catch(e){ S = fresh(); }
 S.her = Object.assign({coupons:[],bigcoupons:[],trivia:[],love:[],finish:[],deep:[]}, S.her||{}); delete S.her.questions; S.aMonths ||= {}; S.aDeep ||= [];
+S.aWallet ||= []; if(!S.aWelcome){ S.aWelcome=true; if(!S.aWallet.some(w=>w.from==="welcome")) S.aWallet.unshift({uid:"wa1",cid:"besitos",at:Date.now(),from:"welcome",usedAt:null}); }
 S.activity ||= []; S.ex ||= []; S.notes ||= []; S.checkins ||= []; S.photos ||= []; S.agreements ||= []; S.calm ||= {her:{},andrew:{}}; S.wins ||= []; S.jar ||= []; S.streakOwed ||= {}; S.aWeeks ||= {}; S.weeks ||= {};
 const me = () => isA() ? "andrew" : "her", other = () => isA() ? "her" : "andrew";
 const nameOf = p => p==="andrew" ? "Andrew" : "Indiana";
@@ -1074,7 +1080,14 @@ function ticketHTML(w, opts={}){
 
 /* V55: cloud title + planet town */
 function cloudTitle(txt){
-  return `<div class="cloud-title"><svg class="cl" viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="M34 96C14 96 4 82 9 68C2 54 12 38 30 40C30 22 50 12 68 20C76 6 98 2 114 12C126 0 152 -2 166 10C180 0 206 2 214 18C232 10 256 18 258 36C278 36 294 52 288 70C296 86 282 100 264 96C256 106 238 108 226 100C214 108 194 108 184 100C172 108 150 108 140 100C128 108 106 108 96 100C84 108 62 108 54 100C46 102 38 100 34 96Z"/><path class="shade" vector-effect="non-scaling-stroke" d="M40 88C70 94 230 94 262 86"/></svg><span class="puff p1"></span><span class="puff p2"></span><span class="puff p3"></span><h2 class="sec mini">${txt}</h2></div>`;
+  const D="M34 96C14 96 4 82 9 68C2 54 12 38 30 40C30 22 50 12 68 20C76 6 98 2 114 12C126 0 152 -2 166 10C180 0 206 2 214 18C232 10 256 18 258 36C278 36 294 52 288 70C296 86 282 100 264 96C256 106 238 108 226 100C214 108 194 108 184 100C172 108 150 108 140 100C128 108 106 108 96 100C84 108 62 108 54 100C46 102 38 100 34 96Z";
+  return `<div class="cloud-title"><svg class="cl" viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true"><defs>
+    <linearGradient id="clG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#fbf6f7"/><stop offset="1" stop-color="#ecd3d9"/></linearGradient>
+    <radialGradient id="clH" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+    <path class="cl-sh" d="${D}" transform="translate(0 6)"/><path class="cl-body" d="${D}"/>
+    <ellipse cx="72" cy="34" rx="26" ry="14" fill="url(#clH)"/><ellipse cx="140" cy="20" rx="30" ry="12" fill="url(#clH)"/><ellipse cx="214" cy="32" rx="24" ry="11" fill="url(#clH)"/>
+    <path d="M40 92C80 100 220 100 262 90" fill="none" stroke="#e7c3cb" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity=".7"/></svg>
+    <span class="puff p1"></span><span class="puff p2"></span><span class="puff p3"></span><h2 class="sec mini">${txt}</h2></div>`;
 }
 const TOWN = (()=>{
   const R=500, CX=500, CY=600+34-0; // circle top sits at y=34+66-66 inside the svg (svg top is -34px, planet top 66px => y=100)
@@ -1167,7 +1180,7 @@ function render(){
   const unseen = S.activity.filter(a=>a.to===me() && !a.seen).length; $("#bbadge").textContent=unseen; $("#bbadge").hidden=!unseen;
   if(isA() && tab==="her") tab="play";
   $('nav.bar [data-tab="her"]').hidden = isA();
-  $("#view").classList.toggle("home", tab==="play"||tab==="therapy");
+  $("#view").classList.toggle("home", tab==="play"||tab==="therapy"||(tab==="andrew"&&andrewOpen));
   ({album:renderAlbum, therapy:renderTherapy, play:isA()?renderAndrewPlay:renderPlay, wallet:renderWallet, her:renderHer, andrew:renderAndrew})[tab]();
   badge();
 }
@@ -1803,6 +1816,11 @@ function renderTherapy(){
 }
 
 /* ---------- ANDREW ---------- */
+const AGRP = [
+  {k:"game", c:"#bcdaf7", cd:"#3b5e7e", d:"bellboy"}, {k:"her", c:"#dccff2", cd:"#634a93", d:"gardener"},
+  {k:"surp", c:"#f3ec8a", cd:"#7d6f0e", d:"richwoman"}, {k:"app", c:"#cfe6c4", cd:"#3f7a4a", d:"concierge"}
+];
+let aTab = "game";
 function renderAndrew(){
   if(!andrewOpen){
     $("#view").innerHTML = `<h2 class="sec">${t("tabAndrew")}</h2><p class="lead">${t("aLead")}</p>
@@ -1812,25 +1830,39 @@ function renderAndrew(){
     return;
   }
   const w = week(), per = () => { S.pers ||= {}; S.aPers ||= {}; const k="P"+periodIdx(); return {her:(S.pers[k] ||= {used:0,extra:0,log:[]}), andrew:(S.aPers[k] ||= {used:0,extra:0,log:[]})}; };
+  const curG = AGRP.find(x=>x.k===aTab) || AGRP[0];
   const leftOf = o => `${Math.max(0, TRIES + o.extra - o.used)}/${TRIES + o.extra}`;
-  $("#view").innerHTML = `<h2 class="sec">${t("aTitle")}</h2>
+  $("#view").innerHTML = `${cloudTitle(t("aTitle"))}
+    ${planetTop()}<div class="throw" role="tablist">${AGRP.map(x=>`<button type="button" role="tab" class="thtile" data-agrp="${x.k}" aria-pressed="${aTab===x.k}" aria-selected="${aTab===x.k}" style="--c:${x.c};--cd:${x.cd}"><img src="${duck(x.d)}" alt=""><span>${t("ag_"+x.k)}</span></button>`).join("")}</div>
+    <div class="thwrap" style="--c:${curG.c};--cd:${curG.cd}"><div class="thhead"><img src="${duck(curG.d)}" alt=""><h3>${t("ag_"+curG.k)}</h3></div><p class="hint">${t("ag_"+curG.k+"_d")}</p>
+    <section class="agrp" data-grp="game" ${aTab!=="game"?"hidden":""}>
     <div class="card"><h4>${t("aResetT")}</h4><p class="hint">${t("aResetNow",{h:leftOf(per().her),a:leftOf(per().andrew)})}</p>
       <div class="row-btns"><button class="btn small" type="button" data-rtries="her">Indiana</button><button class="btn small" type="button" data-rtries="andrew">Andrew</button><button class="btn small" type="button" data-rtries="both">${t("whoBoth")}</button></div></div>
-    <div class="card"><h4>${t("aWipeT")}</h4><p class="hint">${t("aWipeD")}</p><button class="btn small" type="button" id="aWipe">${t("aWipeBtn")}</button></div>
     <div class="card"><h4>${t("aWeek")}</h4><p class="hint">${w.log.map(l=>`${t("g_"+l.game)}: ${l.won?"✓":"✗"}`).join(" · ")||"–"}</p></div>
-    <div class="card"><h4>${t("aTrip")}</h4>
-      <button class="btn small" type="button" id="aTrip" ${S.tripUnlocked?"disabled":""}>${S.tripUnlocked?t("aTripDone"):t("aTripBtn")}</button></div>
     <div class="card"><h4>${t("aGive")}</h4><div class="field"><select id="aGiveSel">${C.coupons.map(c=>`<option value="${c.id}">${esc(t(c.tier))}: ${esc(tx(c))}</option>`).join("")}</select></div>
       <button class="btn small" type="button" id="aGive">${t("aGiveBtn")}</button></div>
+    <div class="card"><h4>${t("aTrip")}</h4>
+      <button class="btn small" type="button" id="aTrip" ${S.tripUnlocked?"disabled":""}>${S.tripUnlocked?t("aTripDone"):t("aTripBtn")}</button></div>
+    </section>
+    <section class="agrp" data-grp="her" ${aTab!=="her"?"hidden":""}>
     <div class="card"><h4>${t("aHer")}</h4>${SECTIONS.map(sec=>`<p class="hint" style="margin:10px 0 0"><b>${t("sec_"+sec.k)}</b> (${S.her[sec.k].length})</p><ul class="list">${S.her[sec.k].map(it=>`<li><span>${itemHTML(sec.k,it)}</span></li>`).join("")}</ul>`).join("")}</div>
+    </section>
+    <section class="agrp" data-grp="surp" ${aTab!=="surp"?"hidden":""}>
+    ${surprisesHTML("andrew")}
+    </section>
+    <section class="agrp" data-grp="app" ${aTab!=="app"?"hidden":""}>
+    <div class="card"><h4>${t("twAgainT")}</h4><p class="hint">${t("twAgainD")}</p><div class="row-btns" style="justify-content:flex-start">${HOSTED?`<button class="btn small" type="button" data-rtour="${S.device||"andrew"}">${t("twAgain")}</button>`:`<button class="btn small" type="button" data-rtour="her">Indiana</button><button class="btn small ghost" type="button" data-rtour="andrew">Andrew</button>`}</div></div>
+    ${HOSTED?`<div class="card"><h4>${t("devT")}</h4><p class="hint">${t("devNow",{n:nameOf(S.device||"her")})}</p><button class="btn small" type="button" id="aDev">${t("devChange")}</button></div>`:""}
     <div class="card"><h4>${t("aDate")}</h4><div class="field"><input id="aDate" type="date" value="${esc(S.testDate)}"></div><p class="hint">${t("aDateNote")}</p>
       <h4 style="margin-top:14px">${t("aWorker")}</h4><div class="field"><input id="aWorker" type="text" value="${esc(S.worker)}" placeholder="https://…workers.dev/judge"></div><p class="hint">${t("aWorkerNote")}</p>
       <button class="btn small" type="button" id="aSave">${t("save")}</button></div>
-    ${surprisesHTML("andrew")}
-    ${HOSTED?`<div class="card"><h4>${t("devT")}</h4><p class="hint">${t("devNow",{n:nameOf(S.device||"her")})}</p><button class="btn small" type="button" id="aDev">${t("devChange")}</button></div>`:""}
-    <div class="card"><h4>${t("twAgainT")}</h4><p class="hint">${t("twAgainD")}</p><div class="row-btns" style="justify-content:flex-start">${HOSTED?`<button class="btn small" type="button" data-rtour="${S.device||"andrew"}">${t("twAgain")}</button>`:`<button class="btn small" type="button" data-rtour="her">Indiana</button><button class="btn small ghost" type="button" data-rtour="andrew">Andrew</button>`}</div></div>
+    <div class="card"><h4>${t("aWipeT")}</h4><p class="hint">${t("aWipeD")}</p><button class="btn small" type="button" id="aWipe">${t("aWipeBtn")}</button></div>
+    </section>
+    </div>
     <button class="btn ghost" type="button" id="aLock">${t("aLock")}</button>`;
   bindSurprises("andrew");
+  document.querySelectorAll("[data-agrp]").forEach(b=>b.onclick=()=>{ aTab=b.dataset.agrp; render(); });
+  { const on=$('.throw [aria-pressed="true"]'), row=$(".throw"); if(on&&row) row.scrollLeft = on.offsetLeft - (row.clientWidth-on.offsetWidth)/2; }
   $("#aWipe").onclick=()=>{
     openSheet(`<div class="result"><img class="big sticker" src="${duck("donotdisturb")}" alt=""><h3>${t("aWipeQ")}</h3><p class="hint">${t("aWipeWarn")}</p>
       <div class="row-btns"><button class="btn" type="button" id="wipeYes">${t("aWipeYes")}</button><button class="btn ghost" type="button" data-close>${t("cancel")}</button></div></div>`);
@@ -1871,7 +1903,7 @@ Object.assign(T.en, {stkTitle:"Sticker album", tabAlbum:"Album",
   tw10:"Coins buy packs of 3 stickers made from our photos. Fill a page and you win a coupon. There's also a sealed letter hiding in there…",
   tw11T:"News", tw11:"Here you see what Andrew does: when he plays, wins or uses a coupon.",
   tw12T:"Your tab, Indiana", tw12:"This is your part: write your questions and coupons for Andrew. If you fill it all in, you win a super exclusive bonus. 🤫", twGo:"Let's play!",
-  twA1T:"Welcome to Casita Huma!", twA1:"You play too: win coins and the coupons Indiana made for you. Let me show you around.", twA2:"You get your own 2 tries every 4 days. Every win gives you a coin, and every 3 wins, one of her coupons.", twA3:"Questions Indiana wrote about herself, with 4 options. It unlocks once she writes them in her tab.", twA4:"Pick what Indiana would want in each situation.", twA7:"Ask her one deep question a month and answer hers by voice note. It doesn't use a try.", twA8:"The coupons you win from Indiana land here. Use them whenever you want.", twA11:"Here you see what Indiana does: when she plays, wins or uses a coupon.", twA12T:"Your settings", twA12:"Locked with your code: add questions and coupons, reset tries and replay this tour.", aWipeT:"Start from zero", aWipeD:"Leaves this phone like new: games, coins, coupons, stickers, notes and both welcome tours. It asks who is playing again.", aWipeBtn:"Reset everything", aWipeQ:"Reset everything?", aWipeWarn:"Everything saved on this phone is erased and can't be recovered. The app opens like the first time.", aWipeYes:"Yes, erase it", twSkip:"Skip", devT:"Who are you?", devD:"This phone stays set to one person.", devNow:"This phone is {n}'s.", devChange:"Change person", twAgainT:"Welcome tour", twAgainD:"Shows the welcome tour again, the way each of you sees it the first time.", twAgain:"Show the tour",
+  twA1T:"Welcome to Casita Huma!", twA1:"You play too: win coins and the coupons Indiana made for you. Let me show you around.", twA2:"You get your own 2 tries every 4 days. Every win gives you a coin, and every 3 wins, one of her coupons.", twA3:"Questions Indiana wrote about herself, with 4 options. It unlocks once she writes them in her tab.", twA4:"Pick what Indiana would want in each situation.", twA7:"Ask her one deep question a month and answer hers by voice note. It doesn't use a try.", twA8:"The coupons you win from Indiana land here. Use them whenever you want.", twA11:"Here you see what Indiana does: when she plays, wins or uses a coupon.", twA12T:"Your settings", twA12:"Locked with your code: add questions and coupons, reset tries and replay this tour.", aWipeT:"Start from zero", aWipeD:"Leaves this phone like new: games, coins, coupons, stickers, notes and both welcome tours. It asks who is playing again.", aWipeBtn:"Reset everything", aWipeQ:"Reset everything?", aWipeWarn:"Everything saved on this phone is erased and can't be recovered. The app opens like the first time.", aWipeYes:"Yes, erase it", ag_game:"Game", ag_game_d:"Tries, this round's plays, gift a coupon and the trip gift.", ag_her:"What she added", ag_her_d:"Everything Indiana has written in her tab, section by section.", ag_surp:"Surprises", ag_surp_d:"Her sealed letter, hidden secrets and the stickers made from your photos.", ag_app:"App", ag_app_d:"Welcome tours, test date, who this phone belongs to and starting from zero.", twSkip:"Skip", devT:"Who are you?", devD:"This phone stays set to one person.", devNow:"This phone is {n}'s.", devChange:"Change person", twAgainT:"Welcome tour", twAgainD:"Shows the welcome tour again, the way each of you sees it the first time.", twAgain:"Show the tour",
   remT:"Fill in your tab", remD:"Super exclusive bonus waiting · {d} of {n} sections",
   coinWon:"+1 coin", nextCup:"Next coupon", winsOf:"{n}/3 wins", qOf:"Question {i} of {n}", guessOf:"What would {n} answer?", guessSay:"What would {n} say?", isRight:"Right", yourPick:"Your pick", toCoupon:"{n} of 3 wins for your next coupon", couponWon:"3 wins! You won a coupon.", noMore:"You already won every coupon of that kind. Here's a coin instead.",
   coins:"Coins", tries:"Tries", renew:"New tries on {d}", mkTitle:"Make a new sticker", mkLead:"Upload a photo of us. It takes the album's design by itself.",
@@ -1901,7 +1933,7 @@ Object.assign(T.es, {stkTitle:"Álbum de monas", tabAlbum:"Álbum",
   tw10:"Con las monedas compras sobres de 3 monas hechas con nuestras fotos. Llena una página y ganas un cupón. Y ahí se esconde una carta sellada…",
   tw11T:"Novedades", tw11:"Aquí ves lo que hace Andrew: cuando juega, gana o usa un cupón.",
   tw12T:"Tu tab, Indiana", tw12:"Esta es tu parte: escribe tus preguntas y tus cupones para Andrew. Si lo llenas todo, te ganas un bono súper exclusivo. 🤫", twGo:"¡A jugar!",
-  twA1T:"¡Bienvenido a Casita Huma!", twA1:"Tú también juegas: ganas monedas y los cupones que Indiana hizo para ti. Te enseño rapidito.", twA2:"Tienes tus propios 2 intentos cada 4 días. Cada victoria te da una moneda, y cada 3, uno de sus cupones.", twA3:"Preguntas que Indiana escribió sobre ella, con 4 opciones. Se activa cuando ella las escriba en su tab.", twA4:"Elige lo que Indiana querría en cada situación.", twA7:"Hazle una pregunta profunda al mes y contesta la suya con nota de voz. No gasta intentos.", twA8:"Aquí llegan los cupones que le ganas a Indiana. Úsalos cuando quieras.", twA11:"Aquí ves lo que hace Indiana: cuando juega, gana o usa un cupón.", twA12T:"Tus ajustes", twA12:"Con tu código: agregas preguntas y cupones, reinicias intentos y vuelves a ver esta bienvenida.", aWipeT:"Empezar de cero", aWipeD:"Deja este teléfono como nuevo: juegos, monedas, cupones, monas, notas y las dos bienvenidas. Vuelve a preguntar quién juega.", aWipeBtn:"Reiniciar todo", aWipeQ:"¿Reiniciar todo?", aWipeWarn:"Se borra todo lo guardado en este teléfono y no se puede recuperar. La app abre como la primera vez.", aWipeYes:"Sí, borrar todo", twSkip:"Saltar", devT:"¿Quién eres?", devD:"Este teléfono queda para una sola persona.", devNow:"Este teléfono es de {n}.", devChange:"Cambiar de persona", twAgainT:"Bienvenida", twAgainD:"Muestra otra vez el recorrido de bienvenida, como lo ve cada uno la primera vez.", twAgain:"Ver la bienvenida",
+  twA1T:"¡Bienvenido a Casita Huma!", twA1:"Tú también juegas: ganas monedas y los cupones que Indiana hizo para ti. Te enseño rapidito.", twA2:"Tienes tus propios 2 intentos cada 4 días. Cada victoria te da una moneda, y cada 3, uno de sus cupones.", twA3:"Preguntas que Indiana escribió sobre ella, con 4 opciones. Se activa cuando ella las escriba en su tab.", twA4:"Elige lo que Indiana querría en cada situación.", twA7:"Hazle una pregunta profunda al mes y contesta la suya con nota de voz. No gasta intentos.", twA8:"Aquí llegan los cupones que le ganas a Indiana. Úsalos cuando quieras.", twA11:"Aquí ves lo que hace Indiana: cuando juega, gana o usa un cupón.", twA12T:"Tus ajustes", twA12:"Con tu código: agregas preguntas y cupones, reinicias intentos y vuelves a ver esta bienvenida.", aWipeT:"Empezar de cero", aWipeD:"Deja este teléfono como nuevo: juegos, monedas, cupones, monas, notas y las dos bienvenidas. Vuelve a preguntar quién juega.", aWipeBtn:"Reiniciar todo", aWipeQ:"¿Reiniciar todo?", aWipeWarn:"Se borra todo lo guardado en este teléfono y no se puede recuperar. La app abre como la primera vez.", aWipeYes:"Sí, borrar todo", ag_game:"Juego", ag_game_d:"Intentos, jugadas de estos días, regalar un cupón y el regalo del viaje.", ag_her:"Lo que ella agregó", ag_her_d:"Todo lo que Indiana ha escrito en su tab, por sección.", ag_surp:"Sorpresas", ag_surp_d:"Su carta sellada, los secretos escondidos y las monas hechas con sus fotos.", ag_app:"App", ag_app_d:"Bienvenidas, fecha de prueba, de quién es este teléfono y empezar de cero.", twSkip:"Saltar", devT:"¿Quién eres?", devD:"Este teléfono queda para una sola persona.", devNow:"Este teléfono es de {n}.", devChange:"Cambiar de persona", twAgainT:"Bienvenida", twAgainD:"Muestra otra vez el recorrido de bienvenida, como lo ve cada uno la primera vez.", twAgain:"Ver la bienvenida",
   remT:"Llena tu tab", remD:"Te espera un bono súper exclusivo · {d} de {n} secciones",
   coinWon:"+1 moneda", nextCup:"Próximo cupón", winsOf:"{n}/3 victorias", qOf:"Pregunta {i} de {n}", guessOf:"¿Qué respondería {n}?", guessSay:"¿Qué diría {n}?", isRight:"Correcta", yourPick:"Tu respuesta", toCoupon:"{n} de 3 victorias para tu próximo cupón", couponWon:"¡3 victorias! Te ganaste un cupón.", noMore:"Ya ganaste todos los cupones de ese tipo. Te doy una moneda.",
   coins:"Monedas", tries:"Intentos", renew:"Nuevos intentos el {d}", mkTitle:"Crear una mona nueva", mkLead:"Sube una foto de los dos. Toma el diseño del álbum sola.",
