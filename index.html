@@ -838,6 +838,69 @@ main#view.home::before{display:none}
 .her-remind small{font-family:var(--f-round);font-weight:700;font-size:.78rem;color:var(--ink2)} .her-remind i{font-style:normal;color:var(--red);font-size:1.2rem}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:360px){.games{grid-template-columns:1fr}}
+
+/* ===== V62: calmer UI. One main thing per screen, little secondary text, flat monochrome decoration ===== */
+h2.sec::after{display:none}
+h2.sec{margin-bottom:14px}
+/* flat cloud, same rose family as the planet */
+.cloud-title svg.cl{filter:none}
+.cloud-title svg.cl .cl-body{fill:#f6e4e7}
+.cloud-title .puff{background:#f6e4e7;box-shadow:none}
+.cloud-title h2.sec.mini{text-shadow:none;font-size:clamp(2.1rem,9.5vw,2.5rem)}
+.cloud-title{padding:18px 34px 14px;margin-top:18px}
+/* flat planet: no craters, no rings */
+.planet-top::before{background:var(--rose)!important;box-shadow:none!important}
+/* stats: icons + numbers, no labels, no box lines */
+.tries-box.tb3{display:flex;justify-content:space-around;align-items:center;gap:8px;background:transparent;border:0;padding:4px 0;margin:0}
+.tb3 .tb-stat{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:44px;padding:4px 10px}
+.tb3 .tb-stat + .tb-stat{border-left:0}
+.tb3 .tb-stat > span + b{margin-left:0}
+.tb3 .tb-stat:has(b){flex-direction:row;gap:6px}
+.tb3 .tb-stat small{font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+/* game cards: title, one line, button */
+.games .game .g-top{display:flex;justify-content:flex-end;align-items:center;gap:6px}
+.game .gcount{font-family:var(--f-body);font-size:.7rem;letter-spacing:.06em;color:var(--muted);background:rgba(255,255,255,.55);border-radius:999px;padding:2px 8px}
+.game .g-top .tag{position:static}
+.game .sub{opacity:.75}
+.game .play b{display:none}
+/* below the games: one quiet row */
+.slim{display:flex;align-items:center;gap:10px;width:100%;margin:14px 0 0;padding:12px 16px;min-height:48px;background:#fcfcfc;border:0;border-radius:16px;font:inherit;color:var(--ink2);text-align:left;cursor:pointer}
+.slim b{flex:1;font-family:var(--f-body);font-weight:600;font-size:.95rem}
+.slim .mt-n{font-size:.8rem;color:var(--muted)}
+.slim i{font-style:normal;color:var(--red);font-weight:700}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;margin:12px 0 0}
+.mini-tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:92px;padding:12px 8px;background:#fcfcfc;border:0;border-radius:16px;font:inherit;color:var(--ink2);cursor:pointer;text-align:center}
+.mini-tile b{font-family:var(--f-body);font-weight:600;font-size:.82rem;letter-spacing:.02em}
+.mini-tile .stdots{display:flex;gap:3px;margin:0}.mini-tile .stdots::before,.mini-tile .stdots i::after{display:none}
+.mini-tile .stdots i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--rose);border:0}
+.mini-tile .stdots i.on{background:var(--red)}
+.mini-tile .mt-n{font-size:.75rem;color:var(--muted)}
+.mini-tile .mt-big{font-family:var(--f-display);font-size:1.7rem;line-height:1;color:var(--ink2)} .mini-tile .mt-big small{font-size:.9rem;color:var(--muted)}
+.mini-tile .tag{position:absolute;top:6px;right:6px;font-size:.62rem;background:var(--red);color:#fff;border-radius:999px;padding:1px 7px}
+.mini-tile.wait img{height:44px;width:auto}
+.mini-tile:active,.slim:active{transform:scale(.97)}
+/* section labels: plain text instead of tilted stickers */
+h2.sec-tab,h3.sec-tab{background:none;transform:none;padding:0;font-size:1rem;letter-spacing:.12em;color:var(--muted);margin:28px auto 10px}
+/* therapy: the tile row is the navigation, the section is calm and one colour */
+.thhead2{font-family:var(--f-display);font-weight:400;font-size:1.9rem;line-height:1;text-transform:uppercase;color:var(--cd,var(--ink2));margin:6px 0 14px}
+h4.grp2{font-family:var(--f-body);font-weight:600;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cd,var(--muted));margin:20px 0 8px}
+.thwrap .phrase{border-left:5px solid var(--c)!important;background:#fcfcfc!important;box-shadow:none}
+.thwrap .card{box-shadow:none;border:0}
+/* album: one slim shop row */
+.shop.shop2{gap:12px;border:0;padding:10px 14px}
+.shop2 .coin-big{width:54px;height:54px;border-width:2px;box-shadow:none}
+.shop2 .coin-big span{font-size:1.8rem}
+.shop2 .btn[aria-disabled="true"]{opacity:.5}
+.shop2 .album-n{margin-left:auto;font-family:var(--f-display);font-size:1.8rem;color:var(--ink2)} .shop2 .album-n small{font-size:1rem;color:var(--muted)}
+.egg-line{text-align:center;margin-top:16px}
+/* her tab */
+.her-prog{display:flex;align-items:center;gap:12px;margin-top:4px;border:0;box-shadow:none}
+.her-prog > div{flex:1;min-width:0} .her-prog b{display:block;font-size:.92rem;margin-bottom:8px}
+.her-prog .hp-ic{font-size:1.5rem} .her-prog .mt-n{font-size:.85rem;color:var(--muted)}
+.sec-card summary .hint{display:none}
+.sec-help{margin:0 0 10px}
+main#view::after{display:none}
+.tb3 .tb-ic.hearts i{width:22px;height:22px;font-size:.75rem}
 </style>
 
 <div class="wrap">
@@ -908,7 +971,7 @@ const T = {
   claim:"Open gift",claimed:"Opened",today:"Today!",inDays:"in {n} days",tomorrow:"tomorrow",
   trip:"Our first trip abroad",tripWait:"Andrew unlocks this one",tripReady:"Unlocked!",
   sideDone:"Indiana's side is complete",sideWait:"Finish Indiana's side",
-  herTitle:"Indiana's side",herLead:"Make the games Andrew plays. Add coupons he can win from you and questions for every game.",
+  herTitle:"Your side",herLead:"Make the games Andrew plays. Add coupons he can win from you and questions for every game.",
   herCoupons:"Your coupons for Andrew",herQs:"Your questions for Andrew",addCoupon:"Add coupon",addQ:"Add question",
   couponPh:"e.g. I make you pancakes",qPh:"e.g. What's my favorite flower?",aPh:"The answer",remove:"Remove",
   progressSide:"{d} of {n} sections complete",
@@ -969,7 +1032,7 @@ const T = {
   claim:"Abrir regalo",claimed:"Abierto",today:"¡Hoy!",inDays:"en {n} días",tomorrow:"mañana",
   trip:"Nuestro primer viaje internacional",tripWait:"Andrew lo desbloquea",tripReady:"¡Desbloqueado!",
   sideDone:"El lado de Indiana está completo",sideWait:"Completa el lado de Indiana",
-  herTitle:"El lado de Indiana",herLead:"Arma los juegos que Andrew juega. Agrega cupones que puede ganarse de ti y preguntas para cada juego.",
+  herTitle:"Tu lado",herLead:"Arma los juegos que Andrew juega. Agrega cupones que puede ganarse de ti y preguntas para cada juego.",
   herCoupons:"Tus cupones para Andrew",herQs:"Tus preguntas para Andrew",addCoupon:"Agregar cupón",addQ:"Agregar pregunta",
   couponPh:"ej. Te hago panqueques",qPh:"ej. ¿Cuál es mi flor favorita?",aPh:"La respuesta",remove:"Quitar",
   progressSide:"{d} de {n} secciones completas",
@@ -1042,7 +1105,7 @@ async function enablePush(btn){
 function pushCardHTML(){
   if(!HOSTED || S.pushOn) return "";
   const can = PUSH_OK() && STANDALONE();
-  return `<div class="card push-card"><img src="${duck("bellboy")}" alt=""><div><b>${t("pushT")}</b><small>${can?t("pushD"):t("pushNeedApp")}</small>${can?`<button class="btn small" type="button" data-pushon>${t("pushBtn")}</button>`:""}</div></div>`;
+  return can ? `<button type="button" class="slim" data-pushon><span aria-hidden="true">🔔</span><b>${t("pushT")}</b><i aria-hidden="true">→</i></button>` : "";
 }
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-pushon]"); if(b) enablePush(b); const tb=e.target.closest("[data-pushtest]"); if(tb){ pushSend(me(), t("pushTestBody"), 5000).then(r=>{ if(!r||!r.sent) toast(t("pushNone")); }); toast(t("pushTestToast")); } });
 setTimeout(()=>{ if(HOSTED && S.pushOn && PUSH_OK() && Notification.permission==="granted" && Date.now()-(S.pushAt||0) > 864e5) pushSubscribe(false).catch(()=>{}); }, 4000);
@@ -1082,6 +1145,10 @@ function poolFor(kind){ // items with stable keys
 function remaining(kind){ const done=new Set(M()[kind]); return poolFor(kind).filter(x=>!done.has(x.key)); }
 function masteryHTML(kind){ const total=poolFor(kind).length; if(!total) return ""; const n=Math.min(M()[kind].length,total);
   return `<span class="mast ${n>=total?"ok":""}"><span class="ml">${t("mastLbl")}</span><span class="mbar"><i style="width:${Math.round(100*n/total)}%"></i></span><b>${n}/${total}</b></span>`; }
+/* V62 short labels */
+Object.assign(T.en,{backOn:"back {d}",renewToast:"{n} tries left · new ones {d}",stShort:"Streak",stkShort:"Stickers",exclusiveS:"Fill everything → secret coupon",exclusiveReadyS:"Done! Open it in Wait and Win",exclusiveGotS:"Secret coupon won ✓"});
+Object.assign(T.es,{backOn:"vuelven {d}",renewToast:"Te quedan {n} intentos · nuevos el {d}",stShort:"Racha",stkShort:"Monas",exclusiveS:"Llénalo todo → cupón secreto",exclusiveReadyS:"¡Listo! Ábrelo en Espera y gana",exclusiveGotS:"Cupón secreto ganado ✓"});
+function cornerCount(kind){ const total=poolFor(kind).length; if(!total) return ""; const n=Math.min(M()[kind].length,total); return `<span class="gcount" aria-label="${t("mastLbl")}: ${n}/${total}">✓ ${n}/${total}</span>`; }
 const masteredAll = () => MASTERY.every(k=>poolFor(k).length && !remaining(k).length);
 
 /* ---------- coupons ---------- */
@@ -1111,9 +1178,9 @@ function ticketHTML(w, opts={}){
   return `<article class="ticket ${c.tier} ${used?"used":""}">
     <div class="stub"><img class="sticker" src="${duck(c.duck)}" alt=""></div>
     <div class="body">
-      <div class="row"><span class="chip">${t(c.tier==="hersBig"?"hersBig":c.tier==="hers"&&isA()?"hersA":c.tier)}${w.from==="welcome"?" · "+t("welcome"):w.from==="streak"?" · "+t("streak"):""}</span>${used?"":""}</div>
+      <div class="row"><span class="chip">${t(c.tier==="hersBig"?"hersBig":c.tier==="hers"&&isA()?"hersA":c.tier)}</span>${used?"":""}</div>
       <div class="what">${esc(tx(c))}</div>
-      ${opts.bare?"":`<div class="row"><span class="when">${used?t("usedOn",{d:fmt(w.usedAt)}):t("earned",{d:fmt(w.at)})}</span>
+      ${opts.bare?"":`<div class="row"><span class="when">${used?t("usedOn",{d:fmt(w.usedAt)}):""}</span>
       ${used?"":`<button class="btn small" type="button" data-redeem="${w.uid}">${t("redeem")}</button>`}</div>`}
     </div>${used?`<span class="stamp">${t("redeemed")}</span>`:""}</article>`;
 }
@@ -1122,57 +1189,35 @@ function ticketHTML(w, opts={}){
 /* V55: cloud title + planet town */
 function cloudTitle(txt){
   const D="M34 96C14 96 4 82 9 68C2 54 12 38 30 40C30 22 50 12 68 20C76 6 98 2 114 12C126 0 152 -2 166 10C180 0 206 2 214 18C232 10 256 18 258 36C278 36 294 52 288 70C296 86 282 100 264 96C256 106 238 108 226 100C214 108 194 108 184 100C172 108 150 108 140 100C128 108 106 108 96 100C84 108 62 108 54 100C46 102 38 100 34 96Z";
-  return `<div class="cloud-title"><svg class="cl" viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true"><defs>
-    <linearGradient id="clG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#fbf6f7"/><stop offset="1" stop-color="#ecd3d9"/></linearGradient>
-    <radialGradient id="clH" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
-    <path class="cl-sh" d="${D}" transform="translate(0 6)"/><path class="cl-body" d="${D}"/>
-    <ellipse cx="72" cy="34" rx="26" ry="14" fill="url(#clH)"/><ellipse cx="140" cy="20" rx="30" ry="12" fill="url(#clH)"/><ellipse cx="214" cy="32" rx="24" ry="11" fill="url(#clH)"/>
-    <path d="M40 92C80 100 220 100 262 90" fill="none" stroke="#e7c3cb" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity=".7"/></svg>
+  return `<div class="cloud-title"><svg class="cl" viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true"><path class="cl-body" d="${D}"/></svg>
     <span class="puff p1"></span><span class="puff p2"></span><span class="puff p3"></span><h2 class="sec mini">${txt}</h2></div>`;
 }
 const TOWN = (()=>{
-  const R=500, CX=500, CY=600+34-0; // circle top sits at y=34+66-66 inside the svg (svg top is -34px, planet top 66px => y=100)
-  const top=100, cy=top+R;
+  /* V62: flat, one-colour town (darker rose on the rose planet), no gradients or shadows */
+  const R=500, CX=500, top=100, cy=top+R, A="#e0abb5", B="#d49aa5", Wn="#f4e0e4";
   const g = (dx, inner) => { const a=Math.asin(dx/R), x=CX+R*Math.sin(a), y=cy-R*Math.cos(a); return `<g transform="translate(${x.toFixed(1)} ${(y+1).toFixed(1)}) rotate(${(a*180/Math.PI).toFixed(2)})">${inner}</g>`; };
-  const shadow = w => `<ellipse cx="0" cy="0" rx="${w}" ry="3.2" fill="#d79aa4" opacity=".7"/>`;
-  const house = (wall, roof, s=1, chimney=false) => { const w=34*s, h=26*s, r=20*s;
-    return shadow(w*0.62)+
-    (chimney?`<rect x="${w*0.2}" y="${-h-r*0.75}" width="${6*s}" height="${12*s}" rx="1.5" fill="url(#gRoofD)"/><circle class="smoke" cx="${w*0.2+3*s}" cy="${-h-r*0.85}" r="${4*s}" fill="#fff"/><circle class="smoke b" cx="${w*0.2+3*s}" cy="${-h-r*0.85}" r="${3.4*s}" fill="#fff"/>`:"")+
-    `<rect x="${-w/2}" y="${-h}" width="${w}" height="${h}" rx="${5*s}" fill="url(#${wall})"/>`+
-    `<path d="M${-w/2-3*s} ${-h+2*s} L0 ${-h-r} L${w/2+3*s} ${-h+2*s}Z" fill="url(#${roof})" stroke="url(#${roof})" stroke-width="${5*s}" stroke-linejoin="round"/>`+
-    `<path d="M${-w/2+1*s} ${-h+1*s} L0 ${-h-r+5*s}" stroke="#fff" stroke-opacity=".35" stroke-width="${2*s}" stroke-linecap="round"/>`+
-    `<rect x="${-4.5*s}" y="${-13*s}" width="${9*s}" height="${13*s}" rx="${4.5*s}" fill="#8a4b2f"/><circle cx="${2.2*s}" cy="${-6*s}" r="${0.9*s}" fill="#efe84c"/>`+
-    `<rect x="${-w/2+4*s}" y="${-h+6*s}" width="${7*s}" height="${7*s}" rx="${2*s}" fill="#bcdaf7" stroke="#fff" stroke-width="${1.4*s}"/>`+
-    `<rect x="${w/2-11*s}" y="${-h+6*s}" width="${7*s}" height="${7*s}" rx="${2*s}" fill="#bcdaf7" stroke="#fff" stroke-width="${1.4*s}"/>`+
-    `<rect x="${-w/2}" y="${-5*s}" width="${w}" height="${5*s}" rx="${2.5*s}" fill="#000" opacity=".06"/>`;
+  const house = (s=1, chimney=false) => { const w=34*s, h=26*s, r=20*s;
+    return (chimney?`<rect x="${w*0.2}" y="${-h-r*0.75}" width="${6*s}" height="${12*s}" rx="1.5" fill="${B}"/><circle class="smoke" cx="${w*0.2+3*s}" cy="${-h-r*0.85}" r="${4*s}" fill="${Wn}"/><circle class="smoke b" cx="${w*0.2+3*s}" cy="${-h-r*0.85}" r="${3.4*s}" fill="${Wn}"/>`:"")+
+    `<rect x="${-w/2}" y="${-h}" width="${w}" height="${h}" rx="${5*s}" fill="${A}"/>`+
+    `<path d="M${-w/2-3*s} ${-h+2*s} L0 ${-h-r} L${w/2+3*s} ${-h+2*s}Z" fill="${B}" stroke="${B}" stroke-width="${5*s}" stroke-linejoin="round"/>`+
+    `<rect x="${-4.5*s}" y="${-13*s}" width="${9*s}" height="${13*s}" rx="${4.5*s}" fill="${B}"/>`+
+    `<rect x="${-w/2+4*s}" y="${-h+6*s}" width="${7*s}" height="${7*s}" rx="${2*s}" fill="${Wn}"/>`+
+    `<rect x="${w/2-11*s}" y="${-h+6*s}" width="${7*s}" height="${7*s}" rx="${2*s}" fill="${Wn}"/>`;
   };
-  const tree = (s=1, cls="") => shadow(12*s)+`<g class="sway ${cls}"><rect x="${-2.6*s}" y="${-16*s}" width="${5.2*s}" height="${16*s}" rx="${2.6*s}" fill="#8a4b2f"/><circle cx="0" cy="${-26*s}" r="${13*s}" fill="url(#gTree)"/><circle cx="${-8*s}" cy="${-19*s}" r="${8*s}" fill="url(#gTree)"/><circle cx="${8*s}" cy="${-20*s}" r="${8.5*s}" fill="url(#gTree)"/><circle cx="${-4*s}" cy="${-31*s}" r="${3.2*s}" fill="#fff" opacity=".35"/></g>`;
-  const pine = (s=1, cls="") => shadow(10*s)+`<g class="sway ${cls}"><rect x="${-2.2*s}" y="${-10*s}" width="${4.4*s}" height="${10*s}" rx="2" fill="#8a4b2f"/><path d="M0 ${-46*s} Q${3*s} ${-40*s} ${11*s} ${-24*s} Q${14*s} ${-16*s} ${15*s} ${-12*s} Q0 ${-7*s} ${-15*s} ${-12*s} Q${-14*s} ${-16*s} ${-11*s} ${-24*s} Q${-3*s} ${-40*s} 0 ${-46*s}Z" fill="url(#gPine)"/></g>`;
-  const bush = (s=1) => `<circle cx="${-6*s}" cy="${-5*s}" r="${6*s}" fill="url(#gTree)"/><circle cx="${4*s}" cy="${-6*s}" r="${7*s}" fill="url(#gTree)"/><circle cx="${12*s}" cy="${-4*s}" r="${4.5*s}" fill="url(#gTree)"/>`;
-  const flower = c => `<rect x="-.7" y="-8" width="1.4" height="8" fill="#6aa865"/><circle cx="0" cy="-9" r="2.6" fill="${c}"/><circle cx="0" cy="-9" r="1" fill="#efe84c"/>`;
-  const defs = `<defs>
-    <linearGradient id="gCream" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f1e3cf"/></linearGradient>
-    <linearGradient id="gButter" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8f08a"/><stop offset="1" stop-color="#e3d84a"/></linearGradient>
-    <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d6e9fb"/><stop offset="1" stop-color="#a6c8ea"/></linearGradient>
-    <linearGradient id="gLav" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4eff4"/><stop offset="1" stop-color="#d9d0da"/></linearGradient>
-    <linearGradient id="gRoofR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8624f"/><stop offset="1" stop-color="#b93a2a"/></linearGradient>
-    <linearGradient id="gRoofB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8653f"/><stop offset="1" stop-color="#7a4126"/></linearGradient>
-    <linearGradient id="gRoofP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2a0ad"/><stop offset="1" stop-color="#d77a8a"/></linearGradient>
-    <linearGradient id="gRoofD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8653f"/><stop offset="1" stop-color="#6e3a22"/></linearGradient>
-    <radialGradient id="gTree" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#a9d98f"/><stop offset=".6" stop-color="#7dbb6a"/><stop offset="1" stop-color="#5c9a52"/></radialGradient>
-    <linearGradient id="gPine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ccf86"/><stop offset="1" stop-color="#4f8d4a"/></linearGradient>
-  </defs>`;
+  const tree = (s=1, cls="") => `<g class="sway ${cls}"><rect x="${-2.6*s}" y="${-16*s}" width="${5.2*s}" height="${16*s}" rx="${2.6*s}" fill="${B}"/><circle cx="0" cy="${-26*s}" r="${13*s}" fill="${A}"/><circle cx="${-8*s}" cy="${-19*s}" r="${8*s}" fill="${A}"/><circle cx="${8*s}" cy="${-20*s}" r="${8.5*s}" fill="${A}"/></g>`;
+  const pine = (s=1, cls="") => `<g class="sway ${cls}"><rect x="${-2.2*s}" y="${-10*s}" width="${4.4*s}" height="${10*s}" rx="2" fill="${B}"/><path d="M0 ${-46*s} Q${3*s} ${-40*s} ${11*s} ${-24*s} Q${14*s} ${-16*s} ${15*s} ${-12*s} Q0 ${-7*s} ${-15*s} ${-12*s} Q${-14*s} ${-16*s} ${-11*s} ${-24*s} Q${-3*s} ${-40*s} 0 ${-46*s}Z" fill="${B}"/></g>`;
+  const bush = (s=1) => `<circle cx="${-6*s}" cy="${-5*s}" r="${6*s}" fill="${A}"/><circle cx="${4*s}" cy="${-6*s}" r="${7*s}" fill="${A}"/><circle cx="${12*s}" cy="${-4*s}" r="${4.5*s}" fill="${A}"/>`;
   const items = [
-    [-470, pine(1.0,"b")], [-430, house("gButter","gRoofR",1.05,true)], [-385, tree(1,"c")],
-    [-338, house("gBlue","gRoofB",.95)], [-300, bush(1)], [-262, tree(.9)], [-232, flower("#ecc3c9")],
-    [-200, pine(.95,"c")], [-168, house("gCream","gRoofR",1,true)], [-138, tree(.85,"b")], [-118, flower("#d14735")],
-    [-92, bush(.9)], [-64, house("gLav","gRoofP",.9)], [-36, pine(.8,"b")],
-    [34, tree(.8,"c")], [58, flower("#efe84c")], [80, house("gButter","gRoofB",.85)], [112, bush(.95)],
-    [136, pine(.95)], [166, house("gBlue","gRoofR",1.05,true)], [200, tree(.95,"b")], [226, flower("#ecc3c9")],
-    [250, house("gCream","gRoofP",.95)], [288, pine(1,"c")], [318, bush(1)], [350, house("gLav","gRoofR",1)],
-    [392, tree(1.05)], [432, house("gButter","gRoofB",.95,true)], [470, pine(1,"b")]
+    [-470, pine(1.0,"b")], [-430, house(1.05,true)], [-385, tree(1,"c")],
+    [-338, house(.95)], [-300, bush(1)], [-262, tree(.9)],
+    [-200, pine(.95,"c")], [-168, house(1,true)], [-138, tree(.85,"b")],
+    [-92, bush(.9)], [-64, house(.9)], [-36, pine(.8,"b")],
+    [34, tree(.8,"c")], [80, house(.85)], [112, bush(.95)],
+    [136, pine(.95)], [166, house(1.05,true)], [200, tree(.95,"b")],
+    [250, house(.95)], [288, pine(1,"c")], [318, bush(1)], [350, house(1)],
+    [392, tree(1.05)], [432, house(.95,true)], [470, pine(1,"b")]
   ];
-  return `<svg class="town" viewBox="0 0 1000 140" aria-hidden="true">${defs}${items.map(([dx,html])=>g(dx,html)).join("")}</svg>`;
+  return `<svg class="town" viewBox="0 0 1000 140" aria-hidden="true">${items.map(([dx,html])=>g(dx,html)).join("")}</svg>`;
 })();
 function planetTop(){ return `<div class="planet-top" aria-hidden="true">${TOWN}</div>`; }
 /* a little Duckoo walks from one house to the next along the planet, once a minute */
@@ -1183,7 +1228,7 @@ function duckWalk(){
   const svg = document.querySelector("svg.town"); if(!svg || svg.querySelector(".walker")) return;
   const R=500, CX=500, CY=600, [from,to] = WALKS[walkN++ % WALKS.length];
   const ns="http://www.w3.org/2000/svg", g=document.createElementNS(ns,"g"), inner=document.createElementNS(ns,"g"), img=document.createElementNS(ns,"image");
-  g.setAttribute("class","walker"); img.setAttribute("href", duck(walkN%2?"traveler":"suitcasekid")); img.setAttribute("width","32"); img.setAttribute("height","37"); img.setAttribute("x","-16"); img.setAttribute("y","-37");
+  g.setAttribute("class","walker"); img.setAttribute("href", duck(["traveler","suitcasekid","pancake","caveman","apron","ketchup"][walkN%6])); img.setAttribute("width","32"); img.setAttribute("height","37"); img.setAttribute("x","-16"); img.setAttribute("y","-37");
   if(to<from) img.setAttribute("transform","scale(-1 1)");
   inner.appendChild(img); g.appendChild(inner); svg.appendChild(g);
   const dur = 7000, t0 = performance.now();
@@ -1245,12 +1290,10 @@ const GAMES = [
 function gameCard(g, o){
   const rule = g.id==="love" ? t(g.sub ? "gr_love_o" : "gr_love", g.vars) : t("gr_"+g.id, g.vars||{});
   return `<button type="button" class="game" data-${o.attr}="${g.id}" ${o.why?`data-why="${o.why}"`:""} aria-disabled="${!!o.off}" style="--tint:${g.tint}">
-    <span class="g-top"><span class="gnum">${o.num}</span>${o.badge?`<span class="gbadge">${o.badge}</span>`:""}${o.tag?`<span class="tag">${o.tag}</span>`:""}</span>
+    <span class="g-top">${o.tag?`<span class="tag">${o.tag}</span>`:""}${MASTERY.includes(g.id)?cornerCount(g.id):""}</span>
     <h3>${t("g_"+g.id)}</h3><div class="sub">${o.q}</div>
     <div class="pic"><img class="sticker" src="${duck(g.duck)}" alt=""></div>
-    <div class="meta">${rule}</div>
-    <span class="play">${t(o.btn||"playBtn")} <b aria-hidden="true">→</b></span>
-    ${MASTERY.includes(g.id)&&masteryHTML(g.id)||`<span class="mast ph" aria-hidden="true"></span>`}</button>`;
+    <span class="play">${t(o.btn||"playBtn")}</span></button>`;
 }
 function renderPlay(){
   const left = triesLeft(), w = week();
@@ -1268,9 +1311,7 @@ function renderPlay(){
       const badge = !off && first && g.id!=="deep" ? (first=false, t("todayBadge")) : "";
       return gameCard(g, {attr:"game", off, tag, badge, num:String(i+1).padStart(2,"0"), q:t("gq_"+g.id), btn:g.id==="deep"?"openBtn":"playBtn"}); }).join(""); })()}
     </div>
-    ${pushCardHTML()}${herReminderHTML()}${streakHTML()}${stkCardHTML()}
-    <h2 class="sec-tab">${t("special")}</h2>
-    <div class="games solo">${gameCard({id:"wait", duck:"sunbed", tint:"var(--card)"}, {attr:"game", tag:ready?t("today"):"", num:"★", q:t("gq_wait"), btn:"seeBtn"})}</div>`;
+    ${pushCardHTML()}${herReminderHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}${waitTileHTML(ready)}</div>`;
   document.querySelectorAll("[data-game]").forEach(b=>b.onclick=()=>{
     const id=b.dataset.game;
     if(id==="wait") return openWait();
@@ -1295,7 +1336,7 @@ function renderAndrewPlay(){
       const empty = g.id!=="deep" && g.id!=="finish" && (!hasC || !has[g.id]), monthly = g.id==="deep" && deepDone, allDone = !empty && MASTERY.includes(g.id) && !remaining(g.id).length; let off = (left<=0 && g.id!=="deep") || empty || monthly || allDone;
       let tag = g.id==="deep" && deepPending ? t("exTag") : empty ? t("soon") : allDone ? t("allDone") : monthly ? t("monthDone") : left<=0 && g.id!=="deep" ? t("locked") : "";
       if(g.id==="finish"){ const mc=matchCard(left); off=mc.off; tag=mc.tag; }
-      return gameCard(g, {attr:"ag", why: empty?"empty":allDone?"all":monthly?"month":"week", off, tag, num:String(i+1).padStart(2,"0"), q:t("g_"+g.id+"_A"), btn:g.id==="deep"?"openBtn":"playBtn"});}).join("")}</div>${pushCardHTML()}${streakHTML()}${stkCardHTML()}`;
+      return gameCard(g, {attr:"ag", why: empty?"empty":allDone?"all":monthly?"month":"week", off, tag, num:String(i+1).padStart(2,"0"), q:t("g_"+g.id+"_A"), btn:g.id==="deep"?"openBtn":"playBtn"});}).join("")}</div>${pushCardHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}</div>`;
   document.querySelectorAll("[data-ag]").forEach(b=>b.onclick=()=>{
     if(b.getAttribute("aria-disabled")==="true") return toast(b.dataset.why==="empty"?t("needHer"):b.dataset.why==="all"?t("allDone"):b.dataset.why==="month"?t("monthDone"):t("weekNext",{d:nextReset()}));
     ({trivia:()=>openQuiz("trivia"), love:openLove, scratch:openScratch, deep:openDeep, finish:openMatch})[b.dataset.ag]();
@@ -1346,9 +1387,10 @@ function checkStreak(){
 }
 function streakHTML(){
   const st=streakInfo(), dots=[...Array(STREAK)].map((_,i)=>`<i class="${i<st.n?"on":""}"></i>`).join("");
-  const now = st.nowOk ? t("stNowOk") : st.her||st.andrew ? t("stWait",{n:st.her?"Andrew":"Indiana"}) : t("stNone");
-  return `<div class="streak card"><div class="sthead"><b>${t("stTitle")}</b><span class="stn">${st.n}/${STREAK}</span></div><div class="stdots">${dots}</div><small>${now}</small></div>`;
+  return `<button type="button" class="mini-tile" data-streak><b>${t("stShort")}</b><span class="stdots">${dots}</span><span class="mt-n">${st.n}/${STREAK}</span></button>`;
 }
+document.addEventListener("click", e=>{ if(e.target.closest("[data-streak]")){ const st=streakInfo(); toast(st.nowOk ? t("stNowOk") : st.her||st.andrew ? t("stWait",{n:st.her?"Andrew":"Indiana"}) : t("stNone")); } });
+function waitTileHTML(ready){ return `<button type="button" class="mini-tile wait" data-game="wait"><img src="${duck("sunbed")}" alt=""><b>${t("g_wait")}</b>${ready?`<span class="tag">${t("today")}</span>`:""}</button>`; }
 function showResult(won, extraHTML=""){
   let html;
   if(won){ const r = winRewards(won);
@@ -1365,7 +1407,7 @@ function showResult(won, extraHTML=""){
 
 /* game stage: a host duck asks in a speech bubble, a little crowd cheers or sighs */
 const HOSTS = {trivia:"concierge", love:"peach", finish:"traveler"}, TINTS = {trivia:"var(--blue)", love:"var(--rose2)", finish:"var(--lav)"};
-const CROWD = ["doorman","lobbyboy","bellboy","richwoman","richman","suitcasekid","farmer","gardener","pig","rabbit","scarecrow","digger","beetroot","orange","potato","sprayer","ricesack","founder","sunbed","donotdisturb"];
+const CROWD = ["doorman","lobbyboy","bellboy","richwoman","richman","suitcasekid","farmer","gardener","pig","rabbit","scarecrow","digger","beetroot","orange","potato","sprayer","ricesack","founder","sunbed","donotdisturb","tiger","jamtoast","ketchup","lemonade","apron","mushroom","pancake","avocado","caveman"];
 function stageHTML(kind, i, total, marks, text, extra=""){
   const crowd = shuffle(CROWD.filter(n=>n!==HOSTS[kind])).slice(0,3), whoN = whoLabel(isA()?"her":"andrew");
   return `<div class="stage" style="--sbg:${TINTS[kind]||"var(--blue)"}">
@@ -1485,7 +1527,7 @@ function matchResult(r, fresh){
 /* scratch */
 function openScratch(){
   useTry("scratch", false);
-  const names = ["doorman","lobbyboy","bellboy","concierge","richwoman","richman","suitcasekid","sunbed","donotdisturb","traveler","founder","farmer","gardener","sprayer","pig","rabbit","scarecrow","ricesack","digger","peach","beetroot","orange","potato"];
+  const names = ["doorman","lobbyboy","bellboy","concierge","richwoman","richman","suitcasekid","sunbed","donotdisturb","traveler","founder","farmer","gardener","sprayer","pig","rabbit","scarecrow","ricesack","digger","peach","beetroot","orange","potato","tiger","jamtoast","ketchup","lemonade","apron","mushroom","pancake","avocado","caveman"];
   const won = Math.random() < 0.20;
   const kinds = shuffle(names);
   let cells;
@@ -1773,23 +1815,22 @@ function renderHer(){
   const p = sideProgress(), pct = Math.round(100*p.secs.reduce((a,x)=>a+Math.min(x.n,x.goal)/x.goal,0)/p.n);
   const secHTML = sec => { const st=p.secs.find(x=>x.k===sec.k), ok=st.n>=st.goal;
     return `<details class="card sec-card" data-sec="${sec.k}" ${openSec===sec.k?"open":""}>
-      <summary><img class="sticker" src="${duck(sec.duck)}" alt=""><span><b>${t("sec_"+sec.k)}</b><span class="hint">${t("sec_"+sec.k+"_s")}</span></span><span class="count ${ok?"ok":""}">${ok?"✓ ":""}${st.n}/${st.goal}</span></summary>
-      <form data-form="${sec.k}">${sec.fields.map(([f,ph,lab],fi)=>`${lab?`<label class="flab" for="f-${sec.k}-${f}">${t(lab)}</label>`:""}<div class="field"><input id="f-${sec.k}-${f}" type="text" placeholder="${esc(t(ph))}" aria-label="${esc(t(ph))}" maxlength="160" required></div>${fi===0?ideasHTML(sec.k):""}`).join("")}
+      <summary><img class="sticker" src="${duck(sec.duck)}" alt=""><span><b>${t("sec_"+sec.k)}</b></span><span class="count ${ok?"ok":""}">${ok?"✓ ":""}${st.n}/${st.goal}</span></summary>
+      <form data-form="${sec.k}"><p class="hint sec-help">${t("sec_"+sec.k+"_s")}</p>${sec.fields.map(([f,ph,lab],fi)=>`${lab?`<label class="flab" for="f-${sec.k}-${f}">${t(lab)}</label>`:""}<div class="field"><input id="f-${sec.k}-${f}" type="text" placeholder="${esc(t(ph))}" aria-label="${esc(t(ph))}" maxlength="160" required></div>${fi===0?ideasHTML(sec.k):""}`).join("")}
         ${sec.who?`<div class="field"><label class="flab" for="f-who-a">${t("whoPick")}</label><select id="f-who-a"><option value="andrew">Andrew</option><option value="her">Indiana</option><option value="both">${t("whoBoth")}</option></select></div>`:""}
         <button class="btn small" type="submit">${t("add")}</button></form>
       <ul class="list">${S.her[sec.k].map((it,i)=>`<li><span>${itemHTML(sec.k,it)}</span><button type="button" data-rm="${sec.k}:${i}">${t("remove")}</button></li>`).join("")}</ul>
     </details>`; };
   const textCard = (k, id, duckName, val, n) => `<details class="card sec-card" data-sec="${k}" ${openSec===k?"open":""}>
-      <summary><img class="sticker" src="${duck(duckName)}" alt=""><span><b>${t("sec_"+k)}</b><span class="hint">${t("sec_"+k+"_s")}</span></span><span class="count ${n?"ok":""}">${n}</span></summary>
-      <div style="margin:12px 14px"><div class="field"><textarea id="${id}" style="min-height:130px" aria-label="${esc(t("sec_"+k))}">${esc(val)}</textarea></div>
+      <summary><img class="sticker" src="${duck(duckName)}" alt=""><span><b>${t("sec_"+k)}</b></span><span class="count ${n?"ok":""}">${n}</span></summary>
+      <div style="margin:12px 14px"><p class="hint sec-help">${t("sec_"+k+"_s")}</p><div class="field"><textarea id="${id}" style="min-height:130px" aria-label="${esc(t("sec_"+k))}">${esc(val)}</textarea></div>
       ${ideasHTML(k)}<button class="btn small" type="button" data-savetext>${t("save")}</button></div></details>`;
   const games = SECTIONS.filter(x=>!["coupons","bigcoupons"].includes(x.k)), prizes = SECTIONS.filter(x=>["coupons","bigcoupons"].includes(x.k));
-  $("#view").innerHTML = `<h2 class="sec">${t("herTitle")}</h2><p class="lead">${t("herLead")}</p>
-    <div class="note"><b>${t("exclusiveTag")}</b>${S.claimed.side?t("exclusiveGot"):p.done?t("exclusiveReady"):t("exclusive")}</div>
-    <div class="card" style="margin-top:18px"><div class="meter"><i style="width:${pct}%"></i></div><div class="hint">${t("progressSide",{d:p.d,n:p.n})}</div></div>
+  $("#view").innerHTML = `<h2 class="sec">${t("herTitle")}</h2>
+    <div class="card her-prog"><span class="hp-ic" aria-hidden="true">🎁</span><div><b>${S.claimed.side?t("exclusiveGotS"):p.done?t("exclusiveReadyS"):t("exclusiveS")}</b><div class="meter"><i style="width:${pct}%"></i></div></div><span class="mt-n">${p.d}/${p.n}</span></div>
     <h3 class="sec-tab">${t("herGames")}</h3>
     ${games.map(secHTML).join("")}
-    <div class="card sec-card static"><div class="summary"><img class="sticker" src="${duck("suitcasekid")}" alt=""><span><b>${t("sec_scratch")}</b><span class="hint">${t("sec_scratch_s")}</span></span></div></div>
+    
     <h3 class="sec-tab">${t("herPrizes")}</h3>
     ${prizes.map(secHTML).join("")}
     <h3 class="sec-tab">${t("herExtras")}</h3>
@@ -1840,7 +1881,7 @@ function renderTherapy(){
   let body = "", bind = ()=>{};
   if(therapyTab==="fight"){
     const cols = ["#cfe6c4","#bcdaf7","#f8d2b8","#dccff2"];
-    body = `<p class="hint">${t("frSource")}</p>${C.fightRight.map((g,gi)=>`<h4 class="grp label" style="--c:${cols[gi%cols.length]}">${esc(tx(g.title))}</h4><div class="phrases">${g.items.map(i=>`<div class="phrase" style="--c:${cols[gi%cols.length]}">${esc(tx(i))}${i.note?`<small>${esc(tx(i.note))}</small>`:""}</div>`).join("")}</div>`).join("")}`;
+    body = `${C.fightRight.map((g,gi)=>`<h4 class="grp2">${esc(tx(g.title))}</h4><div class="phrases">${g.items.map(i=>`<div class="phrase">${esc(tx(i))}${i.note?`<small>${esc(tx(i.note))}</small>`:""}</div>`).join("")}</div>`).join("")}`;
   } else if(therapyTab==="notes"){
     body = `<form class="card" id="nf"><div class="field"><label for="nTitle">${t("nTitle")}</label><input id="nTitle" type="text" maxlength="80" placeholder="${esc(t("nTitlePh"))}"></div>
         <div class="field"><label for="nText">${t("nText")}</label><textarea id="nText" placeholder="${esc(t("nTextPh"))}"></textarea></div>
@@ -1858,33 +1899,31 @@ function renderTherapy(){
     body = `<p class="hint">${t("ciHelp")}</p>
       ${mine ? `<div class="card"><h4>${t("ciYours")}</h4>${show(mine)}</div>` : `<form class="card" id="cif"><h4>${t("ciYours")}</h4>${CHECKIN_Q.map(q=>`<div class="field"><label for="ci-${q}">${t(q)}</label><textarea id="ci-${q}" style="min-height:64px"></textarea></div>`).join("")}<button class="btn small" type="submit">${t("ciSend")}</button></form>`}
       <div class="card"><h4>${t("ciTheirs",{o})}</h4>${!theirs ? `<p class="hint">${t("ciWaiting",{o})}</p>` : !mine ? `<p class="hint">${t("ciLocked")}</p>` : show(theirs)}</div>
-      ${past.length?`<h4 class="grp label" style="--c:var(--butter)">${t("ciPast")}</h4><div class="ex">${past.map(show).join("")}</div>`:""}`;
+      ${past.length?`<h4 class="grp2">${t("ciPast")}</h4><div class="ex">${past.map(show).join("")}</div>`:""}`;
     bind = ()=>{ const f=$("#cif"); if(f) f.onsubmit=e=>{ e.preventDefault(); const a={}; CHECKIN_Q.forEach(q=>a[q]=$("#ci-"+q).value.trim()); if(!Object.values(a).some(Boolean)) return;
       S.checkins.push({month:mk, by:me(), a, at:Date.now()}); notify(`${nameOf(me())} did this month's check-in`, `${nameOf(me())} hizo el check-in del mes`); save(); render(); }; };
   } else if(therapyTab==="agree"){
-    const l = simpleList("agreements","agreePh","added an agreement","agregó un acuerdo"); body = `<p class="hint">${t("agreeHelp")}</p>`+l.html; bind=l.bind;
+    const l = simpleList("agreements","agreePh","added an agreement","agregó un acuerdo"); body = l.html; bind=l.bind;
   } else if(therapyTab==="wins"){
-    const l = simpleList("wins","winsPh","added a win to the journal","agregó un logro al diario"); body = `<p class="hint">${t("winsHelp")}</p>`+l.html; bind=l.bind;
+    const l = simpleList("wins","winsPh","added a win to the journal","agregó un logro al diario"); body = l.html; bind=l.bind;
   } else if(therapyTab==="calm"){
     const mine = S.calm[me()], theirs = S.calm[other()];
-    body = `<p class="hint">${t("calmHelp")}</p>
-      <form class="card" id="cf"><h4>${t("calmMine")}</h4>${CALM_Q.map(q=>`<div class="field"><label for="cp-${q}">${t(q)}</label><textarea id="cp-${q}" style="min-height:60px">${esc(mine[q]||"")}</textarea></div>`).join("")}<button class="btn small" type="submit">${t("save")}</button></form>
+    body = `<form class="card" id="cf"><h4>${t("calmMine")}</h4>${CALM_Q.map(q=>`<div class="field"><label for="cp-${q}">${t(q)}</label><textarea id="cp-${q}" style="min-height:60px">${esc(mine[q]||"")}</textarea></div>`).join("")}<button class="btn small" type="submit">${t("save")}</button></form>
       <div class="card"><h4>${t("calmTheirs",{o})}</h4>${CALM_Q.some(q=>theirs[q]) ? CALM_Q.map(q=>`<p style="margin:6px 0 0"><b>${t(q)}</b><br>${esc(theirs[q]||"–")}</p>`).join("") : `<p class="hint">${t("calmEmpty",{o})}</p>`}</div>`;
     bind = ()=>{ $("#cf").onsubmit=e=>{ e.preventDefault(); CALM_Q.forEach(q=>mine[q]=$("#cp-"+q).value.trim()); notify(`${nameOf(me())} updated their calm-down plan`, `${nameOf(me())} actualizó su plan para calmarse`); save(); toast(t("saved")); render(); }; };
   } else if(therapyTab==="jar"){
     const got = S.jar.filter(j=>j.to===me()), sent = S.jar.filter(j=>j.from===me());
-    body = `<p class="hint">${t("jarHelp",{o})}</p>
-      <form class="card" id="jf"><div class="field"><label for="jText">${t("jarWrite",{o})}</label><textarea id="jText" style="min-height:70px" placeholder="${esc(t("jarPh"))}"></textarea></div><button class="btn small" type="submit">${t("jarSend")}</button></form>
+    body = `<form class="card" id="jf"><div class="field"><label for="jText">${t("jarWrite",{o})}</label><textarea id="jText" style="min-height:70px" placeholder="${esc(t("jarPh"))}"></textarea></div><button class="btn small" type="submit">${t("jarSend")}</button></form>
       <div class="card jar"><img class="sticker" src="${duck("peach")}" alt=""><div><b>${t("jarCount",{n:got.length})}</b><div id="jarPick" class="q" style="font-size:1.3rem;margin:6px 0 0"></div></div>
         <button class="btn small" type="button" id="jarDraw" ${got.length?"":"disabled"}>${t("jarDraw")}</button></div>
-      ${sent.length?`<h4 class="grp label" style="--c:var(--teal)">${t("jarSent")}</h4><div class="ex">${sent.map(j=>`<div class="item"><small class="hint">${fmt(j.at)}</small><p style="margin:4px 0 0">${esc(j.text)}</p></div>`).join("")}</div>`:""}`;
+      ${sent.length?`<h4 class="grp2">${t("jarSent")}</h4><div class="ex">${sent.map(j=>`<div class="item"><small class="hint">${fmt(j.at)}</small><p style="margin:4px 0 0">${esc(j.text)}</p></div>`).join("")}</div>`:""}`;
     bind = ()=>{ $("#jf").onsubmit=e=>{ e.preventDefault(); const text=$("#jText").value.trim(); if(!text) return; S.jar.push({from:me(),to:other(),text,at:Date.now()});
         notify(`${nameOf(me())} put an appreciation in your jar`, `${nameOf(me())} puso un aprecio en tu frasco`); save(); toast(t("jarSentToast",{o})); render(); };
       $("#jarDraw").onclick=()=>{ const j=got[Math.floor(Math.random()*got.length)]; $("#jarPick").textContent=`“${j.text}” · ${fmt(j.at)}`; }; };
   }
-  $("#view").innerHTML = `${cloudTitle(t("tabTherapy"))}<p class="lead">${t("thLead")}</p>
+  $("#view").innerHTML = `${cloudTitle(t("tabTherapy"))}
     ${planetTop()}<div class="throw" role="tablist">${TH.map(x=>`<button type="button" role="tab" class="thtile" data-th="${x.k}" aria-pressed="${therapyTab===x.k}" aria-selected="${therapyTab===x.k}" style="--c:${x.c};--cd:${x.cd}"><img src="${duck(x.d)}" alt=""><span>${t("th_"+x.k)}</span></button>`).join("")}</div>
-    <div class="thwrap" style="--c:${cur.c};--cd:${cur.cd}"><div class="thhead"><img src="${duck(cur.d)}" alt=""><h3>${t("th_"+cur.k)}</h3></div>${body}</div>`;
+    <div class="thwrap" style="--c:${cur.c};--cd:${cur.cd}"><h3 class="thhead2">${t("th_"+cur.k)}</h3>${body}</div>`;
   { const on=$('.throw [aria-pressed="true"]'), row=$(".throw"); if(on&&row) row.scrollLeft = on.offsetLeft - (row.clientWidth-on.offsetWidth)/2; }
   document.querySelectorAll("[data-th]").forEach(b=>b.onclick=()=>{ therapyTab=b.dataset.th; render(); });
   bind();
@@ -1909,7 +1948,7 @@ function renderAndrew(){
   const leftOf = o => `${Math.max(0, TRIES + o.extra - o.used)}/${TRIES + o.extra}`;
   $("#view").innerHTML = `${cloudTitle(t("aTitle"))}
     ${planetTop()}<div class="throw" role="tablist">${AGRP.map(x=>`<button type="button" role="tab" class="thtile" data-agrp="${x.k}" aria-pressed="${aTab===x.k}" aria-selected="${aTab===x.k}" style="--c:${x.c};--cd:${x.cd}"><img src="${duck(x.d)}" alt=""><span>${t("ag_"+x.k)}</span></button>`).join("")}</div>
-    <div class="thwrap" style="--c:${curG.c};--cd:${curG.cd}"><div class="thhead"><img src="${duck(curG.d)}" alt=""><h3>${t("ag_"+curG.k)}</h3></div><p class="hint">${t("ag_"+curG.k+"_d")}</p>
+    <div class="thwrap" style="--c:${curG.c};--cd:${curG.cd}"><h3 class="thhead2">${t("ag_"+curG.k)}</h3>
     <section class="agrp" data-grp="game" ${aTab!=="game"?"hidden":""}>
     <div class="card"><h4>${t("aResetT")}</h4><p class="hint">${t("aResetNow",{h:leftOf(per().her),a:leftOf(per().andrew)})}</p>
       <div class="row-btns"><button class="btn small" type="button" data-rtries="her">Indiana</button><button class="btn small" type="button" data-rtries="andrew">Andrew</button><button class="btn small" type="button" data-rtries="both">${t("whoBoth")}</button></div></div>
@@ -2219,23 +2258,22 @@ function dragMona(el){
 /* album tab */
 function renderAlbum(){
   const all = stickers(), have = all.filter(s=>ST().own[s.id]).length, eg = (S.eggs[me()]||[]).length, loose = ST().loose, dups = dupsInTray();
-  $("#view").innerHTML = `<h2 class="sec">${t("tabAlbum")}</h2><p class="lead">${t("stkLead")}</p>
-    <div class="shop">
-      <div class="coin-big" aria-label="${t("coins")}: ${ST().coins}"><span>${ST().coins}</span><small>${t("coins")}</small></div>
-      <div class="shop-r"><button class="btn" type="button" id="buy" ${ST().coins>0?"":"aria-disabled=\"true\""}>${t("buyPack")}</button><small>${ST().coins>0?t("buyCost"):t("noCoins")}</small></div>
+  $("#view").innerHTML = `<h2 class="sec">${t("tabAlbum")}</h2>
+    <div class="shop shop2">
+      <div class="coin-big" aria-label="${t("coins")}: ${ST().coins}"><span>${ST().coins}</span></div>
+      <button class="btn" type="button" id="buy" ${ST().coins>0?"":"aria-disabled=\"true\""}>${t("buyPack")}</button>
+      <span class="album-n">${have}<small>/${all.length}</small></span>
     </div>
-    <section class="tray"><div class="stk-ph"><b>${t("toPaste")}</b><span>${loose.length}</span></div>
-      ${loose.length ? `<p class="hint">${t("pasteHint")}</p><div class="tray-row">${loose.map((it,i)=>{ const s=all.find(x=>x.id===it.id); if(!s) return "";
+    ${loose.length ? `<section class="tray"><div class="stk-ph"><b>${t("toPaste")}</b><span>${loose.length}</span></div>
+      <p class="hint">${t("pasteHint")}</p><div class="tray-row">${loose.map((it,i)=>{ const s=all.find(x=>x.id===it.id); if(!s) return "";
         const dup = ST().own[it.id] && !(it.shiny && !ST().shiny[it.id]);
         return `<button type="button" class="loose ${dup?"isdup":""}" data-paste="${i}">${monaHTML(s,{shiny:it.shiny})}${dup?`<em>${t("stkDup")}</em>`:""}</button>`; }).join("")}</div>
-        ${dups.length>=3?`<button class="btn small ghost" type="button" id="swap">${t("swap")}</button>`:""}` : `<p class="hint">${t("pasteNone")}</p>`}
-    </section>
-    <div class="album-count"><span class="big">${have}<small>/${all.length}</small></span></div>
+        ${dups.length>=3?`<button class="btn small ghost" type="button" id="swap">${t("swap")}</button>`:""}</section>` : ""}
     ${letterHTML()}
     ${pagesOf(all).map((pg,i)=>{ const full = pg.length===PAGE && pg.every(s=>ST().own[s.id]);
       return `<section class="stk-page ${full?"full":""}"><div class="stk-ph"><b>${t("stkPage",{n:i+1})}</b><span>${full?"✓ ":""}${pg.filter(s=>ST().own[s.id]).length}/${PAGE}</span></div>
       <div class="stk-grid">${pg.map(slotHTML).join("")}${[...Array(PAGE-pg.length)].map(()=>`<div class="stk miss soon"><span>?</span></div>`).join("")}</div></section>`; }).join("")}
-    <p class="hint" style="text-align:center;margin-top:16px">🥚 ${t("eggCount",{n:eg,t:EGGS.length})}<br>${t("eggHint",{t:EGGS.length})}</p>`;
+    <p class="hint egg-line">🥚 ${t("eggCount",{n:eg,t:EGGS.length})}</p>`;
   fillThumbs();
   $("#buy").onclick = buyPack;
   document.querySelectorAll("[data-paste]").forEach(dragMona);
@@ -2246,19 +2284,17 @@ function renderAlbum(){
 
 /* top of Jugar: big circles for tries and coins */
 function triesHTML(){
-  const left = Math.max(0, triesLeft()), total = Math.max(TRIES + week().extra, left), cup = W().filter(w=>!w.usedAt).length, wn = ST().wins%3;
-  return `<div class="tries-box tb2">
-    <div class="tb-stat"><span class="tb-ic hearts" aria-hidden="true">${[...Array(total)].map((_,i)=>`<i class="${i<left?"on":""}">♥</i>`).join("")}</span><b>${left}/${total}</b><small>${t("tries")}</small></div>
-    <button type="button" class="tb-stat" data-shop aria-label="${t("coins")}: ${ST().coins}"><span class="tb-ic coin" aria-hidden="true"></span><b>${ST().coins}</b><small>${t("coins")}</small></button>
-    <button type="button" class="tb-stat" data-gowallet aria-label="${t("tabWallet")}: ${cup}"><span class="tb-ic cup" aria-hidden="true">🎟</span><b>${cup}</b><small>${t("tabWallet")}</small></button>
-    <div class="tb-foot2"><div class="tb-next"><span>${t("nextCup")}</span><span class="tb-seg" aria-hidden="true">${[0,1,2].map(i=>`<i class="${i<wn?"on":""}"></i>`).join("")}</span><b>${t("winsOf",{n:wn})}</b></div><small>${t("renew",{d:nextReset()})}</small></div></div>`;
+  const left = Math.max(0, triesLeft()), total = Math.max(TRIES + week().extra, left), cup = W().filter(w=>!w.usedAt).length;
+  return `<div class="tries-box tb3">
+    <button type="button" class="tb-stat" data-renew aria-label="${t("tries")}: ${left}/${total}"><span class="tb-ic hearts" aria-hidden="true">${[...Array(total)].map((_,i)=>`<i class="${i<left?"on":""}">♥</i>`).join("")}</span>${left?"":`<small>${t("backOn",{d:nextReset()})}</small>`}</button>
+    <button type="button" class="tb-stat" data-shop aria-label="${t("coins")}: ${ST().coins}"><span class="tb-ic coin" aria-hidden="true"></span><b>${ST().coins}</b></button>
+    <button type="button" class="tb-stat" data-gowallet aria-label="${t("tabWallet")}: ${cup}"><span class="tb-ic cup" aria-hidden="true">🎟</span><b>${cup}</b></button></div>`;
 }
+document.addEventListener("click", e=>{ if(e.target.closest("[data-renew]")) toast(t("renewToast",{n:Math.max(0,triesLeft()),d:nextReset()})); });
 document.addEventListener("click", e=>{ if(e.target.closest("[data-gowallet]")){ tab="wallet"; walletTab="avail"; render(); window.scrollTo(0,0); } });
 function stkCardHTML(){
   const all = stickers(), have = all.filter(s=>ST().own[s.id]).length, n = ST().loose.length;
-  return `<button type="button" class="stk-card card" data-shop><span class="sthead"><b>${t("stkTitle")}</b><span class="stn">${have}/${all.length}</span></span>
-    <span class="minis">${all.slice(0,10).map(s=>`<i class="${ST().own[s.id]?"on":""}"></i>`).join("")}</span>
-    <small>${n?`${t("toPaste")}: ${n}`:ST().coins?`🪙 ${ST().coins} · ${t("buyPack")}`:t("noCoins")}</small></button>`;
+  return `<button type="button" class="mini-tile" data-gotab="album"><b>${t("stkShort")}</b><span class="mt-big">${have}<small>/${all.length}</small></span>${n?`<span class="tag">+${n}</span>`:""}</button>`;
 }
 
 /* settings / her tab: write the letter and the secrets; Andrew also titles stickers and makes new ones */
@@ -2391,7 +2427,7 @@ function startTour(force){
 }
 function herReminderHTML(){
   if(isA()) return ""; const p=sideProgress(); if(p.done) return "";
-  return `<button type="button" class="card her-remind" data-gotab="her"><img src="${duck("sunbed")}" alt=""><span><b>${t("remT")}</b><small>${t("remD",{d:p.d,n:p.n})}</small></span><i aria-hidden="true">→</i></button>`;
+  return `<button type="button" class="slim" data-gotab="her"><span aria-hidden="true">✏️</span><b>${t("remT")}</b><span class="mt-n">${p.d}/${p.n}</span><i aria-hidden="true">→</i></button>`;
 }
 document.addEventListener("click", e=>{ const g=e.target.closest("[data-gotab]"); if(g){ tab=g.dataset.gotab; render(); window.scrollTo(0,0); } });
 function pickDevice(){
