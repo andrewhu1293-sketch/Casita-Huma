@@ -1027,11 +1027,11 @@ h3.hx-ch span{display:grid;place-items:center;width:30px;height:30px;border-radi
 </div>
 
 <nav class="bar"><div class="in">
-  <button type="button" data-tab="play"><img src="ducks/suitcasekid.webp" alt=""><span data-t="tabPlay"></span></button>
-  <button type="button" data-tab="wallet"><img src="ducks/bellboy.webp" alt=""><span><span data-t="tabWallet"></span><span id="wbadge" class="badge" hidden></span></span></button>
+  <button type="button" data-tab="play"><img src="ducks/lemonade.webp" alt=""><span data-t="tabPlay"></span></button>
+  <button type="button" data-tab="wallet"><img src="ducks/ketchup.webp" alt=""><span><span data-t="tabWallet"></span><span id="wbadge" class="badge" hidden></span></span></button>
   <button type="button" data-tab="therapy"><img src="ducks/rabbit.webp" alt=""><span data-t="tabTherapy"></span></button>
-  <button type="button" data-tab="album"><img src="ducks/sunbed.webp" alt=""><span data-t="tabAlbum"></span></button>
-  <button type="button" data-tab="her"><img src="ducks/gardener.webp" alt=""><span data-t="tabHer"></span></button>
+  <button type="button" data-tab="album"><img src="ducks/jamtoast.webp" alt=""><span data-t="tabAlbum"></span></button>
+  <button type="button" data-tab="her"><img src="ducks/apron.webp" alt=""><span data-t="tabHer"></span></button>
 </div></nav>
 
 <div id="splash" aria-hidden="true"><div class="sp-inner">
@@ -1442,10 +1442,10 @@ function renderPlay(){
 }
 const GAMES_A = [
   {id:"trivia", duck:"richwoman", tint:"var(--sky)", vars:C.triviaRule},
-  {id:"love", duck:"peach", tint:"var(--paper)", get vars(){ return SAMPLE ? LOVE_OPEN : C.loveRule; }, get sub(){ return SAMPLE ? "g_love_o" : ""; }},
-  {id:"finish", duck:"traveler", tint:"var(--mint)"},
-  {id:"scratch", duck:"suitcasekid", tint:"var(--lilac)"},
-  {id:"deep", duck:"founder", tint:"var(--teal)", wide:true}
+  {id:"love", duck:"avocado", tint:"var(--paper)", get vars(){ return SAMPLE ? LOVE_OPEN : C.loveRule; }, get sub(){ return SAMPLE ? "g_love_o" : ""; }},
+  {id:"finish", duck:"tiger", tint:"var(--mint)"},
+  {id:"scratch", duck:"pancake", tint:"var(--lilac)"},
+  {id:"deep", duck:"lobbyboy", tint:"var(--teal)", wide:true}
 ];
 function renderAndrewPlay(){
   const left = triesLeft(), H = S.her, hasC = H.coupons.length+H.bigcoupons.length>0, deepDone = false, deepPending = (()=>{ const x=exFor(other()); return x && !x.answer; })();
@@ -1508,7 +1508,7 @@ function checkStreak(){
 }
 function streakHTML(){
   const st=streakInfo(), dots=[...Array(STREAK)].map((_,i)=>`<i class="${i<st.n?"on":""}"></i>`).join("");
-  return `<button type="button" class="mini-tile t-streak" data-streak><img class="peek" src="${duck("bellboy")}" alt=""><b>${t("stShort")}</b><span class="tl">${dots}</span><span class="mt-n">${st.n}/${STREAK} ${t("weeksS")}</span></button>`;
+  return `<button type="button" class="mini-tile t-streak" data-streak><img class="peek" src="${duck("doorman")}" alt=""><b>${t("stShort")}</b><span class="tl">${dots}</span><span class="mt-n">${st.n}/${STREAK} ${t("weeksS")}</span></button>`;
 }
 document.addEventListener("click", e=>{ if(e.target.closest("[data-streak]")){ const st=streakInfo(); toast(st.nowOk ? t("stNowOk") : st.her||st.andrew ? t("stWait",{n:st.her?"Andrew":"Indiana"}) : t("stNone")); } });
 function waitTileHTML(ready, list){
@@ -2044,8 +2044,8 @@ async function shrink(file, max, q){ const bmp = await createImageBitmap(file); 
 /* ---------- THERAPY ---------- */
 let therapyTab = "fight", notesView = "shared";
 const TH = [
-  {k:"fight", c:"#bcdaf7", cd:"#3b5e7e", d:"rabbit"}, {k:"notes", c:"#f3ec8a", cd:"#7d6f0e", d:"concierge"}, {k:"checkin", c:"#dccff2", cd:"#634a93", d:"founder"},
-  {k:"agree", c:"#cfe6c4", cd:"#3f7a4a", d:"doorman"}, {k:"calm", c:"#f8d2b8", cd:"#a9532a", d:"donotdisturb"}, {k:"wins", c:"#f6b3a7", cd:"#a8382a", d:"farmer"}, {k:"jar", c:"#bfe6e2", cd:"#2e7570", d:"peach"}
+  {k:"fight", c:"#bcdaf7", cd:"#3b5e7e", d:"caveman"}, {k:"notes", c:"#f3ec8a", cd:"#7d6f0e", d:"lobbyboy"}, {k:"checkin", c:"#dccff2", cd:"#634a93", d:"founder"},
+  {k:"agree", c:"#cfe6c4", cd:"#3f7a4a", d:"richman"}, {k:"calm", c:"#f8d2b8", cd:"#a9532a", d:"donotdisturb"}, {k:"wins", c:"#f6b3a7", cd:"#a8382a", d:"digger"}, {k:"jar", c:"#bfe6e2", cd:"#2e7570", d:"orange"}
 ];
 const CHECKIN_Q = ["ciWell","ciHard","ciAppr","ciNeed","ciTry"];
 const CALM_Q = ["calmHelps","calmHurts","calmSignal","calmTime"];
@@ -2151,7 +2151,7 @@ function renderTherapy(){
   } else if(therapyTab==="jar"){
     const got = S.jar.filter(j=>j.to===me()), sent = S.jar.filter(j=>j.from===me());
     body = `<form class="card" id="jf"><div class="field"><label for="jText">${t("jarWrite",{o})}</label><textarea id="jText" style="min-height:70px" placeholder="${esc(t("jarPh"))}"></textarea></div><button class="btn small" type="submit">${t("jarSend")}</button></form>
-      <div class="card jar"><img class="sticker" src="${duck("peach")}" alt=""><div><b>${t("jarCount",{n:got.length})}</b><div id="jarPick" class="q" style="font-size:1.3rem;margin:6px 0 0"></div></div>
+      <div class="card jar"><img class="sticker" src="${duck("orange")}" alt=""><div><b>${t("jarCount",{n:got.length})}</b><div id="jarPick" class="q" style="font-size:1.3rem;margin:6px 0 0"></div></div>
         <button class="btn small" type="button" id="jarDraw" ${got.length?"":"disabled"}>${t("jarDraw")}</button></div>
       ${sent.length?`<h4 class="grp2">${t("jarSent")}</h4><div class="ex">${sent.map(j=>`<div class="item"><small class="hint">${fmt(j.at)}</small><p style="margin:4px 0 0">${esc(j.text)}</p></div>`).join("")}</div>`:""}`;
     bind = ()=>{ $("#jf").onsubmit=e=>{ e.preventDefault(); const text=$("#jText").value.trim(); if(!text) return; S.jar.push({from:me(),to:other(),text,at:Date.now()});
@@ -2538,7 +2538,7 @@ document.addEventListener("click", e=>{ if(e.target.closest("[data-renew]")) toa
 document.addEventListener("click", e=>{ if(e.target.closest("[data-gowallet]")){ tab="wallet"; walletTab="avail"; render(); window.scrollTo(0,0); } });
 function stkCardHTML(){
   const all = stickers(), have = all.filter(s=>ST().own[s.id]).length, n = ST().loose.length;
-  return `<button type="button" class="mini-tile t-stk" data-gotab="album"><img class="peek" src="${duck("richwoman")}" alt=""><b>${t("stkShort")}</b><span class="slots">${all.slice(0,10).map(s=>`<i class="${ST().own[s.id]?"on":""}"></i>`).join("")}</span><span class="mt-n">${have}/${all.length}</span>${n?`<span class="tag">+${n}</span>`:""}</button>`;
+  return `<button type="button" class="mini-tile t-stk" data-gotab="album"><img class="peek" src="${duck("mushroom")}" alt=""><b>${t("stkShort")}</b><span class="slots">${all.slice(0,10).map(s=>`<i class="${ST().own[s.id]?"on":""}"></i>`).join("")}</span><span class="mt-n">${have}/${all.length}</span>${n?`<span class="tag">+${n}</span>`:""}</button>`;
 }
 
 /* settings / her tab: write the letter and the secrets; Andrew also titles stickers and makes new ones */
@@ -2612,23 +2612,23 @@ const TOUR = [
   {sel:'[data-game="finish"]', duck:"traveler", t:"g_finish", d:"tw5"},
   {sel:'[data-game="scratch"]', duck:"suitcasekid", t:"g_scratch", d:"tw6"},
   {sel:'[data-game="deep"]', duck:"founder", t:"g_deep", d:"tw7"},
-  {sel:'nav.bar [data-tab="wallet"]', duck:"bellboy", t:"tabWallet", d:"tw8"},
+  {sel:'nav.bar [data-tab="wallet"]', duck:"ketchup", t:"tabWallet", d:"tw8"},
   {sel:'nav.bar [data-tab="therapy"]', duck:"rabbit", t:"tabTherapy", d:"tw9"},
-  {sel:'nav.bar [data-tab="album"]', duck:"richwoman", t:"tabAlbum", d:"tw10"},
+  {sel:'nav.bar [data-tab="album"]', duck:"jamtoast", t:"tabAlbum", d:"tw10"},
   {sel:"#bell", duck:"lobbyboy", t:"tw11T", d:"tw11"},
-  {sel:'nav.bar [data-tab="her"]', duck:"sunbed", t:"tw12T", d:"tw12", last:true}
+  {sel:'nav.bar [data-tab="her"]', duck:"apron", t:"tw12T", d:"tw12", last:true}
 ];
 const TOUR_A = [
   {duck:"doorman", t:"twA1T", d:"twA1"},
   {sel:".tries-box", duck:"bellboy", t:"tw2T", d:"twA2"},
   {sel:'[data-ag="trivia"]', duck:"richwoman", t:"g_trivia", d:"twA3"},
-  {sel:'[data-ag="love"]', duck:"peach", t:"g_love", d:"twA4"},
-  {sel:'[data-ag="finish"]', duck:"traveler", t:"g_finish", d:"tw5"},
-  {sel:'[data-ag="scratch"]', duck:"suitcasekid", t:"g_scratch", d:"tw6"},
-  {sel:'[data-ag="deep"]', duck:"founder", t:"g_deep", d:"twA7"},
-  {sel:'nav.bar [data-tab="wallet"]', duck:"bellboy", t:"tabWallet", d:"twA8"},
+  {sel:'[data-ag="love"]', duck:"avocado", t:"g_love", d:"twA4"},
+  {sel:'[data-ag="finish"]', duck:"tiger", t:"g_finish", d:"tw5"},
+  {sel:'[data-ag="scratch"]', duck:"pancake", t:"g_scratch", d:"tw6"},
+  {sel:'[data-ag="deep"]', duck:"lobbyboy", t:"g_deep", d:"twA7"},
+  {sel:'nav.bar [data-tab="wallet"]', duck:"ketchup", t:"tabWallet", d:"twA8"},
   {sel:'nav.bar [data-tab="therapy"]', duck:"rabbit", t:"tabTherapy", d:"tw9"},
-  {sel:'nav.bar [data-tab="album"]', duck:"richwoman", t:"tabAlbum", d:"tw10"},
+  {sel:'nav.bar [data-tab="album"]', duck:"jamtoast", t:"tabAlbum", d:"tw10"},
   {sel:"#bell", duck:"lobbyboy", t:"tw11T", d:"twA11"},
   {sel:"#gear", duck:"concierge", t:"twA12T", d:"twA12", last:true}
 ];
@@ -2671,7 +2671,7 @@ function startTour(force){
 }
 function herReminderHTML(){
   if(isA()) return ""; const p=sideProgress(); if(p.done) return "";
-  return `<button type="button" class="fill-tile" data-gotab="her"><img class="peek" src="${duck("gardener")}" alt=""><span class="ft-t"><b>${t("remT")}</b><span class="meter"><i style="width:${Math.round(100*p.d/p.n)}%"></i></span></span><span class="mt-n">${p.d}/${p.n}</span><span class="go" aria-hidden="true">→</span></button>`;
+  return `<button type="button" class="fill-tile" data-gotab="her"><img class="peek" src="${duck("farmer")}" alt=""><span class="ft-t"><b>${t("remT")}</b><span class="meter"><i style="width:${Math.round(100*p.d/p.n)}%"></i></span></span><span class="mt-n">${p.d}/${p.n}</span><span class="go" aria-hidden="true">→</span></button>`;
 }
 document.addEventListener("click", e=>{ const g=e.target.closest("[data-gotab]"); if(g){ tab=g.dataset.gotab; render(); window.scrollTo(0,0); } });
 function pickDevice(){
