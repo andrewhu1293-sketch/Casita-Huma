@@ -744,6 +744,41 @@ nav.bar .badge{font-size:.56rem;padding:0 5px;line-height:1.5}
 .game h3{margin-top:0}
 .game .sub{margin-bottom:4px} .game .meta{margin-bottom:16px}
 
+/* V55: title in a floating cloud */
+.cloud-title{position:relative;display:flex;justify-content:center;margin:24px auto 0;width:max-content;max-width:100%;padding:22px 38px 18px;animation:cloudfloat 5.5s ease-in-out infinite}
+.cloud-title svg.cl{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:0}
+.cloud-title svg.cl path{fill:var(--card);stroke:var(--red);stroke-width:2.5;stroke-linejoin:round}
+.cloud-title svg.cl .shade{fill:none;stroke:var(--rose);stroke-width:5;stroke-linecap:round;opacity:.9}
+.cloud-title h2.sec.mini{position:relative;z-index:1;margin:0;font-size:clamp(2.4rem,11vw,2.9rem);line-height:.9;white-space:nowrap}
+.cloud-title .puff{position:absolute;z-index:0;border:2.5px solid var(--red);background:var(--card);border-radius:50%}
+.cloud-title .puff.p1{width:16px;height:16px;left:-14px;bottom:8px;animation:puff 5.5s ease-in-out infinite}
+.cloud-title .puff.p2{width:9px;height:9px;left:-28px;bottom:2px;animation:puff 5.5s ease-in-out .4s infinite}
+.cloud-title .puff.p3{width:12px;height:12px;right:-16px;top:10px;animation:puff 5.5s ease-in-out .8s infinite}
+@keyframes cloudfloat{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-6px) rotate(.6deg)}}
+@keyframes puff{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-3px,-4px) scale(1.15)}}
+/* V55: the pink is a little planet with houses and trees */
+main#view.home::before{display:none}
+.planet-top{position:relative;height:56px;margin:0 -16px;pointer-events:none}
+.planet-top::before{content:"";position:absolute;z-index:-1;left:50%;top:50px;width:1000px;margin-left:-500px;height:6000px;border-radius:500px 500px 0 0/500px 500px 0 0;
+  background:
+   radial-gradient(circle at 330px 150px,#e3b0b8 0 14px,transparent 15px),
+   radial-gradient(circle at 342px 146px,#e8b9c0 0 5px,transparent 6px),
+   radial-gradient(circle at 690px 120px,#e3b0b8 0 9px,transparent 10px),
+   radial-gradient(circle at 560px 300px,#e5b4bb 0 20px,transparent 21px),
+   radial-gradient(circle at 410px 520px,#e5b4bb 0 11px,transparent 12px),
+   radial-gradient(circle at 640px 700px,#e3b0b8 0 16px,transparent 17px),
+   var(--rose);
+  box-shadow:0 0 0 7px rgba(236,195,201,.55),0 0 0 15px rgba(236,195,201,.25),inset 0 10px 0 rgba(255,255,255,.35)}
+.planet-top svg.town{position:absolute;left:50%;top:-50px;width:1000px;height:140px;margin-left:-500px;overflow:visible}
+.town .sway{transform-box:fill-box;transform-origin:50% 100%;animation:sway 4s ease-in-out infinite}
+.town .sway.b{animation-delay:-1.3s} .town .sway.c{animation-delay:-2.6s}
+.town .smoke{transform-box:fill-box;transform-origin:50% 100%;animation:smoke 3.2s ease-out infinite;opacity:0}
+.town .smoke.b{animation-delay:-1.6s}
+@keyframes sway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+@keyframes smoke{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:.9}100%{opacity:0;transform:translate(4px,-16px) scale(1.3)}}
+.planet-top + .games{padding-top:58px}
+@media (max-height:700px){.cloud-title{margin-top:14px;padding:16px 32px 14px}.planet-top{height:50px}.planet-top::before{top:44px}.planet-top svg.town{top:-56px}}
+
 /* welcome tour */
 #tour{position:fixed;inset:0;z-index:90;animation:fadeup .25s ease-out both}
 #tour.out{opacity:0;transition:opacity .3s}
@@ -1012,6 +1047,56 @@ function ticketHTML(w, opts={}){
     </div>${used?`<span class="stamp">${t("redeemed")}</span>`:""}</article>`;
 }
 
+
+/* V55: cloud title + planet town */
+function cloudTitle(txt){
+  return `<div class="cloud-title"><svg class="cl" viewBox="0 0 300 110" preserveAspectRatio="none" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="M34 96C14 96 4 82 9 68C2 54 12 38 30 40C30 22 50 12 68 20C76 6 98 2 114 12C126 0 152 -2 166 10C180 0 206 2 214 18C232 10 256 18 258 36C278 36 294 52 288 70C296 86 282 100 264 96C256 106 238 108 226 100C214 108 194 108 184 100C172 108 150 108 140 100C128 108 106 108 96 100C84 108 62 108 54 100C46 102 38 100 34 96Z"/><path class="shade" vector-effect="non-scaling-stroke" d="M40 88C70 94 230 94 262 86"/></svg><span class="puff p1"></span><span class="puff p2"></span><span class="puff p3"></span><h2 class="sec mini">${txt}</h2></div>`;
+}
+const TOWN = (()=>{
+  const R=500, CX=500, CY=600+34-0; // circle top sits at y=34+66-66 inside the svg (svg top is -34px, planet top 66px => y=100)
+  const top=100, cy=top+R;
+  const g = (dx, inner) => { const a=Math.asin(dx/R), x=CX+R*Math.sin(a), y=cy-R*Math.cos(a); return `<g transform="translate(${x.toFixed(1)} ${(y+1).toFixed(1)}) rotate(${(a*180/Math.PI).toFixed(2)})">${inner}</g>`; };
+  const shadow = w => `<ellipse cx="0" cy="0" rx="${w}" ry="3.2" fill="#d79aa4" opacity=".7"/>`;
+  const house = (wall, roof, s=1, chimney=false) => { const w=34*s, h=26*s, r=20*s;
+    return shadow(w*0.62)+
+    (chimney?`<rect x="${w*0.2}" y="${-h-r*0.75}" width="${6*s}" height="${12*s}" rx="1.5" fill="url(#gRoofD)"/><circle class="smoke" cx="${w*0.2+3*s}" cy="${-h-r*0.85}" r="${4*s}" fill="#fff"/><circle class="smoke b" cx="${w*0.2+3*s}" cy="${-h-r*0.85}" r="${3.4*s}" fill="#fff"/>`:"")+
+    `<rect x="${-w/2}" y="${-h}" width="${w}" height="${h}" rx="${5*s}" fill="url(#${wall})"/>`+
+    `<path d="M${-w/2-3*s} ${-h+2*s} L0 ${-h-r} L${w/2+3*s} ${-h+2*s}Z" fill="url(#${roof})" stroke="url(#${roof})" stroke-width="${5*s}" stroke-linejoin="round"/>`+
+    `<path d="M${-w/2+1*s} ${-h+1*s} L0 ${-h-r+5*s}" stroke="#fff" stroke-opacity=".35" stroke-width="${2*s}" stroke-linecap="round"/>`+
+    `<rect x="${-4.5*s}" y="${-13*s}" width="${9*s}" height="${13*s}" rx="${4.5*s}" fill="#8a4b2f"/><circle cx="${2.2*s}" cy="${-6*s}" r="${0.9*s}" fill="#efe84c"/>`+
+    `<rect x="${-w/2+4*s}" y="${-h+6*s}" width="${7*s}" height="${7*s}" rx="${2*s}" fill="#bcdaf7" stroke="#fff" stroke-width="${1.4*s}"/>`+
+    `<rect x="${w/2-11*s}" y="${-h+6*s}" width="${7*s}" height="${7*s}" rx="${2*s}" fill="#bcdaf7" stroke="#fff" stroke-width="${1.4*s}"/>`+
+    `<rect x="${-w/2}" y="${-5*s}" width="${w}" height="${5*s}" rx="${2.5*s}" fill="#000" opacity=".06"/>`;
+  };
+  const tree = (s=1, cls="") => shadow(12*s)+`<g class="sway ${cls}"><rect x="${-2.6*s}" y="${-16*s}" width="${5.2*s}" height="${16*s}" rx="${2.6*s}" fill="#8a4b2f"/><circle cx="0" cy="${-26*s}" r="${13*s}" fill="url(#gTree)"/><circle cx="${-8*s}" cy="${-19*s}" r="${8*s}" fill="url(#gTree)"/><circle cx="${8*s}" cy="${-20*s}" r="${8.5*s}" fill="url(#gTree)"/><circle cx="${-4*s}" cy="${-31*s}" r="${3.2*s}" fill="#fff" opacity=".35"/></g>`;
+  const pine = (s=1, cls="") => shadow(10*s)+`<g class="sway ${cls}"><rect x="${-2.2*s}" y="${-10*s}" width="${4.4*s}" height="${10*s}" rx="2" fill="#8a4b2f"/><path d="M0 ${-46*s} Q${3*s} ${-40*s} ${11*s} ${-24*s} Q${14*s} ${-16*s} ${15*s} ${-12*s} Q0 ${-7*s} ${-15*s} ${-12*s} Q${-14*s} ${-16*s} ${-11*s} ${-24*s} Q${-3*s} ${-40*s} 0 ${-46*s}Z" fill="url(#gPine)"/></g>`;
+  const bush = (s=1) => `<circle cx="${-6*s}" cy="${-5*s}" r="${6*s}" fill="url(#gTree)"/><circle cx="${4*s}" cy="${-6*s}" r="${7*s}" fill="url(#gTree)"/><circle cx="${12*s}" cy="${-4*s}" r="${4.5*s}" fill="url(#gTree)"/>`;
+  const flower = c => `<rect x="-.7" y="-8" width="1.4" height="8" fill="#6aa865"/><circle cx="0" cy="-9" r="2.6" fill="${c}"/><circle cx="0" cy="-9" r="1" fill="#efe84c"/>`;
+  const defs = `<defs>
+    <linearGradient id="gCream" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f1e3cf"/></linearGradient>
+    <linearGradient id="gButter" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8f08a"/><stop offset="1" stop-color="#e3d84a"/></linearGradient>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d6e9fb"/><stop offset="1" stop-color="#a6c8ea"/></linearGradient>
+    <linearGradient id="gLav" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4eff4"/><stop offset="1" stop-color="#d9d0da"/></linearGradient>
+    <linearGradient id="gRoofR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8624f"/><stop offset="1" stop-color="#b93a2a"/></linearGradient>
+    <linearGradient id="gRoofB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8653f"/><stop offset="1" stop-color="#7a4126"/></linearGradient>
+    <linearGradient id="gRoofP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2a0ad"/><stop offset="1" stop-color="#d77a8a"/></linearGradient>
+    <linearGradient id="gRoofD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8653f"/><stop offset="1" stop-color="#6e3a22"/></linearGradient>
+    <radialGradient id="gTree" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#a9d98f"/><stop offset=".6" stop-color="#7dbb6a"/><stop offset="1" stop-color="#5c9a52"/></radialGradient>
+    <linearGradient id="gPine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ccf86"/><stop offset="1" stop-color="#4f8d4a"/></linearGradient>
+  </defs>`;
+  const items = [
+    [-470, pine(1.0,"b")], [-430, house("gButter","gRoofR",1.05,true)], [-385, tree(1,"c")],
+    [-338, house("gBlue","gRoofB",.95)], [-300, bush(1)], [-262, tree(.9)], [-232, flower("#ecc3c9")],
+    [-200, pine(.95,"c")], [-168, house("gCream","gRoofR",1,true)], [-138, tree(.85,"b")], [-118, flower("#d14735")],
+    [-92, bush(.9)], [-64, house("gLav","gRoofP",.9)], [-36, pine(.8,"b")],
+    [34, tree(.8,"c")], [58, flower("#efe84c")], [80, house("gButter","gRoofB",.85)], [112, bush(.95)],
+    [136, pine(.95)], [166, house("gBlue","gRoofR",1.05,true)], [200, tree(.95,"b")], [226, flower("#ecc3c9")],
+    [250, house("gCream","gRoofP",.95)], [288, pine(1,"c")], [318, bush(1)], [350, house("gLav","gRoofR",1)],
+    [392, tree(1.05)], [432, house("gButter","gRoofB",.95,true)], [470, pine(1,"b")]
+  ];
+  return `<svg class="town" viewBox="0 0 1000 140" aria-hidden="true">${defs}${items.map(([dx,html])=>g(dx,html)).join("")}</svg>`;
+})();
+function planetTop(){ return `<div class="planet-top" aria-hidden="true">${TOWN}</div>`; }
 /* ---------- UI shell ---------- */
 let tab = "play", walletTab = "avail", andrewOpen = false;
 function badge(){ const n=W().filter(w=>!w.usedAt).length; const b=$("#wbadge"); b.textContent=n; b.hidden=!n; }
@@ -1030,6 +1115,9 @@ function render(){
   $("#who").innerHTML = `<span>${t("whoPlays")}</span><button type="button" data-p="her" aria-pressed="${!isA()}">${t("pHer")}</button><button type="button" data-p="andrew" aria-pressed="${isA()}">Andrew</button>`;
   document.querySelectorAll("#who [data-p]").forEach(b=>b.onclick=()=>{ S.player=b.dataset.p; save(); if(tab==="her"&&isA()) tab="play"; render(); });
   const unseen = S.activity.filter(a=>a.to===me() && !a.seen).length; $("#bbadge").textContent=unseen; $("#bbadge").hidden=!unseen;
+  if(isA() && tab==="her") tab="play";
+  $('nav.bar [data-tab="her"]').hidden = isA();
+  $("#view").classList.toggle("home", tab==="play");
   ({album:renderAlbum, therapy:renderTherapy, play:isA()?renderAndrewPlay:renderPlay, wallet:renderWallet, her:renderHer, andrew:renderAndrew})[tab]();
   badge();
 }
@@ -1067,8 +1155,8 @@ function renderPlay(){
   const ready = specialList().filter(s=>s.ready && !s.claimed).length;
   $("#view").innerHTML = `
     ${triesHTML()}
-    <h2 class="sec mini">${t("games")}</h2><p class="lead">${t("pick")}</p>
-    <div class="games">${(()=>{ let first=true; return GAMES.map((g,i)=>{
+    ${cloudTitle(t("games"))}<p class="lead">${t("pick")}</p>
+    ${planetTop()}<div class="games">${(()=>{ let first=true; return GAMES.map((g,i)=>{
       const allDone = MASTERY.includes(g.id) && !remaining(g.id).length;
       let off = (left<=0 && g.id!=="deep") || (g.id==="deep" && deepDone) || allDone;
       let tag = allDone ? t("allDone") : g.id==="deep" && deepPending ? t("exTag") : (left<=0 && g.id!=="deep" ? t("locked") : "");
@@ -1098,8 +1186,8 @@ function renderAndrewPlay(){
   const has = {trivia:H.trivia.length, love:H.love.length, finish:H.finish.length, deep:1, scratch:1};
   $("#view").innerHTML = `
     ${triesHTML()}
-    <h2 class="sec mini">${t("gamesA")}</h2><p class="lead">${hasC?t("pickA"):t("needHer")}</p>
-    <div class="games">${GAMES_A.map((g,i)=>{
+    ${cloudTitle(t("gamesA"))}<p class="lead">${hasC?t("pickA"):t("needHer")}</p>
+    ${planetTop()}<div class="games">${GAMES_A.map((g,i)=>{
       const empty = g.id!=="deep" && g.id!=="finish" && (!hasC || !has[g.id]), monthly = g.id==="deep" && deepDone, allDone = !empty && MASTERY.includes(g.id) && !remaining(g.id).length; let off = (left<=0 && g.id!=="deep") || empty || monthly || allDone;
       let tag = g.id==="deep" && deepPending ? t("exTag") : empty ? t("soon") : allDone ? t("allDone") : monthly ? t("monthDone") : left<=0 && g.id!=="deep" ? t("locked") : "";
       if(g.id==="finish"){ const mc=matchCard(left); off=mc.off; tag=mc.tag; }
@@ -1726,7 +1814,7 @@ Object.assign(T.en, {stkTitle:"Sticker album", tabAlbum:"Album",
   tw10:"Coins buy packs of 3 stickers made from our photos. Fill a page and you win a coupon. There's also a sealed letter hiding in there…",
   tw11T:"News", tw11:"Here you see what Andrew does: when he plays, wins or uses a coupon.",
   tw12T:"Your tab, Indiana", tw12:"This is your part: write your questions and coupons for Andrew. If you fill it all in, you win a super exclusive bonus. 🤫", twGo:"Let's play!",
-  twSkip:"Skip", devT:"Who are you?", devD:"This phone stays set to one person. Andrew needs his code.", devNow:"This phone is {n}'s.", devChange:"Change person", twAgainT:"Welcome tour", twAgainD:"Shows Indiana's welcome tour again, the way she'll see it the first time.", twAgain:"Show the tour",
+  twSkip:"Skip", devT:"Who are you?", devD:"This phone stays set to one person.", devNow:"This phone is {n}'s.", devChange:"Change person", twAgainT:"Welcome tour", twAgainD:"Shows Indiana's welcome tour again, the way she'll see it the first time.", twAgain:"Show the tour",
   remT:"Fill in your tab", remD:"Super exclusive bonus waiting · {d} of {n} sections",
   coinWon:"+1 coin", nextCup:"Next coupon", winsOf:"{n}/3 wins", qOf:"Question {i} of {n}", guessOf:"What would {n} answer?", guessSay:"What would {n} say?", isRight:"Right", yourPick:"Your pick", toCoupon:"{n} of 3 wins for your next coupon", couponWon:"3 wins! You won a coupon.", noMore:"You already won every coupon of that kind. Here's a coin instead.",
   coins:"Coins", tries:"Tries", renew:"New tries on {d}", mkTitle:"Make a new sticker", mkLead:"Upload a photo of us. It takes the album's design by itself.",
@@ -1756,7 +1844,7 @@ Object.assign(T.es, {stkTitle:"Álbum de monas", tabAlbum:"Álbum",
   tw10:"Con las monedas compras sobres de 3 monas hechas con nuestras fotos. Llena una página y ganas un cupón. Y ahí se esconde una carta sellada…",
   tw11T:"Novedades", tw11:"Aquí ves lo que hace Andrew: cuando juega, gana o usa un cupón.",
   tw12T:"Tu tab, Indiana", tw12:"Esta es tu parte: escribe tus preguntas y tus cupones para Andrew. Si lo llenas todo, te ganas un bono súper exclusivo. 🤫", twGo:"¡A jugar!",
-  twSkip:"Saltar", devT:"¿Quién eres?", devD:"Este teléfono queda para una sola persona. Andrew necesita su código.", devNow:"Este teléfono es de {n}.", devChange:"Cambiar de persona", twAgainT:"Bienvenida", twAgainD:"Muestra otra vez el recorrido de bienvenida de Indiana, como lo verá la primera vez.", twAgain:"Ver la bienvenida",
+  twSkip:"Saltar", devT:"¿Quién eres?", devD:"Este teléfono queda para una sola persona.", devNow:"Este teléfono es de {n}.", devChange:"Cambiar de persona", twAgainT:"Bienvenida", twAgainD:"Muestra otra vez el recorrido de bienvenida de Indiana, como lo verá la primera vez.", twAgain:"Ver la bienvenida",
   remT:"Llena tu tab", remD:"Te espera un bono súper exclusivo · {d} de {n} secciones",
   coinWon:"+1 moneda", nextCup:"Próximo cupón", winsOf:"{n}/3 victorias", qOf:"Pregunta {i} de {n}", guessOf:"¿Qué respondería {n}?", guessSay:"¿Qué diría {n}?", isRight:"Correcta", yourPick:"Tu respuesta", toCoupon:"{n} de 3 victorias para tu próximo cupón", couponWon:"¡3 victorias! Te ganaste un cupón.", noMore:"Ya ganaste todos los cupones de ese tipo. Te doy una moneda.",
   coins:"Monedas", tries:"Intentos", renew:"Nuevos intentos el {d}", mkTitle:"Crear una mona nueva", mkLead:"Sube una foto de los dos. Toma el diseño del álbum sola.",
@@ -2126,13 +2214,11 @@ function herReminderHTML(){
 document.addEventListener("click", e=>{ const g=e.target.closest("[data-gotab]"); if(g){ tab=g.dataset.gotab; render(); window.scrollTo(0,0); } });
 function pickDevice(){
   openSheet(`<div class="result"><img class="big sticker" src="${duck("doorman")}" alt=""><h3>${t("devT")}</h3><p class="hint">${t("devD")}</p>
-    <div class="row-btns"><button class="btn" type="button" data-dev="her">Indiana</button><button class="btn ghost" type="button" data-dev="andrew">Andrew</button></div>
-    <form id="devCode" hidden class="field" style="margin-top:12px"><label for="devPin">${t("code")}</label><input id="devPin" type="password" inputmode="numeric" autocomplete="off"><button class="btn small" type="submit">${t("unlock")}</button> <span class="hint" id="devErr"></span></form></div>`);
+    <div class="row-btns"><button class="btn" type="button" data-dev="her">Indiana</button><button class="btn ghost" type="button" data-dev="andrew">Andrew</button></div></div>`);
   $("#panel [data-close]").remove();
   const set = who => { S.device = who; S.player = who; save(); closeSheet(); if(who==="her") setTimeout(()=>startTour(false),300); };
   $('#panel [data-dev="her"]').onclick = () => set("her");
-  $('#panel [data-dev="andrew"]').onclick = () => { $("#devCode").hidden=false; $("#devPin").focus(); };
-  $("#devCode").onsubmit = e => { e.preventDefault(); if($("#devPin").value===ANDREW_CODE) set("andrew"); else $("#devErr").textContent=t("wrongCode"); };
+  $('#panel [data-dev="andrew"]').onclick = () => set("andrew");
 }
 (function waitSplash(n=0){ if(document.getElementById("splash") && n<40) return setTimeout(()=>waitSplash(n+1),300);
   setTimeout(()=>{ if(HOSTED && !S.device) return pickDevice(); startTour(false); },250); })();
