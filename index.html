@@ -978,6 +978,9 @@ h3.hx-ch span{display:grid;place-items:center;width:30px;height:30px;border-radi
 .cal-c{font-size:.75rem;font-weight:700;color:var(--red);white-space:nowrap}
 .cal-c{display:flex;flex-direction:column;align-items:flex-end;gap:4px}.cal-rm{border:0;background:none;color:var(--red);font:inherit;font-size:.72rem;text-decoration:underline;padding:4px 0;cursor:pointer}
 .cal-in{background:#fcfcfc;border-radius:14px;margin:0 10px 10px;padding:12px}
+/* V67: Duckoos in the loading screen get a white sticker edge like our photos */
+.sp-pic.sp-duck{max-width:120px;filter:drop-shadow(3px 0 0 #fffdf8) drop-shadow(-3px 0 0 #fffdf8) drop-shadow(0 3px 0 #fffdf8) drop-shadow(0 -3px 0 #fffdf8) drop-shadow(0 6px 10px rgba(74,42,26,.18))}
+.herx details.hx-card[data-sec="wait"] .hx-cnt:not(.ok){background:var(--rose2)}
 /* V64: fight manual */
 .fman{margin-top:4px}
 .fm-lead{margin:0 0 12px;font-size:.9rem;color:var(--ink2);opacity:.8}
@@ -1942,7 +1945,7 @@ function itemHTML(k, it){
   return `<b>${esc(it.q)}</b>`;
 }
 let openSec = "";
-const SEC_C = {trivia:"#bcdaf7",love:"#f8d2b8",finish:"#dccff2",deep:"#bfe6e2",coupons:"#f3ec8a",bigcoupons:"#f6b3a7",wait:"#e5e0e5",letter:"#ecc3c9",secrets:"#cfe6c4"};
+const SEC_C = {trivia:"#bcdaf7",love:"#f8d2b8",finish:"#dccff2",deep:"#bfe6e2",coupons:"#f3ec8a",bigcoupons:"#f6b3a7",wait:"#fcfcfc",letter:"#92c2ec",secrets:"#cfe6c4"};
 
 /* example ideas for Indiana while she fills her tab (tap one to use it) */
 const IDEAS = {
@@ -2680,13 +2683,16 @@ function pickDevice(){
   const tick=()=>{ n=Math.min(100,n+Math.ceil(Math.random()*9)); title.textContent=`${word} ${n}%`;
     if(n<100) return setTimeout(tick,95);
     setTimeout(()=>{ title.classList.add("name"); title.innerHTML="Casita Huma".split(" ").map((w,wi)=>`<div>${[...w].map((c,i)=>`<span style="animation-delay:${wi*0.18+i*0.04}s">${esc(c)}</span>`).join("")}</div>`).join(""); setTimeout(close,1500); },250); };
-  /* our photos pop in all over the screen while it loads */
-  const order=[...Array(10)].map((_,i)=>i+1).sort(()=>Math.random()-.5);
-  const spots=[[4,8],[52,6],[2,36],[56,34],[10,62],[54,60],[28,20],[30,48],[6,80],[50,82]].sort(()=>Math.random()-.5);
-  order.forEach((n,i)=>setTimeout(()=>{ if(done) return; const im=new Image(); im.src=`people/p${n}.webp`; im.alt=""; im.className="sp-pic";
-    const [x,y]=spots[i]; im.style.left=(x+Math.random()*6-3)+"%"; im.style.top=(y+Math.random()*6-3)+"%";
-    im.style.setProperty("--r",(Math.random()*36-18).toFixed(1)+"deg"); im.style.width=(34+Math.random()*12).toFixed(0)+"vw";
-    sp.insertBefore(im, sp.firstChild); }, 120+i*240));
+  /* our photos AND Duckoos pop in all over the screen while it loads (V67: lots more of them) */
+  const DK=["concierge","peach","traveler","bellboy","richwoman","gardener","sunbed","lobbyboy","doorman","rabbit","pig","farmer","founder","suitcasekid","tiger","ketchup","pancake","avocado","lemonade","mushroom","caveman","apron","jamtoast","scarecrow","orange","potato"].sort(()=>Math.random()-.5).slice(0,16);
+  const pics=[...[...Array(CUTS)].map((_,i)=>({src:`people/p${i+1}.webp`, w:[30,40]})), ...DK.map(d=>({src:duck(d), w:[16,22], dk:true}))].sort(()=>Math.random()-.5);
+  const cols=4, rowsN=Math.ceil(pics.length/cols), spots=[];
+  for(let r=0;r<rowsN;r++) for(let c=0;c<cols;c++) spots.push([c*25-6+(r%2?8:0), r*(96/rowsN)-4]);
+  spots.sort(()=>Math.random()-.5);
+  pics.forEach((p,i)=>setTimeout(()=>{ if(done) return; const im=new Image(); im.src=p.src; im.alt=""; im.className="sp-pic"+(p.dk?" sp-duck":"");
+    const [x,y]=spots[i]; im.style.left=(x+Math.random()*8-4)+"%"; im.style.top=(y+Math.random()*6-3)+"%";
+    im.style.setProperty("--r",(Math.random()*36-18).toFixed(1)+"deg"); im.style.width=(p.w[0]+Math.random()*(p.w[1]-p.w[0])).toFixed(0)+"vw";
+    sp.insertBefore(im, sp.firstChild); }, 80+i*85));
   tick(); sp.addEventListener("click", close);
 })();
 
