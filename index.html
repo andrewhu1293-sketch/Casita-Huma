@@ -779,6 +779,30 @@ main#view.home::before{display:none}
 .planet-top + .games{padding-top:58px}
 @media (max-height:700px){.cloud-title{margin-top:14px;padding:16px 32px 14px}.planet-top{height:50px}.planet-top::before{top:44px}.planet-top svg.town{top:-56px}}
 
+/* V56: therapy laid out like the home screen, one colour per section */
+.throw{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;margin:0 -16px;padding:56px 16px 14px;scrollbar-width:none}
+.throw::-webkit-scrollbar{display:none}
+.thtile{position:relative;flex:0 0 112px;scroll-snap-align:center;border:2px solid transparent;background:var(--c);border-radius:18px;padding:34px 8px 12px;min-height:92px;display:flex;align-items:flex-end;justify-content:center;text-align:center;color:var(--ink);font-family:var(--f-body);font-weight:500;font-size:.72rem;line-height:1.2;letter-spacing:.06em;text-transform:uppercase;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.thtile img{position:absolute;left:50%;top:-50px;transform:translateX(-50%);height:78px;width:auto;pointer-events:none;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.thtile[aria-pressed="true"]{border-color:var(--ink);transform:translateY(-4px);box-shadow:0 6px 0 rgba(74,42,26,.12)}
+.thtile[aria-pressed="true"] img{transform:translateX(-50%) translateY(-4px) rotate(-6deg) scale(1.08)}
+.thtile[aria-pressed="true"]::after{content:"";position:absolute;bottom:-10px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--ink)}
+.thtile:active{transform:scale(.94)}
+.thwrap{margin-top:8px}
+.thhead{position:relative;background:var(--c);border-radius:22px;padding:18px 16px 16px 104px;min-height:96px;display:flex;align-items:center;margin:10px 0 14px}
+.thhead img{position:absolute;left:10px;bottom:6px;height:100px;width:auto}
+.thhead h3{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(2rem,9vw,2.5rem);line-height:.9;letter-spacing:.01em;text-transform:uppercase;color:var(--ink);text-wrap:balance}
+.thwrap > p.hint{background:var(--card);border-radius:14px;padding:10px 14px;margin:0 0 14px;text-align:left;font-family:var(--f-body);font-size:.92rem;line-height:1.35;letter-spacing:0;text-transform:none;color:var(--ink);opacity:1;border-left:6px solid var(--c)}
+.thwrap .card{border:2px solid var(--c);border-radius:18px}
+.thwrap .card h4{color:var(--ink)}
+.thwrap .field label{color:var(--cd)}
+.thwrap .item{border-left:6px solid var(--c)}
+.thwrap .item .hint,.thwrap .card .hint{color:var(--cd)}
+.thwrap h4.grp.label{display:inline-block;background:var(--c)!important;color:var(--ink)!important;border-radius:999px;padding:4px 14px;font-size:1.45rem;margin:18px 0 10px}
+.thwrap .phrase{background:var(--card)!important;border-left:8px solid var(--c)!important;border-radius:14px;color:var(--ink)!important}
+.thwrap .phrase small{color:var(--ink-soft)!important}
+.thwrap .empty{color:var(--cd)}
+
 /* welcome tour */
 #tour{position:fixed;inset:0;z-index:90;animation:fadeup .25s ease-out both}
 #tour.out{opacity:0;transition:opacity .3s}
@@ -1113,11 +1137,11 @@ function render(){
   document.querySelectorAll("nav.bar button").forEach(b=>{ if(b.dataset.tab===tab) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
   if(HOSTED){ $("#who").hidden = true; if(S.device) S.player = S.device; } else
   $("#who").innerHTML = `<span>${t("whoPlays")}</span><button type="button" data-p="her" aria-pressed="${!isA()}">${t("pHer")}</button><button type="button" data-p="andrew" aria-pressed="${isA()}">Andrew</button>`;
-  document.querySelectorAll("#who [data-p]").forEach(b=>b.onclick=()=>{ S.player=b.dataset.p; save(); if(tab==="her"&&isA()) tab="play"; render(); });
+  document.querySelectorAll("#who [data-p]").forEach(b=>b.onclick=()=>{ S.player=b.dataset.p; save(); if(tab==="her"&&isA()) tab="play"; render(); setTimeout(()=>startTour(false),200); });
   const unseen = S.activity.filter(a=>a.to===me() && !a.seen).length; $("#bbadge").textContent=unseen; $("#bbadge").hidden=!unseen;
   if(isA() && tab==="her") tab="play";
   $('nav.bar [data-tab="her"]').hidden = isA();
-  $("#view").classList.toggle("home", tab==="play");
+  $("#view").classList.toggle("home", tab==="play"||tab==="therapy");
   ({album:renderAlbum, therapy:renderTherapy, play:isA()?renderAndrewPlay:renderPlay, wallet:renderWallet, her:renderHer, andrew:renderAndrew})[tab]();
   badge();
 }
@@ -1685,8 +1709,8 @@ async function shrink(file, max, q){ const bmp = await createImageBitmap(file); 
 /* ---------- THERAPY ---------- */
 let therapyTab = "fight";
 const TH = [
-  {k:"fight", c:"var(--red)", d:"rabbit"}, {k:"notes", c:"var(--red)", d:"concierge"}, {k:"checkin", c:"var(--red)", d:"founder"},
-  {k:"agree", c:"var(--red)", d:"doorman"}, {k:"calm", c:"var(--red)", d:"donotdisturb"}, {k:"wins", c:"var(--red)", d:"farmer"}, {k:"jar", c:"var(--red)", d:"peach"}
+  {k:"fight", c:"#bcdaf7", cd:"#3b5e7e", d:"rabbit"}, {k:"notes", c:"#f3ec8a", cd:"#7d6f0e", d:"concierge"}, {k:"checkin", c:"#dccff2", cd:"#634a93", d:"founder"},
+  {k:"agree", c:"#cfe6c4", cd:"#3f7a4a", d:"doorman"}, {k:"calm", c:"#f8d2b8", cd:"#a9532a", d:"donotdisturb"}, {k:"wins", c:"#f6b3a7", cd:"#a8382a", d:"farmer"}, {k:"jar", c:"#bfe6e2", cd:"#2e7570", d:"peach"}
 ];
 const CHECKIN_Q = ["ciWell","ciHard","ciAppr","ciNeed","ciTry"];
 const CALM_Q = ["calmHelps","calmHurts","calmSignal","calmTime"];
@@ -1701,7 +1725,7 @@ function renderTherapy(){
   const cur = TH.find(x=>x.k===therapyTab), o = nameOf(other());
   let body = "", bind = ()=>{};
   if(therapyTab==="fight"){
-    const cols = ["var(--mint)","var(--sky)","var(--peach)","var(--pink)"];
+    const cols = ["#cfe6c4","#bcdaf7","#f8d2b8","#dccff2"];
     body = `<p class="hint">${t("frSource")}</p>${C.fightRight.map((g,gi)=>`<h4 class="grp label" style="--c:${cols[gi%cols.length]}">${esc(tx(g.title))}</h4><div class="phrases">${g.items.map(i=>`<div class="phrase" style="--c:${cols[gi%cols.length]}">${esc(tx(i))}${i.note?`<small>${esc(tx(i.note))}</small>`:""}</div>`).join("")}</div>`).join("")}`;
   } else if(therapyTab==="notes"){
     body = `<form class="card" id="nf"><div class="field"><label for="nTitle">${t("nTitle")}</label><input id="nTitle" type="text" maxlength="80" placeholder="${esc(t("nTitlePh"))}"></div>
@@ -1744,9 +1768,10 @@ function renderTherapy(){
         notify(`${nameOf(me())} put an appreciation in your jar`, `${nameOf(me())} puso un aprecio en tu frasco`); save(); toast(t("jarSentToast",{o})); render(); };
       $("#jarDraw").onclick=()=>{ const j=got[Math.floor(Math.random()*got.length)]; $("#jarPick").textContent=`“${j.text}” · ${fmt(j.at)}`; }; };
   }
-  $("#view").innerHTML = `<h2 class="sec">${t("tabTherapy")}</h2><p class="lead">${t("thLead")}</p>
-    <div class="thgrid">${TH.map(x=>`<button type="button" data-th="${x.k}" aria-pressed="${therapyTab===x.k}" style="--c:${x.c}"><img src="${duck(x.d)}" alt="">${t("th_"+x.k)}</button>`).join("")}</div>
-    <h3 class="thtitle" style="--c:${cur.c}">${t("th_"+cur.k)}</h3>${body}`;
+  $("#view").innerHTML = `${cloudTitle(t("tabTherapy"))}<p class="lead">${t("thLead")}</p>
+    ${planetTop()}<div class="throw" role="tablist">${TH.map(x=>`<button type="button" role="tab" class="thtile" data-th="${x.k}" aria-pressed="${therapyTab===x.k}" aria-selected="${therapyTab===x.k}" style="--c:${x.c};--cd:${x.cd}"><img src="${duck(x.d)}" alt=""><span>${t("th_"+x.k)}</span></button>`).join("")}</div>
+    <div class="thwrap" style="--c:${cur.c};--cd:${cur.cd}"><div class="thhead"><img src="${duck(cur.d)}" alt=""><h3>${t("th_"+cur.k)}</h3></div>${body}</div>`;
+  { const on=$('.throw [aria-pressed="true"]'), row=$(".throw"); if(on&&row) row.scrollLeft = on.offsetLeft - (row.clientWidth-on.offsetWidth)/2; }
   document.querySelectorAll("[data-th]").forEach(b=>b.onclick=()=>{ therapyTab=b.dataset.th; render(); });
   bind();
 }
@@ -1776,7 +1801,7 @@ function renderAndrew(){
       <button class="btn small" type="button" id="aSave">${t("save")}</button></div>
     ${surprisesHTML("andrew")}
     ${HOSTED?`<div class="card"><h4>${t("devT")}</h4><p class="hint">${t("devNow",{n:nameOf(S.device||"her")})}</p><button class="btn small" type="button" id="aDev">${t("devChange")}</button></div>`:""}
-    <div class="card"><h4>${t("twAgainT")}</h4><p class="hint">${t("twAgainD")}</p><button class="btn small" type="button" id="aTour">${t("twAgain")}</button></div>
+    <div class="card"><h4>${t("twAgainT")}</h4><p class="hint">${t("twAgainD")}</p><div class="row-btns" style="justify-content:flex-start">${HOSTED?`<button class="btn small" type="button" data-rtour="${S.device||"andrew"}">${t("twAgain")}</button>`:`<button class="btn small" type="button" data-rtour="her">Indiana</button><button class="btn small ghost" type="button" data-rtour="andrew">Andrew</button>`}</div></div>
     <button class="btn ghost" type="button" id="aLock">${t("aLock")}</button>`;
   bindSurprises("andrew");
   document.querySelectorAll("[data-rtries]").forEach(b=>b.onclick=()=>{ const who=b.dataset.rtries, P=per();
@@ -1787,7 +1812,7 @@ function renderAndrew(){
   $("#aSave").onclick=()=>{ S.testDate=$("#aDate").value; S.worker=$("#aWorker").value.trim(); save(); toast(t("saved")); render(); };
   $("#aLock").onclick=()=>{ andrewOpen=false; render(); };
   if($("#aDev")) $("#aDev").onclick=()=>{ delete S.device; andrewOpen=false; tab="play"; save(); render(); pickDevice(); };
-  $("#aTour").onclick=()=>{ S.tourSeen ||= {}; S.tourSeen.her=false; S.player="her"; tab="play"; andrewOpen=false; save(); render(); startTour(true); };
+  document.querySelectorAll("[data-rtour]").forEach(b=>b.onclick=()=>{ const w=b.dataset.rtour; S.tourSeen ||= {}; S.tourSeen[w]=false; if(!HOSTED) S.player=w; tab="play"; andrewOpen=false; save(); render(); startTour(true); });
 }
 
 /* ---------- FUN PACK: monas album with coins, sealed letter, hidden secrets, sounds, confetti ---------- */
@@ -1814,7 +1839,7 @@ Object.assign(T.en, {stkTitle:"Sticker album", tabAlbum:"Album",
   tw10:"Coins buy packs of 3 stickers made from our photos. Fill a page and you win a coupon. There's also a sealed letter hiding in there…",
   tw11T:"News", tw11:"Here you see what Andrew does: when he plays, wins or uses a coupon.",
   tw12T:"Your tab, Indiana", tw12:"This is your part: write your questions and coupons for Andrew. If you fill it all in, you win a super exclusive bonus. 🤫", twGo:"Let's play!",
-  twSkip:"Skip", devT:"Who are you?", devD:"This phone stays set to one person.", devNow:"This phone is {n}'s.", devChange:"Change person", twAgainT:"Welcome tour", twAgainD:"Shows Indiana's welcome tour again, the way she'll see it the first time.", twAgain:"Show the tour",
+  twA1T:"Welcome to Casita Huma!", twA1:"You play too: win coins and the coupons Indiana made for you. Let me show you around.", twA2:"You get your own 2 tries every 4 days. Every win gives you a coin, and every 3 wins, one of her coupons.", twA3:"Questions Indiana wrote about herself, with 4 options. It unlocks once she writes them in her tab.", twA4:"Pick what Indiana would want in each situation.", twA7:"Ask her one deep question a month and answer hers by voice note. It doesn't use a try.", twA8:"The coupons you win from Indiana land here. Use them whenever you want.", twA11:"Here you see what Indiana does: when she plays, wins or uses a coupon.", twA12T:"Your settings", twA12:"Locked with your code: add questions and coupons, reset tries and replay this tour.", twSkip:"Skip", devT:"Who are you?", devD:"This phone stays set to one person.", devNow:"This phone is {n}'s.", devChange:"Change person", twAgainT:"Welcome tour", twAgainD:"Shows the welcome tour again, the way each of you sees it the first time.", twAgain:"Show the tour",
   remT:"Fill in your tab", remD:"Super exclusive bonus waiting · {d} of {n} sections",
   coinWon:"+1 coin", nextCup:"Next coupon", winsOf:"{n}/3 wins", qOf:"Question {i} of {n}", guessOf:"What would {n} answer?", guessSay:"What would {n} say?", isRight:"Right", yourPick:"Your pick", toCoupon:"{n} of 3 wins for your next coupon", couponWon:"3 wins! You won a coupon.", noMore:"You already won every coupon of that kind. Here's a coin instead.",
   coins:"Coins", tries:"Tries", renew:"New tries on {d}", mkTitle:"Make a new sticker", mkLead:"Upload a photo of us. It takes the album's design by itself.",
@@ -1844,7 +1869,7 @@ Object.assign(T.es, {stkTitle:"Álbum de monas", tabAlbum:"Álbum",
   tw10:"Con las monedas compras sobres de 3 monas hechas con nuestras fotos. Llena una página y ganas un cupón. Y ahí se esconde una carta sellada…",
   tw11T:"Novedades", tw11:"Aquí ves lo que hace Andrew: cuando juega, gana o usa un cupón.",
   tw12T:"Tu tab, Indiana", tw12:"Esta es tu parte: escribe tus preguntas y tus cupones para Andrew. Si lo llenas todo, te ganas un bono súper exclusivo. 🤫", twGo:"¡A jugar!",
-  twSkip:"Saltar", devT:"¿Quién eres?", devD:"Este teléfono queda para una sola persona.", devNow:"Este teléfono es de {n}.", devChange:"Cambiar de persona", twAgainT:"Bienvenida", twAgainD:"Muestra otra vez el recorrido de bienvenida de Indiana, como lo verá la primera vez.", twAgain:"Ver la bienvenida",
+  twA1T:"¡Bienvenido a Casita Huma!", twA1:"Tú también juegas: ganas monedas y los cupones que Indiana hizo para ti. Te enseño rapidito.", twA2:"Tienes tus propios 2 intentos cada 4 días. Cada victoria te da una moneda, y cada 3, uno de sus cupones.", twA3:"Preguntas que Indiana escribió sobre ella, con 4 opciones. Se activa cuando ella las escriba en su tab.", twA4:"Elige lo que Indiana querría en cada situación.", twA7:"Hazle una pregunta profunda al mes y contesta la suya con nota de voz. No gasta intentos.", twA8:"Aquí llegan los cupones que le ganas a Indiana. Úsalos cuando quieras.", twA11:"Aquí ves lo que hace Indiana: cuando juega, gana o usa un cupón.", twA12T:"Tus ajustes", twA12:"Con tu código: agregas preguntas y cupones, reinicias intentos y vuelves a ver esta bienvenida.", twSkip:"Saltar", devT:"¿Quién eres?", devD:"Este teléfono queda para una sola persona.", devNow:"Este teléfono es de {n}.", devChange:"Cambiar de persona", twAgainT:"Bienvenida", twAgainD:"Muestra otra vez el recorrido de bienvenida, como lo ve cada uno la primera vez.", twAgain:"Ver la bienvenida",
   remT:"Llena tu tab", remD:"Te espera un bono súper exclusivo · {d} de {n} secciones",
   coinWon:"+1 moneda", nextCup:"Próximo cupón", winsOf:"{n}/3 victorias", qOf:"Pregunta {i} de {n}", guessOf:"¿Qué respondería {n}?", guessSay:"¿Qué diría {n}?", isRight:"Correcta", yourPick:"Tu respuesta", toCoupon:"{n} de 3 victorias para tu próximo cupón", couponWon:"¡3 victorias! Te ganaste un cupón.", noMore:"Ya ganaste todos los cupones de ese tipo. Te doy una moneda.",
   coins:"Monedas", tries:"Intentos", renew:"Nuevos intentos el {d}", mkTitle:"Crear una mona nueva", mkLead:"Sube una foto de los dos. Toma el diseño del álbum sola.",
@@ -2172,17 +2197,33 @@ const TOUR = [
   {sel:"#bell", duck:"lobbyboy", t:"tw11T", d:"tw11"},
   {sel:'nav.bar [data-tab="her"]', duck:"sunbed", t:"tw12T", d:"tw12", last:true}
 ];
+const TOUR_A = [
+  {duck:"doorman", t:"twA1T", d:"twA1"},
+  {sel:".tries-box", duck:"bellboy", t:"tw2T", d:"twA2"},
+  {sel:'[data-ag="trivia"]', duck:"richwoman", t:"g_trivia", d:"twA3"},
+  {sel:'[data-ag="love"]', duck:"peach", t:"g_love", d:"twA4"},
+  {sel:'[data-ag="finish"]', duck:"traveler", t:"g_finish", d:"tw5"},
+  {sel:'[data-ag="scratch"]', duck:"suitcasekid", t:"g_scratch", d:"tw6"},
+  {sel:'[data-ag="deep"]', duck:"founder", t:"g_deep", d:"twA7"},
+  {sel:'nav.bar [data-tab="wallet"]', duck:"bellboy", t:"tabWallet", d:"twA8"},
+  {sel:'nav.bar [data-tab="therapy"]', duck:"rabbit", t:"tabTherapy", d:"tw9"},
+  {sel:'nav.bar [data-tab="album"]', duck:"richwoman", t:"tabAlbum", d:"tw10"},
+  {sel:"#bell", duck:"lobbyboy", t:"tw11T", d:"twA11"},
+  {sel:"#gear", duck:"concierge", t:"twA12T", d:"twA12", last:true}
+];
 function startTour(force){
   S.tourSeen ||= {};
-  if(!force && (isA() || S.tourSeen.her)) return;
+  if(document.getElementById("tour")) return;
+  const who = isA() ? "andrew" : "her";
+  if(!force && S.tourSeen[who]) return;
   if(tab!=="play"){ tab="play"; render(); }
   window.scrollTo(0,0);
   const ov=document.createElement("div"); ov.id="tour"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true");
   ov.innerHTML=`<div class="tour-hole"></div><div class="tour-card" aria-live="polite"></div>`; document.body.appendChild(ov);
   const hole=ov.querySelector(".tour-hole"), card=ov.querySelector(".tour-card");
-  const steps = TOUR.filter(st=>!st.sel || document.querySelector(st.sel));
+  const steps = (who==="andrew"?TOUR_A:TOUR).filter(st=>!st.sel || document.querySelector(st.sel));
   let i=0;
-  const end=()=>{ S.tourSeen.her=true; save(); ov.classList.add("out"); setTimeout(()=>ov.remove(),300); };
+  const end=()=>{ S.tourSeen[who]=true; save(); ov.classList.add("out"); setTimeout(()=>ov.remove(),300); };
   const show=()=>{
     const st=steps[i], el=st.sel && document.querySelector(st.sel);
     if(el){ el.scrollIntoView({block:"center", inline:"center", behavior:"smooth"}); }
@@ -2216,7 +2257,7 @@ function pickDevice(){
   openSheet(`<div class="result"><img class="big sticker" src="${duck("doorman")}" alt=""><h3>${t("devT")}</h3><p class="hint">${t("devD")}</p>
     <div class="row-btns"><button class="btn" type="button" data-dev="her">Indiana</button><button class="btn ghost" type="button" data-dev="andrew">Andrew</button></div></div>`);
   $("#panel [data-close]").remove();
-  const set = who => { S.device = who; S.player = who; save(); closeSheet(); if(who==="her") setTimeout(()=>startTour(false),300); };
+  const set = who => { S.device = who; S.player = who; save(); closeSheet(); setTimeout(()=>startTour(false),300); };
   $('#panel [data-dev="her"]').onclick = () => set("her");
   $('#panel [data-dev="andrew"]').onclick = () => set("andrew");
 }
