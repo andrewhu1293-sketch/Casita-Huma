@@ -981,6 +981,12 @@ h3.hx-ch span{display:grid;place-items:center;width:30px;height:30px;border-radi
 /* V67: Duckoos in the loading screen get a white sticker edge like our photos */
 .sp-pic.sp-duck{max-width:120px;filter:drop-shadow(3px 0 0 #fffdf8) drop-shadow(-3px 0 0 #fffdf8) drop-shadow(0 3px 0 #fffdf8) drop-shadow(0 -3px 0 #fffdf8) drop-shadow(0 6px 10px rgba(74,42,26,.18))}
 .herx details.hx-card[data-sec="wait"] .hx-cnt:not(.ok){background:var(--rose2)}
+/* V68: notes, shared vs private */
+.nseg{display:flex;gap:6px;background:#fcfcfc;border-radius:999px;padding:4px;margin:0 0 8px}
+.nseg button{flex:1;border:0;background:none;border-radius:999px;padding:10px 8px;font:inherit;font-weight:700;font-size:.9rem;color:var(--ink2);cursor:pointer;min-height:44px}
+.nseg button[aria-pressed="true"]{background:var(--cd);color:#fff}
+.nwho{margin:0 4px 10px}
+.thwrap .card.npriv{background:#fff9e8;border:1.5px dashed var(--cd)!important}
 /* V64: fight manual */
 .fman{margin-top:4px}
 .fm-lead{margin:0 0 12px;font-size:.9rem;color:var(--ink2);opacity:.8}
@@ -1254,6 +1260,8 @@ Object.assign(T.en,{hxHi:"Hi, Indiana!",hxLead:"Here you build Andrew's games: h
 Object.assign(T.es,{hxHi:"¡Hola, Indiana!",hxLead:"Aquí armas los juegos de Andrew: sus preguntas, sus premios y unas sorpresas. Toca una sección para empezar.",hxLeft:"Faltan {n}",hxDone:"¡Listo!",hxLines:"{n} escritos",hxDates:"{n} fechas",hxOptional:"Opcional"});
 Object.assign(T.en,{calHerT:"Indiana's calendar",calAndrewT:"Andrew's calendar",calPrep:"Their special days, so you can get ready.",calEmpty:"No special dates yet.",herBday:"Indiana's birthday"});
 Object.assign(T.es,{calHerT:"Calendario de Indiana",calAndrewT:"Calendario de Andrew",calPrep:"Sus días especiales, para que te prepares.",calEmpty:"Todavía no hay fechas especiales.",herBday:"Cumpleaños de Indiana"});
+Object.assign(T.en,{nShared:"Shared",nMine:"Just mine",nSharedD:"You and {o} both see these.",nMineD:"Only you see these. Nobody gets a notification.",nTextPhP:"What I want to think about, bring up later or work on myself…",nSaveP:"Save privately",nSavedP:"Saved in your private notes",nEmptyP:"Your private notebook is empty."});
+Object.assign(T.es,{nShared:"De los dos",nMine:"Solo mías",nSharedD:"Las ven tú y {o}.",nMineD:"Solo las ves tú. No le llega aviso a nadie.",nTextPhP:"Lo que quiero pensar, hablar después o trabajar en mí…",nSaveP:"Guardar en privado",nSavedP:"Guardada en tus notas privadas",nEmptyP:"Tu libreta privada está vacía."});
 /* V63 labels */
 Object.assign(T.en,{renewS:"New tries",backS:"You can play again",weeksS:"weeks",sec_wait:"Wait and Win for Andrew",sec_wait_s:"Pick special dates and the gift Andrew opens on each one. He can't see the gift until that day.",wName:"Special date",wNamePh:"e.g. Our anniversary",wDate:"Date",wGift:"His gift that day",wGiftPh:"e.g. A dinner I cook just for you",waitA_s:"Gifts Indiana chose for special days. Each one opens on its day.",waitA_empty:"Indiana hasn't chosen any special dates yet.",secretGift:"Secret gift"});
 Object.assign(T.es,{renewS:"Nuevos intentos",backS:"Vuelves a jugar",weeksS:"semanas",sec_wait:"Espera y gana para Andrew",sec_wait_s:"Elige fechas especiales y el regalo que Andrew abre ese día. Él no ve el regalo hasta ese día.",wName:"Fecha especial",wNamePh:"ej. Nuestro aniversario",wDate:"Fecha",wGift:"Su regalo ese día",wGiftPh:"ej. Una cena que cocino solo para ti",waitA_s:"Regalos que Indiana eligió para días especiales. Cada uno se abre en su día.",waitA_empty:"Indiana todavía no ha elegido fechas especiales.",secretGift:"Regalo secreto"});
@@ -2034,7 +2042,7 @@ async function shrink(file, max, q){ const bmp = await createImageBitmap(file); 
   const c=document.createElement("canvas"); c.width=Math.round(bmp.width*sc); c.height=Math.round(bmp.height*sc); c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
   return new Promise(r=>c.toBlob(r,"image/jpeg",q)); }
 /* ---------- THERAPY ---------- */
-let therapyTab = "fight";
+let therapyTab = "fight", notesView = "shared";
 const TH = [
   {k:"fight", c:"#bcdaf7", cd:"#3b5e7e", d:"rabbit"}, {k:"notes", c:"#f3ec8a", cd:"#7d6f0e", d:"concierge"}, {k:"checkin", c:"#dccff2", cd:"#634a93", d:"founder"},
   {k:"agree", c:"#cfe6c4", cd:"#3f7a4a", d:"doorman"}, {k:"calm", c:"#f8d2b8", cd:"#a9532a", d:"donotdisturb"}, {k:"wins", c:"#f6b3a7", cd:"#a8382a", d:"farmer"}, {k:"jar", c:"#bfe6e2", cd:"#2e7570", d:"peach"}
@@ -2107,14 +2115,19 @@ function renderTherapy(){
     const cols = ["#cfe6c4","#bcdaf7","#f8d2b8","#dccff2"];
     body = fightHTML(); bind = bindFight;
   } else if(therapyTab==="notes"){
-    body = `<form class="card" id="nf"><div class="field"><label for="nTitle">${t("nTitle")}</label><input id="nTitle" type="text" maxlength="80" placeholder="${esc(t("nTitlePh"))}"></div>
-        <div class="field"><label for="nText">${t("nText")}</label><textarea id="nText" placeholder="${esc(t("nTextPh"))}"></textarea></div>
-        <button class="btn small" type="submit">${t("nSave")}</button></form>
-       <div class="ex">${S.notes.length?S.notes.map((n,i)=>`<div class="item card" style="margin:0"><small class="hint">${nameOf(n.by)} · ${fmt(n.at)}</small><h4 style="margin:4px 0">${esc(n.title||"")}</h4><p style="margin:0;white-space:pre-wrap">${esc(n.text)}</p>
-         <div style="text-align:right"><button class="btn small ghost" type="button" data-nrm="${i}">${t("remove")}</button></div></div>`).join(""):`<div class="empty"><img class="sticker" src="${duck("rabbit")}" alt="">${t("nEmpty")}</div>`}</div>`;
-    bind = ()=>{ $("#nf").onsubmit=e=>{ e.preventDefault(); const text=$("#nText").value.trim(); if(!text) return;
-      S.notes.unshift({by:me(), title:$("#nTitle").value.trim(), text, at:Date.now()});
-      notify(`${nameOf(me())} added a therapy note`, `${nameOf(me())} agregó una nota de terapia`); save(); render(); };
+    /* V68: shared notes for both + a private notebook for each person */
+    const priv = notesView==="mine", list = S.notes.map((n,i)=>({...n,i})).filter(n=>priv ? (n.priv && n.by===me()) : !n.priv);
+    body = `<div class="nseg" role="tablist"><button type="button" data-nv="shared" aria-pressed="${!priv}">👫 ${t("nShared")}</button><button type="button" data-nv="mine" aria-pressed="${priv}">🔒 ${t("nMine")}</button></div>
+      <p class="hint nwho">${priv?t("nMineD"):t("nSharedD",{o:nameOf(other())})}</p>
+      <form class="card ${priv?"npriv":""}" id="nf"><div class="field"><label for="nTitle">${t("nTitle")}</label><input id="nTitle" type="text" maxlength="80" placeholder="${esc(t("nTitlePh"))}"></div>
+        <div class="field"><label for="nText">${t("nText")}</label><textarea id="nText" placeholder="${esc(t(priv?"nTextPhP":"nTextPh"))}"></textarea></div>
+        <button class="btn small" type="submit">${t(priv?"nSaveP":"nSave")}</button></form>
+       <div class="ex">${list.length?list.map(n=>`<div class="item card nnote ${priv?"npriv":""}" style="margin:0"><small class="hint">${priv?"🔒 ":""}${nameOf(n.by)} · ${fmt(n.at)}</small><h4 style="margin:4px 0">${esc(n.title||"")}</h4><p style="margin:0;white-space:pre-wrap">${esc(n.text)}</p>
+         ${n.by===me()?`<div style="text-align:right"><button class="btn small ghost" type="button" data-nrm="${n.i}">${t("remove")}</button></div>`:""}</div>`).join(""):`<div class="empty"><img class="sticker" src="${duck(priv?"donotdisturb":"rabbit")}" alt="">${t(priv?"nEmptyP":"nEmpty")}</div>`}</div>`;
+    bind = ()=>{ document.querySelectorAll("[data-nv]").forEach(b=>b.onclick=()=>{ notesView=b.dataset.nv; render(); });
+      $("#nf").onsubmit=e=>{ e.preventDefault(); const text=$("#nText").value.trim(); if(!text) return;
+      S.notes.unshift({by:me(), title:$("#nTitle").value.trim(), text, at:Date.now(), priv});
+      if(!priv) notify(`${nameOf(me())} added a therapy note`, `${nameOf(me())} agregó una nota de terapia`); else toast(t("nSavedP")); save(); render(); };
       document.querySelectorAll("[data-nrm]").forEach(b=>b.onclick=()=>{ S.notes.splice(+b.dataset.nrm,1); save(); render(); }); };
   } else if(therapyTab==="checkin"){
     const mk = monthKey(), mine = S.checkins.find(c=>c.month===mk && c.by===me()), theirs = S.checkins.find(c=>c.month===mk && c.by===other());
