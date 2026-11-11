@@ -941,6 +941,31 @@ main#view::after{display:none}
 .fill-tile .go{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--red);color:#fff;font-weight:700}
 .gift-lock{font-size:1.3rem}
 
+/* V65: Indiana's tab, friendlier */
+.herx h2.sec{margin-bottom:10px}
+.hx-hello{display:flex;align-items:center;gap:12px;background:#fcfcfc;border-radius:20px;padding:12px 14px 12px 10px}
+.hx-hello img{height:76px;width:auto;flex:none}
+.hx-hello b{display:block;font-family:var(--f-display);font-weight:400;font-size:1.6rem;text-transform:uppercase;color:var(--red);line-height:1}
+.hx-hello p{margin:4px 0 0;font-family:var(--f-round);font-weight:600;font-size:.92rem;line-height:1.35;color:var(--ink2)}
+.hx-prog{background:#f6f1a8;border-radius:16px;padding:10px 14px 12px;margin-top:10px}
+.hx-pt{display:flex;justify-content:space-between;gap:8px;align-items:center;font-family:var(--f-round);font-weight:700;font-size:.88rem;color:var(--ink2)}
+.hx-segs{display:flex;gap:5px;margin-top:8px} .hx-segs i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.75)} .hx-segs i.on{background:var(--red)}
+h3.hx-ch{display:flex;align-items:center;gap:10px;margin:28px 0 10px;font-family:var(--f-display);font-weight:400;font-size:1.5rem;text-transform:uppercase;color:var(--ink2);letter-spacing:.02em}
+h3.hx-ch span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;font-size:1.05rem;flex:none}
+.herx details.hx-card{background:var(--c);border:0;box-shadow:none;border-radius:18px;margin:0 0 10px;overflow:hidden}
+.herx details.hx-card summary{grid-template-columns:52px 1fr auto;padding:12px 14px 12px 10px}
+.herx details.hx-card summary img{width:52px}
+.herx .hx-st{display:flex;flex-direction:column;gap:5px;min-width:0}
+.herx .hx-st b{font-size:1.45rem!important;line-height:1!important}
+.herx .hx-st small{font-family:var(--f-round);font-weight:600;font-size:.78rem;color:var(--ink2);opacity:.75}
+.hx-bar{display:block;height:7px;border-radius:4px;background:rgba(255,255,255,.65);overflow:hidden} .hx-bar i{display:block;height:100%;background:var(--red);border-radius:4px}
+.hx-cnt{display:grid;place-items:center;min-width:44px;height:44px;border-radius:50%;background:#fcfcfc;font-family:var(--f-display);font-size:1.15rem;color:var(--ink2);padding:0 4px}
+.hx-cnt small{font-size:.75rem;opacity:.6} .hx-cnt.ok{background:var(--red);color:#fff;font-size:1.3rem}
+.herx details.hx-card[open] summary{border-bottom:0}
+.herx details.hx-card[open] .hx-cnt{transform:rotate(0)}
+.herx details.hx-card > form,.herx details.hx-card > div{background:#fcfcfc;border-radius:14px;margin:0 10px 10px!important;padding:12px}
+.herx details.hx-card > .list{background:rgba(255,255,255,.55);border-radius:14px;margin:0 10px 10px!important;padding:4px 12px}
+.herx .sec-help{font-family:var(--f-round);font-weight:600;font-size:.88rem;line-height:1.35;color:var(--ink2);opacity:.85}
 /* V64: fight manual */
 .fman{margin-top:4px}
 .fm-lead{margin:0 0 12px;font-size:.9rem;color:var(--ink2);opacity:.8}
@@ -1210,6 +1235,8 @@ function poolFor(kind){ // items with stable keys
 function remaining(kind){ const done=new Set(M()[kind]); return poolFor(kind).filter(x=>!done.has(x.key)); }
 function masteryHTML(kind){ const total=poolFor(kind).length; if(!total) return ""; const n=Math.min(M()[kind].length,total);
   return `<span class="mast ${n>=total?"ok":""}"><span class="ml">${t("mastLbl")}</span><span class="mbar"><i style="width:${Math.round(100*n/total)}%"></i></span><b>${n}/${total}</b></span>`; }
+Object.assign(T.en,{hxHi:"Hi, Indiana!",hxLead:"Here you build Andrew's games: his questions, his prizes and a few surprises. Tap a section to start.",hxLeft:"{n} to go",hxDone:"Done!",hxLines:"{n} written",hxDates:"{n} dates",hxOptional:"Optional"});
+Object.assign(T.es,{hxHi:"¡Hola, Indiana!",hxLead:"Aquí armas los juegos de Andrew: sus preguntas, sus premios y unas sorpresas. Toca una sección para empezar.",hxLeft:"Faltan {n}",hxDone:"¡Listo!",hxLines:"{n} escritos",hxDates:"{n} fechas",hxOptional:"Opcional"});
 /* V63 labels */
 Object.assign(T.en,{renewS:"New tries",backS:"You can play again",weeksS:"weeks",sec_wait:"Wait and Win for Andrew",sec_wait_s:"Pick special dates and the gift Andrew opens on each one. He can't see the gift until that day.",wName:"Special date",wNamePh:"e.g. Our anniversary",wDate:"Date",wGift:"His gift that day",wGiftPh:"e.g. A dinner I cook just for you",waitA_s:"Gifts Indiana chose for special days. Each one opens on its day.",waitA_empty:"Indiana hasn't chosen any special dates yet.",secretGift:"Secret gift"});
 Object.assign(T.es,{renewS:"Nuevos intentos",backS:"Vuelves a jugar",weeksS:"semanas",sec_wait:"Espera y gana para Andrew",sec_wait_s:"Elige fechas especiales y el regalo que Andrew abre ese día. Él no ve el regalo hasta ese día.",wName:"Fecha especial",wNamePh:"ej. Nuestro aniversario",wDate:"Fecha",wGift:"Su regalo ese día",wGiftPh:"ej. Una cena que cocino solo para ti",waitA_s:"Regalos que Indiana eligió para días especiales. Cada uno se abre en su día.",waitA_empty:"Indiana todavía no ha elegido fechas especiales.",secretGift:"Regalo secreto"});
@@ -1865,9 +1892,9 @@ function notifyPartner(c){ /* replaced by pushSend() inside notify() */
 
 /* ---------- HER SIDE ---------- */
 function waitCardHTML(){ const l=S.her.wait||[];
-  return `<details class="card sec-card" data-sec="wait" ${openSec==="wait"?"open":""}>
-    <summary><img class="sticker" src="${duck("sunbed")}" alt=""><span><b>${t("sec_wait")}</b></span><span class="count ${l.length?"ok":""}">${l.length}</span></summary>
-    <form id="waitForm"><p class="hint sec-help">${t("sec_wait_s")}</p>
+  return `<details class="card sec-card hx-card" data-sec="wait" style="--c:${SEC_C.wait}" ${openSec==="wait"?"open":""}>
+    <summary><img class="sticker" src="${duck("sunbed")}" alt=""><span class="hx-st"><b>${t("sec_wait")}</b><small>${l.length?t("hxDates",{n:l.length}):t("hxOptional")}</small></span><span class="hx-cnt ${l.length?"ok":""}">${l.length?"✓":"＋"}</span></summary>
+    <form id="waitForm"><p class="hint sec-help">💡 ${t("sec_wait_s")}</p>
       <label class="flab" for="wName">${t("wName")}</label><div class="field"><input id="wName" type="text" maxlength="60" placeholder="${esc(t("wNamePh"))}" required></div>
       <div class="chips ideas">${(L()==="es"?["Cumpleaños de Andrew","San Valentín","Nuestro aniversario","Navidad","Día que nos conocimos"]:["Andrew's birthday","Valentine's Day","Our anniversary","Christmas","The day we met"]).map(x=>`<button type="button" class="chip" data-wname="${esc(x)}">${esc(x)}</button>`).join("")}</div>
       <label class="flab" for="wDate">${t("wDate")}</label><div class="field"><input id="wDate" type="date" required></div>
@@ -1889,7 +1916,8 @@ function itemHTML(k, it){
   if(k==="finish") return `<b>${esc(it.s)}</b>`;
   return `<b>${esc(it.q)}</b>`;
 }
-let openSec = "coupons";
+let openSec = "";
+const SEC_C = {trivia:"#bcdaf7",love:"#f8d2b8",finish:"#dccff2",deep:"#bfe6e2",coupons:"#f3ec8a",bigcoupons:"#f6b3a7",wait:"#e5e0e5",letter:"#ecc3c9",secrets:"#cfe6c4"};
 
 /* example ideas for Indiana while she fills her tab (tap one to use it) */
 const IDEAS = {
@@ -1927,29 +1955,31 @@ document.addEventListener("click", e=>{
 function renderHer(){
   const p = sideProgress(), pct = Math.round(100*p.secs.reduce((a,x)=>a+Math.min(x.n,x.goal)/x.goal,0)/p.n);
   const secHTML = sec => { const st=p.secs.find(x=>x.k===sec.k), ok=st.n>=st.goal;
-    return `<details class="card sec-card" data-sec="${sec.k}" ${openSec===sec.k?"open":""}>
-      <summary><img class="sticker" src="${duck(sec.duck)}" alt=""><span><b>${t("sec_"+sec.k)}</b></span><span class="count ${ok?"ok":""}">${ok?"✓ ":""}${st.n}/${st.goal}</span></summary>
-      <form data-form="${sec.k}"><p class="hint sec-help">${t("sec_"+sec.k+"_s")}</p>${sec.fields.map(([f,ph,lab],fi)=>`${lab?`<label class="flab" for="f-${sec.k}-${f}">${t(lab)}</label>`:""}<div class="field"><input id="f-${sec.k}-${f}" type="text" placeholder="${esc(t(ph))}" aria-label="${esc(t(ph))}" maxlength="160" required></div>${fi===0?ideasHTML(sec.k):""}`).join("")}
+    return `<details class="card sec-card hx-card" data-sec="${sec.k}" style="--c:${SEC_C[sec.k]}" ${openSec===sec.k?"open":""}>
+      <summary><img class="sticker" src="${duck(sec.duck)}" alt=""><span class="hx-st"><b>${t("sec_"+sec.k)}</b><span class="hx-bar"><i style="width:${Math.min(100,Math.round(100*st.n/st.goal))}%"></i></span><small>${ok?t("hxDone"):t("hxLeft",{n:st.goal-st.n})}</small></span><span class="hx-cnt ${ok?"ok":""}">${ok?"✓":`${st.n}<small>/${st.goal}</small>`}</span></summary>
+      <form data-form="${sec.k}"><p class="hint sec-help">💡 ${t("sec_"+sec.k+"_s")}</p>${sec.fields.map(([f,ph,lab],fi)=>`${lab?`<label class="flab" for="f-${sec.k}-${f}">${t(lab)}</label>`:""}<div class="field"><input id="f-${sec.k}-${f}" type="text" placeholder="${esc(t(ph))}" aria-label="${esc(t(ph))}" maxlength="160" required></div>${fi===0?ideasHTML(sec.k):""}`).join("")}
         ${sec.who?`<div class="field"><label class="flab" for="f-who-a">${t("whoPick")}</label><select id="f-who-a"><option value="andrew">Andrew</option><option value="her">Indiana</option><option value="both">${t("whoBoth")}</option></select></div>`:""}
         <button class="btn small" type="submit">${t("add")}</button></form>
       <ul class="list">${S.her[sec.k].map((it,i)=>`<li><span>${itemHTML(sec.k,it)}</span><button type="button" data-rm="${sec.k}:${i}">${t("remove")}</button></li>`).join("")}</ul>
     </details>`; };
-  const textCard = (k, id, duckName, val, n) => `<details class="card sec-card" data-sec="${k}" ${openSec===k?"open":""}>
-      <summary><img class="sticker" src="${duck(duckName)}" alt=""><span><b>${t("sec_"+k)}</b></span><span class="count ${n?"ok":""}">${n}</span></summary>
-      <div style="margin:12px 14px"><p class="hint sec-help">${t("sec_"+k+"_s")}</p><div class="field"><textarea id="${id}" style="min-height:130px" aria-label="${esc(t("sec_"+k))}">${esc(val)}</textarea></div>
+  const textCard = (k, id, duckName, val, n) => `<details class="card sec-card hx-card" data-sec="${k}" style="--c:${SEC_C[k]}" ${openSec===k?"open":""}>
+      <summary><img class="sticker" src="${duck(duckName)}" alt=""><span class="hx-st"><b>${t("sec_"+k)}</b><small>${n?t("hxLines",{n}):t("hxOptional")}</small></span><span class="hx-cnt ${n?"ok":""}">${n?"✓":"＋"}</span></summary>
+      <div style="margin:12px 14px"><p class="hint sec-help">💡 ${t("sec_"+k+"_s")}</p><div class="field"><textarea id="${id}" style="min-height:130px" aria-label="${esc(t("sec_"+k))}">${esc(val)}</textarea></div>
       ${ideasHTML(k)}<button class="btn small" type="button" data-savetext>${t("save")}</button></div></details>`;
   const games = SECTIONS.filter(x=>!["coupons","bigcoupons"].includes(x.k)), prizes = SECTIONS.filter(x=>["coupons","bigcoupons"].includes(x.k));
-  $("#view").innerHTML = `<h2 class="sec">${t("herTitle")}</h2>
-    <div class="card her-prog"><span class="hp-ic" aria-hidden="true">🎁</span><div><b>${S.claimed.side?t("exclusiveGotS"):p.done?t("exclusiveReadyS"):t("exclusiveS")}</b><div class="meter"><i style="width:${pct}%"></i></div></div><span class="mt-n">${p.d}/${p.n}</span></div>
-    <h3 class="sec-tab">${t("herGames")}</h3>
+  $("#view").innerHTML = `<div class="herx"><h2 class="sec">${t("herTitle")}</h2>
+    <div class="hx-hello"><img src="${duck("gardener")}" alt=""><div><b>${t("hxHi")}</b><p>${t("hxLead")}</p></div></div>
+    <div class="hx-prog"><div class="hx-pt"><span>🎁 ${S.claimed.side?t("exclusiveGotS"):p.done?t("exclusiveReadyS"):t("exclusiveS")}</span><b>${p.d}/${p.n}</b></div>
+      <div class="hx-segs">${p.secs.map(x=>`<i class="${x.n>=x.goal?"on":""}" title="${esc(t("sec_"+x.k))}"></i>`).join("")}</div></div>
+    <h3 class="hx-ch"><span>1</span>${t("herGames")}</h3>
     ${games.map(secHTML).join("")}
     
-    <h3 class="sec-tab">${t("herPrizes")}</h3>
+    <h3 class="hx-ch"><span>2</span>${t("herPrizes")}</h3>
     ${prizes.map(secHTML).join("")}
     ${waitCardHTML()}
-    <h3 class="sec-tab">${t("herExtras")}</h3>
+    <h3 class="hx-ch"><span>3</span>${t("herExtras")}</h3>
     ${textCard("letter","sLetter","lobbyboy",S.letter.her||"",lines(S.letter.her).length)}
-    ${textCard("secrets","sSecrets","donotdisturb",S.secrets.her||"",lines(S.secrets.her).length)}`;
+    ${textCard("secrets","sSecrets","donotdisturb",S.secrets.her||"",lines(S.secrets.her).length)}</div>`;
   document.querySelectorAll("details[data-sec]").forEach(d=>d.addEventListener("toggle",()=>{ if(d.open) openSec=d.dataset.sec; }));
   document.querySelectorAll("[data-savetext]").forEach(b=>b.onclick=()=>{ const had=lines(S.letter.her).length+lines(S.secrets.her).length;
     S.letter.her=$("#sLetter").value; S.secrets.her=$("#sSecrets").value; save(); toast(t("saved"));
