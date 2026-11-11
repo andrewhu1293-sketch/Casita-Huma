@@ -156,7 +156,6 @@ window.CONTENT = {
 
   // Wait and Win: special-pool coupons only.
   specialDays: [
-    { id: "andrewbday", month: 12, day: 9, duck: "bellboy", en: "Andrew's birthday", es: "Cumpleaños de Andrew" },
     { id: "herbday", month: 1, day: 7, duck: "richwoman", en: "Your birthday", es: "Tu cumpleaños" },
     { id: "valentine", month: 2, day: 14, duck: "peach", en: "Valentine's Day", es: "Día de San Valentín" }
   ],
