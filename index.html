@@ -901,6 +901,45 @@ h4.grp2{font-family:var(--f-body);font-weight:600;font-size:.8rem;letter-spacing
 .sec-help{margin:0 0 10px}
 main#view::after{display:none}
 .tb3 .tb-ic.hearts i{width:22px;height:22px;font-size:.75rem}
+
+/* ===== V63: richer top box, rules back, designed small tiles ===== */
+.tries-box.tb4{display:block;background:#fcfcfc;border:0;border-radius:20px;padding:10px 10px 10px;margin:4px 0 0}
+.tb4-row{display:flex;justify-content:space-around;align-items:flex-start}
+.tb4 .tb-stat{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:44px;padding:2px 8px;border:0!important}
+.tb4 .tb-n{display:flex;align-items:center;gap:6px}
+.tb4 .tb-stat b{font-size:1.5rem}
+.tb4 .tb-stat small{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tb4 .tb-ic.hearts i{width:22px;height:22px;font-size:.75rem}
+.tb4-strip{display:flex;gap:8px;margin-top:8px}
+.tb4-chip{flex:1;display:flex;align-items:center;gap:6px;border-radius:12px;padding:6px 10px;min-width:0}
+.tb4-chip small{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);opacity:.75;white-space:nowrap}
+.tb4-chip b{font-family:var(--f-body);font-weight:700;font-size:.78rem;color:var(--ink2);white-space:nowrap;margin-left:auto}
+.tb4-chip.next{background:#f6f1a8} .tb4-chip.date{background:var(--blue)}
+.tb4-chip .tb-seg{display:flex;gap:3px} .tb4-chip .tb-seg i{width:14px;height:6px;border-radius:3px;background:rgba(74,42,26,.15)} .tb4-chip .tb-seg i.on{background:var(--red)}
+.game .rule{display:inline-block;align-self:center;margin:2px auto 12px;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.6);font-family:var(--f-body);font-size:.74rem;font-weight:600;color:var(--ink2)}
+/* small tiles with the app's look: colour, duck peeking over the top, display titles */
+.duo{grid-template-columns:repeat(3,1fr);gap:10px;margin-top:44px}
+.mini-tile{min-height:112px;padding:30px 6px 10px;justify-content:flex-start;gap:6px;overflow:visible}
+.mini-tile .peek{position:absolute;top:-38px;left:50%;transform:translateX(-50%);height:58px;width:auto;pointer-events:none;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.mini-tile:active .peek{transform:translateX(-50%) translateY(-5px) rotate(-6deg)}
+.mini-tile b{font-family:var(--f-display);font-weight:400;font-size:1.25rem;letter-spacing:.02em;text-transform:uppercase;line-height:1}
+.t-streak{background:var(--blue)} .t-stk{background:#f6f1a8} .t-wait{background:var(--lav)}
+.t-streak .tl{position:relative;display:flex;justify-content:space-between;width:88%}
+.t-streak .tl::before{content:"";position:absolute;left:3px;right:3px;top:50%;height:1.5px;background:var(--red)}
+.t-streak .tl i{position:relative;width:9px;height:9px;border-radius:50%;background:#fcfcfc;border:1.5px solid var(--red)} .t-streak .tl i.on{background:var(--red)}
+.t-stk .slots{display:grid;grid-template-columns:repeat(5,12px);gap:3px}
+.t-stk .slots i{height:14px;border-radius:3px;border:1.5px dashed rgba(74,42,26,.35)} .t-stk .slots i.on{background:var(--red);border:1.5px solid var(--red)}
+.t-wait .esp{position:absolute;top:-12px;right:-6px;z-index:2;transform:rotate(6deg);background:var(--blue);color:var(--ink2);font-family:var(--f-display);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:6px}
+.mini-tile .mt-n{font-family:var(--f-body);font-weight:600;font-size:.72rem;color:var(--ink2);opacity:.75}
+.mini-tile .mt-n.hot{opacity:1;color:#fff;background:var(--red);border-radius:999px;padding:1px 8px}
+.fill-tile{position:relative;display:flex;align-items:center;gap:12px;width:100%;margin:22px 0 0;padding:12px 14px 12px 76px;min-height:64px;background:#dccff2;border:0;border-radius:18px;font:inherit;color:var(--ink2);text-align:left;cursor:pointer}
+.fill-tile .peek{position:absolute;left:10px;bottom:6px;height:70px;width:auto;pointer-events:none}
+.fill-tile .ft-t{flex:1;display:flex;flex-direction:column;gap:6px}
+.fill-tile b{font-family:var(--f-display);font-weight:400;font-size:1.35rem;text-transform:uppercase;line-height:1}
+.fill-tile .meter{height:7px;border-radius:4px;background:rgba(255,255,255,.7);overflow:hidden;margin:0} .fill-tile .meter i{display:block;height:100%;background:var(--red);border-radius:4px}
+.fill-tile .mt-n{font-size:.8rem;font-weight:600;opacity:.75}
+.fill-tile .go{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--red);color:#fff;font-weight:700}
+.gift-lock{font-size:1.3rem}
 </style>
 
 <div class="wrap">
@@ -1072,7 +1111,7 @@ const fresh = () => ({lang:"es", wallet:[{uid:"w1",cid:"besitos",at:Date.now(),f
   her:{coupons:[],questions:[]}, deep:[], finish:[], testDate:"", worker:"", andrew:false, player:"her", aWallet:[{uid:"wa1",cid:"besitos",at:Date.now(),from:"welcome",usedAt:null}], aWelcome:true, aWeeks:{}});
 let S;
 try{ S = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY)||"null")||{}); }catch(e){ S = fresh(); }
-S.her = Object.assign({coupons:[],bigcoupons:[],trivia:[],love:[],finish:[],deep:[]}, S.her||{}); delete S.her.questions; S.aMonths ||= {}; S.aDeep ||= [];
+S.her = Object.assign({coupons:[],bigcoupons:[],trivia:[],love:[],finish:[],deep:[],wait:[]}, S.her||{}); delete S.her.questions; S.aMonths ||= {}; S.aDeep ||= [];
 S.aWallet ||= []; if(!S.aWelcome){ S.aWelcome=true; if(!S.aWallet.some(w=>w.from==="welcome")) S.aWallet.unshift({uid:"wa1",cid:"besitos",at:Date.now(),from:"welcome",usedAt:null}); }
 S.activity ||= []; S.ex ||= []; S.notes ||= []; S.checkins ||= []; S.photos ||= []; S.agreements ||= []; S.calm ||= {her:{},andrew:{}}; S.wins ||= []; S.jar ||= []; S.streakOwed ||= {}; S.aWeeks ||= {}; S.weeks ||= {};
 const me = () => isA() ? "andrew" : "her", other = () => isA() ? "her" : "andrew";
@@ -1145,6 +1184,9 @@ function poolFor(kind){ // items with stable keys
 function remaining(kind){ const done=new Set(M()[kind]); return poolFor(kind).filter(x=>!done.has(x.key)); }
 function masteryHTML(kind){ const total=poolFor(kind).length; if(!total) return ""; const n=Math.min(M()[kind].length,total);
   return `<span class="mast ${n>=total?"ok":""}"><span class="ml">${t("mastLbl")}</span><span class="mbar"><i style="width:${Math.round(100*n/total)}%"></i></span><b>${n}/${total}</b></span>`; }
+/* V63 labels */
+Object.assign(T.en,{renewS:"New tries",backS:"You can play again",weeksS:"weeks",sec_wait:"Wait and Win for Andrew",sec_wait_s:"Pick special dates and the gift Andrew opens on each one. He can't see the gift until that day.",wName:"Special date",wNamePh:"e.g. Our anniversary",wDate:"Date",wGift:"His gift that day",wGiftPh:"e.g. A dinner I cook just for you",waitA_s:"Gifts Indiana chose for special days. Each one opens on its day.",waitA_empty:"Indiana hasn't chosen any special dates yet.",secretGift:"Secret gift"});
+Object.assign(T.es,{renewS:"Nuevos intentos",backS:"Vuelves a jugar",weeksS:"semanas",sec_wait:"Espera y gana para Andrew",sec_wait_s:"Elige fechas especiales y el regalo que Andrew abre ese día. Él no ve el regalo hasta ese día.",wName:"Fecha especial",wNamePh:"ej. Nuestro aniversario",wDate:"Fecha",wGift:"Su regalo ese día",wGiftPh:"ej. Una cena que cocino solo para ti",waitA_s:"Regalos que Indiana eligió para días especiales. Cada uno se abre en su día.",waitA_empty:"Indiana todavía no ha elegido fechas especiales.",secretGift:"Regalo secreto"});
 /* V62 short labels */
 Object.assign(T.en,{backOn:"back {d}",renewToast:"{n} tries left · new ones {d}",stShort:"Streak",stkShort:"Stickers",exclusiveS:"Fill everything → secret coupon",exclusiveReadyS:"Done! Open it in Wait and Win",exclusiveGotS:"Secret coupon won ✓"});
 Object.assign(T.es,{backOn:"vuelven {d}",renewToast:"Te quedan {n} intentos · nuevos el {d}",stShort:"Racha",stkShort:"Monas",exclusiveS:"Llénalo todo → cupón secreto",exclusiveReadyS:"¡Listo! Ábrelo en Espera y gana",exclusiveGotS:"Cupón secreto ganado ✓"});
@@ -1293,6 +1335,7 @@ function gameCard(g, o){
     <span class="g-top">${o.tag?`<span class="tag">${o.tag}</span>`:""}${MASTERY.includes(g.id)?cornerCount(g.id):""}</span>
     <h3>${t("g_"+g.id)}</h3><div class="sub">${o.q}</div>
     <div class="pic"><img class="sticker" src="${duck(g.duck)}" alt=""></div>
+    <span class="rule">${rule}</span>
     <span class="play">${t(o.btn||"playBtn")}</span></button>`;
 }
 function renderPlay(){
@@ -1311,7 +1354,7 @@ function renderPlay(){
       const badge = !off && first && g.id!=="deep" ? (first=false, t("todayBadge")) : "";
       return gameCard(g, {attr:"game", off, tag, badge, num:String(i+1).padStart(2,"0"), q:t("gq_"+g.id), btn:g.id==="deep"?"openBtn":"playBtn"}); }).join(""); })()}
     </div>
-    ${pushCardHTML()}${herReminderHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}${waitTileHTML(ready)}</div>`;
+    ${pushCardHTML()}${herReminderHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}${waitTileHTML(ready, specialList())}</div>`;
   document.querySelectorAll("[data-game]").forEach(b=>b.onclick=()=>{
     const id=b.dataset.game;
     if(id==="wait") return openWait();
@@ -1336,7 +1379,7 @@ function renderAndrewPlay(){
       const empty = g.id!=="deep" && g.id!=="finish" && (!hasC || !has[g.id]), monthly = g.id==="deep" && deepDone, allDone = !empty && MASTERY.includes(g.id) && !remaining(g.id).length; let off = (left<=0 && g.id!=="deep") || empty || monthly || allDone;
       let tag = g.id==="deep" && deepPending ? t("exTag") : empty ? t("soon") : allDone ? t("allDone") : monthly ? t("monthDone") : left<=0 && g.id!=="deep" ? t("locked") : "";
       if(g.id==="finish"){ const mc=matchCard(left); off=mc.off; tag=mc.tag; }
-      return gameCard(g, {attr:"ag", why: empty?"empty":allDone?"all":monthly?"month":"week", off, tag, num:String(i+1).padStart(2,"0"), q:t("g_"+g.id+"_A"), btn:g.id==="deep"?"openBtn":"playBtn"});}).join("")}</div>${pushCardHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}</div>`;
+      return gameCard(g, {attr:"ag", why: empty?"empty":allDone?"all":monthly?"month":"week", off, tag, num:String(i+1).padStart(2,"0"), q:t("g_"+g.id+"_A"), btn:g.id==="deep"?"openBtn":"playBtn"});}).join("")}</div>${pushCardHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}${(()=>{ const l=specialListA(); return waitTileHTML(l.some(x=>x.ready&&!x.claimed), l).replace('data-game="wait"','data-await'); })()}</div>`;
   document.querySelectorAll("[data-ag]").forEach(b=>b.onclick=()=>{
     if(b.getAttribute("aria-disabled")==="true") return toast(b.dataset.why==="empty"?t("needHer"):b.dataset.why==="all"?t("allDone"):b.dataset.why==="month"?t("monthDone"):t("weekNext",{d:nextReset()}));
     ({trivia:()=>openQuiz("trivia"), love:openLove, scratch:openScratch, deep:openDeep, finish:openMatch})[b.dataset.ag]();
@@ -1387,10 +1430,13 @@ function checkStreak(){
 }
 function streakHTML(){
   const st=streakInfo(), dots=[...Array(STREAK)].map((_,i)=>`<i class="${i<st.n?"on":""}"></i>`).join("");
-  return `<button type="button" class="mini-tile" data-streak><b>${t("stShort")}</b><span class="stdots">${dots}</span><span class="mt-n">${st.n}/${STREAK}</span></button>`;
+  return `<button type="button" class="mini-tile t-streak" data-streak><img class="peek" src="${duck("bellboy")}" alt=""><b>${t("stShort")}</b><span class="tl">${dots}</span><span class="mt-n">${st.n}/${STREAK} ${t("weeksS")}</span></button>`;
 }
 document.addEventListener("click", e=>{ if(e.target.closest("[data-streak]")){ const st=streakInfo(); toast(st.nowOk ? t("stNowOk") : st.her||st.andrew ? t("stWait",{n:st.her?"Andrew":"Indiana"}) : t("stNone")); } });
-function waitTileHTML(ready){ return `<button type="button" class="mini-tile wait" data-game="wait"><img src="${duck("sunbed")}" alt=""><b>${t("g_wait")}</b>${ready?`<span class="tag">${t("today")}</span>`:""}</button>`; }
+function waitTileHTML(ready, list){
+  const next = list.filter(s=>!s.claimed && typeof s.days==="number").sort((a,b)=>a.days-b.days)[0];
+  const when = ready ? t("today") : next ? (next.days===1?t("tomorrow"):t("inDays",{n:next.days})) : t("soon");
+  return `<button type="button" class="mini-tile t-wait" data-game="wait"><span class="esp">${t("special")}</span><img class="peek" src="${duck("sunbed")}" alt=""><b>${t("g_wait")}</b><span class="mt-n ${ready?"hot":""}">${esc(when)}</span></button>`; }
 function showResult(won, extraHTML=""){
   let html;
   if(won){ const r = winRewards(won);
@@ -1712,6 +1758,31 @@ function specialList(){
   out.push({id:"side", duck:"gardener", en:T.en.sideDone, es:T.es.sideDone, ready:done, claimed:!!S.claimed.side, key:"side", side:true});
   return out;
 }
+/* Andrew's Espera y gana: special dates + gifts that Indiana writes in her tab */
+function specialListA(){
+  const d=today(), y=d.getFullYear(), base=new Date(y,d.getMonth(),d.getDate());
+  return (S.her.wait||[]).map((w,i)=>{ const [m,dd]=w.date.split("-").slice(-2).map(Number);
+    let next=new Date(y,m-1,dd); if(next<base) next=new Date(y+1,m-1,dd);
+    const days=Math.round((next-base)/864e5), ready=days===0, key="aw-"+w.at+"-"+(ready?y:next.getFullYear());
+    return {i, name:w.name, gift:w.gift, m, dd, days, ready, claimed:!!S.claimed[key], key}; }).sort((a,b)=>a.days-b.days);
+}
+function openWaitA(){
+  const items = specialListA();
+  openSheet(`<h3>${t("g_wait")}</h3><p class="hint">${t("waitA_s")}</p><div class="days" style="margin-top:12px">${items.length?items.map(s=>{
+    const when = s.claimed?t("claimed"):s.ready?t("today"):s.days===1?t("tomorrow"):t("inDays",{n:s.days});
+    return `<div class="day ${s.ready&&!s.claimed?"ready":""}"><img class="sticker" src="${duck("sunbed")}" alt="">
+      <div><b>${esc(s.name)}</b><span class="cd">${esc(when)} · ${new Date(2000,s.m-1,s.dd).toLocaleDateString(L()==="es"?"es-MX":"en-US",{day:"numeric",month:"short"})}</span></div>
+      ${s.ready&&!s.claimed?`<button class="btn small" type="button" data-aclaim="${s.key}" data-i="${s.i}">${t("claim")}</button>`:`<span class="gift-lock" aria-label="${t("secretGift")}">🎁</span>`}</div>`;}).join(""):`<div class="empty"><img class="sticker" src="${duck("sunbed")}" alt="">${t("waitA_empty")}</div>`}</div>`);
+  document.querySelectorAll("[data-aclaim]").forEach(b=>b.onclick=()=>{
+    const w=S.her.wait[+b.dataset.i]; S.claimed[b.dataset.aclaim]=Date.now();
+    S.aWallet.unshift({uid:"aw"+Date.now(), text:w.gift, big:true, at:Date.now(), from:"wait", usedAt:null}); save(); badge();
+    notify(`Andrew opened his Wait and Win gift: ${w.name}`, `Andrew abrió su regalo de Espera y gana: ${w.name}`);
+    openSheet(`<div class="result"><h3>${t("win")}</h3><p class="hint">${esc(w.name)}</p>${ticketHTML(S.aWallet[0],{bare:true})}
+      <div class="row-btns"><button class="btn" type="button" id="toWallet">${t("tabWallet")}</button><button class="btn ghost" type="button" data-close>${t("close")}</button></div></div>`);
+    sfx("win"); confetti(); $("#toWallet").onclick=()=>{ tab="wallet"; walletTab="avail"; closeSheet(); };
+  });
+}
+document.addEventListener("click", e=>{ if(e.target.closest("[data-await]")) openWaitA(); });
 function openWait(){
   const items = specialList();
   openSheet(`<h3>${t("g_wait")}</h3><p class="hint">${t("g_wait_s")}</p><div class="days" style="margin-top:12px">${items.map(s=>{
@@ -1767,6 +1838,22 @@ function notifyPartner(c){ /* replaced by pushSend() inside notify() */
 }
 
 /* ---------- HER SIDE ---------- */
+function waitCardHTML(){ const l=S.her.wait||[];
+  return `<details class="card sec-card" data-sec="wait" ${openSec==="wait"?"open":""}>
+    <summary><img class="sticker" src="${duck("sunbed")}" alt=""><span><b>${t("sec_wait")}</b></span><span class="count ${l.length?"ok":""}">${l.length}</span></summary>
+    <form id="waitForm"><p class="hint sec-help">${t("sec_wait_s")}</p>
+      <label class="flab" for="wName">${t("wName")}</label><div class="field"><input id="wName" type="text" maxlength="60" placeholder="${esc(t("wNamePh"))}" required></div>
+      <div class="chips ideas">${(L()==="es"?["Cumpleaños de Andrew","San Valentín","Nuestro aniversario","Navidad","Día que nos conocimos"]:["Andrew's birthday","Valentine's Day","Our anniversary","Christmas","The day we met"]).map(x=>`<button type="button" class="chip" data-wname="${esc(x)}">${esc(x)}</button>`).join("")}</div>
+      <label class="flab" for="wDate">${t("wDate")}</label><div class="field"><input id="wDate" type="date" required></div>
+      <label class="flab" for="wGift">${t("wGift")}</label><div class="field"><input id="wGift" type="text" maxlength="160" placeholder="${esc(t("wGiftPh"))}" required></div>
+      <button class="btn small" type="submit">${t("add")}</button></form>
+    <ul class="list">${l.map((w,i)=>`<li><span><b>${esc(w.name)}</b> · ${new Date(2000,+w.date.split("-")[1]-1,+w.date.split("-")[2]).toLocaleDateString(L()==="es"?"es-MX":"en-US",{day:"numeric",month:"short"})}<br><small>🎁 ${esc(w.gift)}</small></span><button type="button" data-wrm="${i}">${t("remove")}</button></li>`).join("")}</ul></details>`; }
+document.addEventListener("click", e=>{ const c=e.target.closest("[data-wname]"); if(c){ const i=$("#wName"); if(i){ i.value=c.dataset.wname; i.focus(); } }
+  const r=e.target.closest("[data-wrm]"); if(r){ S.her.wait.splice(+r.dataset.wrm,1); openSec="wait"; save(); render(); } });
+document.addEventListener("submit", e=>{ if(e.target.id!=="waitForm") return; e.preventDefault();
+  const name=$("#wName").value.trim(), date=$("#wDate").value, gift=$("#wGift").value.trim(); if(!name||!date||!gift) return;
+  S.her.wait.push({name, date, gift, at:Date.now()}); openSec="wait"; save();
+  notify(`Indiana added a special date to your Wait and Win: ${name}`, `Indiana agregó una fecha especial a tu Espera y gana: ${name}`); render(); });
 function whoLabel(a){ return a==="andrew"?"Andrew":a==="her"?"Indiana":a==="both"?t("whoBoth"):a==="none"?t("whoNone"):String(a||""); }
 function itemHTML(k, it){
   if(k==="coupons"||k==="bigcoupons") return esc(it.text);
@@ -1833,6 +1920,7 @@ function renderHer(){
     
     <h3 class="sec-tab">${t("herPrizes")}</h3>
     ${prizes.map(secHTML).join("")}
+    ${waitCardHTML()}
     <h3 class="sec-tab">${t("herExtras")}</h3>
     ${textCard("letter","sLetter","lobbyboy",S.letter.her||"",lines(S.letter.her).length)}
     ${textCard("secrets","sSecrets","donotdisturb",S.secrets.her||"",lines(S.secrets.her).length)}`;
@@ -2284,17 +2372,23 @@ function renderAlbum(){
 
 /* top of Jugar: big circles for tries and coins */
 function triesHTML(){
-  const left = Math.max(0, triesLeft()), total = Math.max(TRIES + week().extra, left), cup = W().filter(w=>!w.usedAt).length;
-  return `<div class="tries-box tb3">
-    <button type="button" class="tb-stat" data-renew aria-label="${t("tries")}: ${left}/${total}"><span class="tb-ic hearts" aria-hidden="true">${[...Array(total)].map((_,i)=>`<i class="${i<left?"on":""}">♥</i>`).join("")}</span>${left?"":`<small>${t("backOn",{d:nextReset()})}</small>`}</button>
-    <button type="button" class="tb-stat" data-shop aria-label="${t("coins")}: ${ST().coins}"><span class="tb-ic coin" aria-hidden="true"></span><b>${ST().coins}</b></button>
-    <button type="button" class="tb-stat" data-gowallet aria-label="${t("tabWallet")}: ${cup}"><span class="tb-ic cup" aria-hidden="true">🎟</span><b>${cup}</b></button></div>`;
+  const left = Math.max(0, triesLeft()), total = Math.max(TRIES + week().extra, left), cup = W().filter(w=>!w.usedAt).length, wn = ST().wins%3;
+  return `<div class="tries-box tb4">
+    <div class="tb4-row">
+      <button type="button" class="tb-stat" data-renew aria-label="${t("tries")}: ${left}/${total}"><span class="tb-ic hearts" aria-hidden="true">${[...Array(total)].map((_,i)=>`<i class="${i<left?"on":""}">♥</i>`).join("")}</span><small>${t("tries")}</small></button>
+      <button type="button" class="tb-stat" data-shop aria-label="${t("coins")}: ${ST().coins}"><span class="tb-n"><span class="tb-ic coin" aria-hidden="true"></span><b>${ST().coins}</b></span><small>${t("coins")}</small></button>
+      <button type="button" class="tb-stat" data-gowallet aria-label="${t("tabWallet")}: ${cup}"><span class="tb-n"><span class="tb-ic cup" aria-hidden="true">🎟</span><b>${cup}</b></span><small>${t("tabWallet")}</small></button>
+    </div>
+    <div class="tb4-strip">
+      <span class="tb4-chip next"><small>${t("nextCup")}</small><span class="tb-seg" aria-hidden="true">${[0,1,2].map(i=>`<i class="${i<wn?"on":""}"></i>`).join("")}</span><b>${wn}/3</b></span>
+      <span class="tb4-chip date"><small>${t(left?"renewS":"backS")}</small><b>${nextReset()}</b></span>
+    </div></div>`;
 }
 document.addEventListener("click", e=>{ if(e.target.closest("[data-renew]")) toast(t("renewToast",{n:Math.max(0,triesLeft()),d:nextReset()})); });
 document.addEventListener("click", e=>{ if(e.target.closest("[data-gowallet]")){ tab="wallet"; walletTab="avail"; render(); window.scrollTo(0,0); } });
 function stkCardHTML(){
   const all = stickers(), have = all.filter(s=>ST().own[s.id]).length, n = ST().loose.length;
-  return `<button type="button" class="mini-tile" data-gotab="album"><b>${t("stkShort")}</b><span class="mt-big">${have}<small>/${all.length}</small></span>${n?`<span class="tag">+${n}</span>`:""}</button>`;
+  return `<button type="button" class="mini-tile t-stk" data-gotab="album"><img class="peek" src="${duck("richwoman")}" alt=""><b>${t("stkShort")}</b><span class="slots">${all.slice(0,10).map(s=>`<i class="${ST().own[s.id]?"on":""}"></i>`).join("")}</span><span class="mt-n">${have}/${all.length}</span>${n?`<span class="tag">+${n}</span>`:""}</button>`;
 }
 
 /* settings / her tab: write the letter and the secrets; Andrew also titles stickers and makes new ones */
@@ -2427,7 +2521,7 @@ function startTour(force){
 }
 function herReminderHTML(){
   if(isA()) return ""; const p=sideProgress(); if(p.done) return "";
-  return `<button type="button" class="slim" data-gotab="her"><span aria-hidden="true">✏️</span><b>${t("remT")}</b><span class="mt-n">${p.d}/${p.n}</span><i aria-hidden="true">→</i></button>`;
+  return `<button type="button" class="fill-tile" data-gotab="her"><img class="peek" src="${duck("gardener")}" alt=""><span class="ft-t"><b>${t("remT")}</b><span class="meter"><i style="width:${Math.round(100*p.d/p.n)}%"></i></span></span><span class="mt-n">${p.d}/${p.n}</span><span class="go" aria-hidden="true">→</span></button>`;
 }
 document.addEventListener("click", e=>{ const g=e.target.closest("[data-gotab]"); if(g){ tab=g.dataset.gotab; render(); window.scrollTo(0,0); } });
 function pickDevice(){
