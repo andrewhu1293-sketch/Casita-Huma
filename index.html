@@ -1250,13 +1250,16 @@ function save(){ S.savedAt=Date.now(); try{ localStorage.setItem(KEY, JSON.strin
 let bkTimer=null;
 function backupSoon(){ if(!HOSTED || !S.device) return; clearTimeout(bkTimer); bkTimer=setTimeout(backupNow,1500); }
 function backupNow(keep){ clearTimeout(bkTimer); bkTimer=null; if(!HOSTED || !S.device) return Promise.resolve(null);
-  const body=JSON.stringify({who:S.device, at:S.savedAt||Date.now(), state:S});
+  if(!S.savedAt) S.savedAt=Date.now();   // V85: the copy must carry the same time as its stamp, or the phone keeps "restoring" it
+  const body=JSON.stringify({who:S.device, at:S.savedAt, state:S});
   return fetch("/api/state",{method:"PUT",headers:{"content-type":"application/json"},body,keepalive:!!keep && body.length<60000}).then(r=>r.json()).then(r=>{ if(r&&r.ok){ S.backupAt=r.at; try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} } return r; }).catch(()=>null); }
 addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden" && bkTimer) backupNow(true); });
 addEventListener("pagehide",()=>{ if(bkTimer) backupNow(true); });
 async function restoreFromServer(){ if(!HOSTED || !S.device) return false;
   try{ const r=await fetch("/api/state?who="+S.device,{cache:"no-store"}).then(r=>r.json());
-    if(r && r.state && (r.at||0) > (S.savedAt||0)+1000){ const keepDev=S.device; S=Object.assign(fresh(), r.state); S.device=keepDev; try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} location.reload(); return true; }
+    let recent=0; try{ recent=+sessionStorage.getItem("casita-restored")||0; }catch(e){}
+    if(r && r.state && (r.at||0) > (S.savedAt||0)+1000 && Date.now()-recent > 60000){ const keepDev=S.device; S=Object.assign(fresh(), r.state); S.device=keepDev; S.savedAt=r.at;
+      try{ localStorage.setItem(KEY, JSON.stringify(S)); sessionStorage.setItem("casita-restored", String(Date.now())); }catch(e){} location.reload(); return true; }
     if(!r || !r.state || (S.savedAt||0) > (r.at||0)) backupNow(); }catch(e){}
   setTimeout(imgSweep, 3000); return false; }
 async function imgSweep(){ S.imgUp ||= {}; for(const c of S.custom||[]){ if(S.imgUp[c.id]) continue;   // photos made before the server copy existed
@@ -3337,7 +3340,7 @@ function pickDevice(){
   const set = async who => { closeSheet();
     // V83: a phone that lost its data (or a new phone) gets that person's server copy back before anything is saved over it
     if(HOSTED){ try{ const r=await fetch("/api/state?who="+who,{cache:"no-store"}).then(r=>r.json());
-      if(r && r.state){ S=Object.assign(fresh(), r.state); S.device=who; S.player=who; localStorage.setItem(KEY, JSON.stringify(S)); location.reload(); return; } }catch(e){} }
+      if(r && r.state){ S=Object.assign(fresh(), r.state); S.device=who; S.player=who; S.savedAt=r.at||Date.now(); localStorage.setItem(KEY, JSON.stringify(S)); try{ sessionStorage.setItem("casita-restored", String(Date.now())); }catch(e){} location.reload(); return; } }catch(e){} }
     S.device = who; S.player = who; save(); setTimeout(()=>startTour(false),300); };
   $('#panel [data-dev="her"]').onclick = () => set("her");
   $('#panel [data-dev="andrew"]').onclick = () => set("andrew");
