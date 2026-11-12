@@ -990,6 +990,8 @@ h3.hx-ch span{display:grid;place-items:center;width:30px;height:30px;border-radi
 .nwho{margin:0 4px 10px}
 .thwrap .card.npriv{background:#fff9e8;border:1.5px dashed var(--cd)!important}
 /* V70: kiss hearts on the planet + psychedelic celebration */
+.bbqpuff circle,circle.bbqpuff{animation:bbqup 2.2s ease-out both;transform-box:fill-box;transform-origin:50% 50%}
+@keyframes bbqup{0%{opacity:0;transform:translateY(0) scale(.5)}25%{opacity:.95}100%{opacity:0;transform:translateY(-26px) scale(1.8)}}
 .kissheart{fill:#b97884;animation:kissup 2.4s ease-out both;transform-box:fill-box;transform-origin:50% 50%}
 @keyframes kissup{0%{opacity:0;transform:translateY(6px) scale(.4)}20%{opacity:1;transform:translateY(0) scale(1.2)}100%{opacity:0;transform:translateY(-34px) scale(.9)}}
 html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infinite}
@@ -1396,6 +1398,19 @@ const TOWN = (()=>{
   const lifeguard = (s=1) => `<rect x="${-8*s}" y="${-10*s}" width="${2*s}" height="${10*s}" fill="${B}"/><rect x="${6*s}" y="${-10*s}" width="${2*s}" height="${10*s}" fill="${B}"/>`+
       `<rect x="${-11*s}" y="${-24*s}" width="${22*s}" height="${14*s}" rx="${2*s}" fill="${A}"/><path d="M${-13*s} ${-24*s} L0 ${-31*s} L${13*s} ${-24*s}Z" fill="${B}"/><rect x="${-6*s}" y="${-21*s}" width="${12*s}" height="${5*s}" rx="1" fill="${Wn}"/>`+
       `<path d="M${11*s} ${-12*s} L${24*s} 0" stroke="${B}" stroke-width="${2*s}"/>`;
+  /* V75: a Korean BBQ restaurant (sign, awning, lanterns, grill chimney) */
+  const kbbq = (s=1) => { const w=50*s, h=28*s;
+    let sc=""; for(let i=0;i<6;i++){ const x=-w/2+2*s+i*(w-4*s)/6, r=(w-4*s)/12; sc+=`<path d="M${x} ${-h+9*s} a${r} ${r} 0 0 0 ${2*r} 0" fill="${B}"/>`; }
+    return `<rect x="${w*0.22}" y="${-h-18*s}" width="${5*s}" height="${14*s}" rx="1.5" fill="${B}"/><circle class="smoke" cx="${w*0.22+2.5*s}" cy="${-h-20*s}" r="${4.4*s}" fill="${Wn}"/><circle class="smoke b" cx="${w*0.22+2.5*s}" cy="${-h-20*s}" r="${3.6*s}" fill="${Wn}"/>`+
+      `<rect x="${-w/2}" y="${-h}" width="${w}" height="${h}" rx="${2*s}" fill="${A}"/>`+
+      `<rect x="${-w/2-3*s}" y="${-h-4*s}" width="${w+6*s}" height="${5*s}" rx="${1.5*s}" fill="${B}"/>`+
+      `<rect x="${-w*0.36}" y="${-h-15*s}" width="${w*0.72}" height="${11*s}" rx="${2*s}" fill="${B}"/>`+
+      `<text x="0" y="${-h-6.6*s}" text-anchor="middle" font-family="Oswald, 'Bebas Neue', Impact, sans-serif" font-weight="700" font-size="${7.6*s}" letter-spacing="${.6*s}" fill="${Wn}">고기 BBQ</text>`+
+      `<rect x="${-w/2+1*s}" y="${-h+1*s}" width="${w-2*s}" height="${8*s}" fill="${B}"/>`+sc+
+      `<rect x="${-w/2+5*s}" y="${-h+13*s}" width="${11*s}" height="${8*s}" rx="${1.5*s}" fill="${Wn}"/><rect x="${w/2-16*s}" y="${-h+13*s}" width="${11*s}" height="${8*s}" rx="${1.5*s}" fill="${Wn}"/>`+
+      `<path d="M${-5*s} 0 V${-12*s} H${5*s} V0Z" fill="${B}"/>`+
+      `<line x1="${-w/2-1*s}" y1="${-h+9*s}" x2="${-w/2-1*s}" y2="${-h+12*s}" stroke="${B}" stroke-width="${1*s}"/><ellipse cx="${-w/2-1*s}" cy="${-h+14.5*s}" rx="${2.6*s}" ry="${3.2*s}" fill="${B}"/>`+
+      `<line x1="${w/2+1*s}" y1="${-h+9*s}" x2="${w/2+1*s}" y2="${-h+12*s}" stroke="${B}" stroke-width="${1*s}"/><ellipse cx="${w/2+1*s}" cy="${-h+14.5*s}" rx="${2.6*s}" ry="${3.2*s}" fill="${B}"/>`; };
   const tree = (s=1, cls="") => `<g class="sway ${cls}"><rect x="${-2.6*s}" y="${-16*s}" width="${5.2*s}" height="${16*s}" rx="${2.6*s}" fill="${B}"/><circle cx="0" cy="${-26*s}" r="${13*s}" fill="${A}"/><circle cx="${-8*s}" cy="${-19*s}" r="${8*s}" fill="${A}"/><circle cx="${8*s}" cy="${-20*s}" r="${8.5*s}" fill="${A}"/></g>`;
   const pine = (s=1, cls="") => `<g class="sway ${cls}"><rect x="${-2.2*s}" y="${-10*s}" width="${4.4*s}" height="${10*s}" rx="2" fill="${B}"/><path d="M0 ${-46*s} Q${3*s} ${-40*s} ${11*s} ${-24*s} Q${14*s} ${-16*s} ${15*s} ${-12*s} Q0 ${-7*s} ${-15*s} ${-12*s} Q${-14*s} ${-16*s} ${-11*s} ${-24*s} Q${-3*s} ${-40*s} 0 ${-46*s}Z" fill="${B}"/></g>`;
   const bush = (s=1) => `<circle cx="${-6*s}" cy="${-5*s}" r="${6*s}" fill="${A}"/><circle cx="${4*s}" cy="${-6*s}" r="${7*s}" fill="${A}"/><circle cx="${12*s}" cy="${-4*s}" r="${4.5*s}" fill="${A}"/>`;
@@ -1404,8 +1419,8 @@ const TOWN = (()=>{
     [-338, house(.95)], [-300, bush(1)], [-262, tree(.9)],
     [-200, palm(1,"c",-1)], [-168, house(1,true)],
     [-72, chinese(.95)], [-30, palm(.9,"b")],
-    [34, tree(.8,"c")], [80, colombian(.9)], [112, bush(.95)],
-    [136, palm(1.05)], [166, house(1.05,true)], [200, tree(.95,"b")],
+    [34, tree(.8,"c")], [80, colombian(.9)],
+    [126, kbbq(1)], [172, palm(1.05)], [206, tree(.95,"b")],
     [250, house(.95)], [288, palm(1,"c",-1)], [318, bush(1)], [350, house(1)],
     [392, tree(1.05)], [432, house(.95,true)], [470, pine(1,"b")]
   ];
@@ -1425,7 +1440,7 @@ const TOWN = (()=>{
 function planetTop(){ return `<div class="planet-top" aria-hidden="true">${TOWN}</div>`; }
 /* a little Duckoo walks from one house to the next along the planet, once a minute.
    V70: every other time two Duckoos leave their houses, meet, kiss, and walk home together */
-const WALKS = [[-168,-64],[-64,-168],[80,166],[166,80]];
+const WALKS = [[-168,-72],[-72,-168],[80,126],[126,80]];
 let walkN = 0;
 const PR=500, PCX=500, PCY=600;
 function planetPos(dx){ const a=Math.asin(Math.max(-1,Math.min(1,dx/PR))); return {x:PCX+PR*Math.sin(a), y:PCY-PR*Math.cos(a)+1, deg:a*180/Math.PI}; }
@@ -1480,7 +1495,7 @@ function duckKiss(svg){
 }
 /* V74: the world turns to visit Los Angeles (Hollywood, then Santa Monica) and comes home */
 let touring = false;
-function townBusy(svg){ return !svg || touring || !!svg.querySelector(".walker,.cat"); }
+function townBusy(svg){ return !svg || touring || !!svg.querySelector(".walker,.cat,.prop"); }
 function worldTour(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
   const svg=document.querySelector("svg.town"); if(townBusy(svg)) return; const w=svg.querySelector(".world"); if(!w) return;
@@ -1546,9 +1561,92 @@ function duckCats(){
   };
   requestAnimationFrame(step);
 }
+/* V75: small props on the planet (sled, wall-ball target, ball, puffs) */
+function propAt(svg, html, cls){ const ns="http://www.w3.org/2000/svg", g=document.createElementNS(ns,"g"), inner=document.createElementNS(ns,"g"); g.setAttribute("class","prop "+(cls||"")); inner.innerHTML=html; g.appendChild(inner); svg.appendChild(g);
+  return {g, set(dx,up=0,op=1,rot=0){ const p=planetPos(dx); g.setAttribute("transform",`translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${(p.deg+rot).toFixed(2)})`); inner.setAttribute("transform",`translate(0 ${(-up).toFixed(2)})`); inner.setAttribute("opacity",op.toFixed(2)); }}; }
+function popHeart(svg, dx, txt){ const ns="http://www.w3.org/2000/svg", p=planetPos(dx), h=document.createElementNS(ns,"text"); h.textContent=txt||"♥"; h.setAttribute("class","kissheart"); h.setAttribute("x",p.x.toFixed(1)); h.setAttribute("y",(p.y-42).toFixed(1)); h.setAttribute("font-size","11"); svg.appendChild(h); setTimeout(()=>h.remove(),2600); }
+const SCENE_PAIRS=[["traveler","peach"],["richman","richwoman"],["farmer","apron"],["caveman","gardener"]];
+/* V75: they walk from home to the Korean BBQ place, go in to eat (the grill smokes, hearts), and walk home full */
+let bbqN=0;
+function duckBBQ(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
+  const svg=document.querySelector("svg.town"); if(townBusy(svg)) return;
+  const [na,nb]=SCENE_PAIRS[(bbqN++)%SCENE_PAIRS.length], A=makeWalker(svg,na), Bw=makeWalker(svg,nb);
+  const home=-168, door=126, T1=6500, T2=1000, T3=4600, T4=1000, T5=6500, t0=performance.now(); let puffs=0, hearts=0;
+  const kill=()=>{ A.g.remove(); Bw.g.remove(); svg.querySelectorAll(".bbqpuff").forEach(x=>x.remove()); };
+  const step = now => {
+    if(!A.g.isConnected){ kill(); return; }
+    const t=now-t0, ph=t/170;
+    if(t<T1){ const k=t/T1, e=ease(k), ap=Math.min(1,k/.06);
+      A.set(home+(door-6-home)*e,{hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, sc:.45+.55*ap, op:ap});
+      Bw.set(home-14+(door+6-home+14)*e,{hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7, sc:.45+.55*ap, op:ap});
+    } else if(t<T1+T2){ const k=(t-T1)/T2, f=1-k;      // in through the door
+      A.set(door-6+4*k,{sc:.45+.55*f, op:f}); Bw.set(door+6-4*k,{sc:.45+.55*f, op:f, left:true});
+    } else if(t<T1+T2+T3){ const u=(t-T1-T2);         // eating: the grill smokes and hearts float up
+      A.set(door,{op:0}); Bw.set(door,{op:0});
+      if(puffs<Math.floor(u/420)){ puffs++; const pf=propAt(svg,`<circle r="${3+Math.random()*2.5}" fill="#f4e0e4" class="bbqpuff"/>`,"bbqpuff"); pf.set(door+12+(Math.random()*8-4),48); setTimeout(()=>pf.g.remove(),2300); }
+      if(hearts<3 && u>900+hearts*1200){ hearts++; popHeart(svg, door-14+hearts*7); }
+    } else if(t<T1+T2+T3+T4){ const k=(t-T1-T2-T3)/T4;  // out again
+      A.set(door-2-4*k,{sc:.45+.55*k, op:k, left:true}); Bw.set(door+2+4*k,{sc:.45+.55*k, op:k, left:true});
+    } else { const k=Math.min(1,(t-T1-T2-T3-T4)/T5), e=ease(k), f=Math.min(1,(1-k)/.06);
+      A.set(door-6+(home-door+6)*e,{hop:Math.abs(Math.sin(ph*.8))*2, rot:Math.sin(ph*.8)*9, sc:.45+.55*f, op:f, left:true});
+      Bw.set(door+6+(home+12-door-6)*e,{hop:Math.abs(Math.sin(ph*.8+1))*2, rot:Math.sin(ph*.8+1)*9, sc:.45+.55*f, op:f, left:true});
+      if(k>=1){ kill(); return; } }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+/* V75: Hyrox on the lawn: run laps, wall balls + burpees, sled push, then celebrate and go home */
+let hyN=0;
+function duckHyrox(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
+  const svg=document.querySelector("svg.town"); if(townBusy(svg)) return;
+  const [na,nb]=SCENE_PAIRS[(hyN++ +2)%SCENE_PAIRS.length], A=makeWalker(svg,na), Bw=makeWalker(svg,nb), C="#b97884";
+  const target=propAt(svg,`<rect x="-1" y="-62" width="2" height="62" fill="${C}"/><circle cy="-64" r="6" fill="none" stroke="${C}" stroke-width="2.2"/><circle cy="-64" r="1.8" fill="${C}"/><rect x="-16" y="-50" width="32" height="10" rx="2" fill="${C}"/><text x="0" y="-42.2" text-anchor="middle" font-family="Oswald, 'Bebas Neue', Impact, sans-serif" font-weight="700" font-size="7.6" letter-spacing=".8" fill="#f4e0e4">HYROX</text>`);
+  const sled=propAt(svg,`<rect x="-9" y="-8" width="18" height="7" rx="1.5" fill="${C}"/><rect x="-11" y="-2" width="22" height="2" rx="1" fill="${C}"/><rect x="-11" y="-20" width="2" height="13" fill="${C}"/><rect x="9" y="-20" width="2" height="13" fill="${C}"/>`);
+  const ball=propAt(svg,`<circle r="4" fill="${C}"/><path d="M-4 0 H4" stroke="#f4e0e4" stroke-width="1"/>`);
+  const home=-168, L=-160, R=-96, tgt=-100, T0=1200, T1=5200, T2=4400, T3=3800, T4=4600, t0=performance.now(); let cheer=0;
+  const kill=()=>[A,Bw,target,sled,ball].forEach(x=>x.g.remove());
+  const props=(op)=>{ target.set(tgt,0,op); };
+  const step = now => {
+    if(!A.g.isConnected){ kill(); return; }
+    const t=now-t0, ph=t/110;
+    if(t<T0){ const k=t/T0, ap=k;                       // out of the house, gear appears
+      props(ap); sled.set(-150,0,ap); ball.set(-118,0,0);
+      A.set(home+8*k,{sc:.45+.55*ap, op:ap}); Bw.set(home+2*k,{sc:.45+.55*ap, op:ap});
+    } else if(t<T0+T1){ const u=(t-T0)/1000;           // run laps, fast bobbing
+      props(1); sled.set(-150,0,1); ball.set(-118,0,0);
+      const xa=(L+R)/2-((R-L)/2)*Math.cos(u*2.4), xb=(L+R)/2-((R-L)/2)*Math.cos(u*2.4-.7);
+      A.set(xa,{hop:Math.abs(Math.sin(ph))*3.4, rot:Math.sin(ph)*10, left:Math.sin(u*2.4)<0});
+      Bw.set(xb,{hop:Math.abs(Math.sin(ph+1))*3.4, rot:Math.sin(ph+1)*10, left:Math.sin(u*2.4-.7)<0});
+    } else if(t<T0+T1+T2){ const u=(t-T0-T1)/1000, c=(u%1.4)/1.4;   // A: wall balls, B: burpees
+      props(1); sled.set(-150,0,1);
+      const squat=c<.25?Math.sin(c/.25*Math.PI/2):c<.4?1-(c-.25)/.15:0;
+      A.set(-114,{sc:1-.14*squat, hop:c>=.25&&c<.45?4*Math.sin((c-.25)/.2*Math.PI):0});
+      const fl=c>=.3&&c<.95?(c-.3)/.65:-1; ball.set(fl<0?-114+3:-111+(tgt-(-111))*Math.sin(fl*Math.PI/2)*(fl<.5?1:1), fl<0?16-8*squat:16+52*Math.sin(fl*Math.PI), 1);
+      const cb=(u%1.1)/1.1, down=cb<.35?cb/.35:cb<.55?1:0, jump=cb>=.55?Math.sin((cb-.55)/.45*Math.PI):0;
+      Bw.set(-146,{sc:1-.4*down, rot:-60*down*(cb<.55?1:0), hop:9*jump});
+    } else if(t<T0+T1+T2+T3){ const k=(t-T0-T1-T2)/T3, e=k; // B pushes the sled, A cheers
+      props(1); ball.set(-118,0,0);
+      const sx=-150+46*e; sled.set(sx,0,1); Bw.set(sx-14,{hop:Math.abs(Math.sin(ph*.6))*1.2, rot:18});
+      A.set(-118+22*e,{hop:Math.abs(Math.sin(ph*.8))*5, rot:Math.sin(ph*.8)*8, left:true});
+      if(cheer<2 && k>.3+cheer*.4){ cheer++; popHeart(svg,-118+22*e); }
+    } else { const k=Math.min(1,(t-T0-T1-T2-T3)/T4), e=ease(k), f=Math.min(1,(1-k)/.1);
+      if(cheer<3){ cheer++; popHeart(svg,-110); }
+      props(f); sled.set(-104,0,f); ball.set(-118,0,0);
+      A.set(-96+(home+6+96)*e,{hop:Math.abs(Math.sin(ph*.5))*2.4*f, rot:Math.sin(ph*.5)*7, sc:.45+.55*f, op:f, left:true});
+      Bw.set(-118+(home+118)*e,{hop:Math.abs(Math.sin(ph*.5+1))*2.4*f, rot:Math.sin(ph*.5+1)*7, sc:.45+.55*f, op:f, left:true});
+      if(k>=1){ kill(); return; } }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
 /* one scene at a time, about every 22 s: kiss, cats, a stroll, a trip around the world */
-const SCENES=[()=>duckKiss(), duckCats, duckWalk, worldTour]; let sceneN=0; window.__town={worldTour,duckCats,duckKiss,duckWalk,busy:()=>touring};
-setTimeout(function sceneTick(){ if(!document.hidden && !townBusy(document.querySelector("svg.town"))) SCENES[(sceneN++)%SCENES.length](); setTimeout(sceneTick, 22000); }, 5000);
+const SCENES=[()=>duckKiss(), duckCats, duckBBQ, duckWalk, duckHyrox, worldTour]; let sceneN=0; window.__town={worldTour,duckCats,duckKiss,duckWalk,duckBBQ,duckHyrox,busy:()=>touring};
+let sceneTimer = setTimeout(sceneTick, 5000);
+function sceneTick(){ clearTimeout(sceneTimer); if(!document.hidden && !townBusy(document.querySelector("svg.town"))) SCENES[(sceneN++)%SCENES.length](); sceneTimer=setTimeout(sceneTick, 22000); }
+/* V75: every time a tab opens, the next scene in the list plays right away */
+function sceneSoon(){ clearTimeout(sceneTimer); sceneTimer=setTimeout(sceneTick, 900); }
 /* ---------- UI shell ---------- */
 let tab = "play", walletTab = "avail", andrewOpen = false;
 function badge(){ const n=W().filter(w=>!w.usedAt).length; const b=$("#wbadge"); b.textContent=n; b.hidden=!n; checkPsy(); }
@@ -1586,7 +1684,7 @@ function render(){
   ({album:renderAlbum, therapy:renderTherapy, play:isA()?renderAndrewPlay:renderPlay, wallet:renderWallet, her:renderHer, andrew:renderAndrew})[tab]();
   badge();
 }
-document.querySelectorAll("nav.bar button").forEach(b=>b.addEventListener("click",()=>{ tab=b.dataset.tab; render(); window.scrollTo(0,0); const v=$("#view"); v.classList.remove("view-in"); void v.offsetWidth; v.classList.add("view-in"); }));
+document.querySelectorAll("nav.bar button").forEach(b=>b.addEventListener("click",()=>{ tab=b.dataset.tab; render(); sceneSoon(); window.scrollTo(0,0); const v=$("#view"); v.classList.remove("view-in"); void v.offsetWidth; v.classList.add("view-in"); }));
 $("#bell").onclick=()=>{ const mine=S.activity.filter(a=>a.to===me());
   openSheet(`<h3>${t("feedTitle")}</h3><p class="hint">${t("feedNote")}</p><ul class="feed">${mine.length?mine.map(a=>`<li class="${a.seen?"":"new"}">${esc(a[L()]||a.en)}<small>${fmt(a.at)}</small></li>`).join(""):`<li>${t("feedEmpty")}</li>`}</ul>`);
   mine.forEach(a=>a.seen=true); save(); };
