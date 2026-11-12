@@ -1064,10 +1064,10 @@ html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infi
 </div></div>
 <div id="sheet" class="sheet" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
 
-<script src="content.js?v=e5bd1b5a6e"></script>
-<script src="real.js?v=e5bd1b5a6e"></script>
+<script src="content.js?v=93943b6c82"></script>
+<script src="real.js?v=93943b6c82"></script>
 <script>/* Andrew's real questions go first; placeholders only fill up to 20 */
-(function(C,R){ if(!R) return; ["trivia","love"].forEach(k=>{ C[k]=[...R[k], ...C[k].slice(R[k].length)]; }); if(R.finish) C.finish=R.finish; })(window.CONTENT, window.CONTENT_REAL);</script>
+(function(C,R){ if(!R) return; ["trivia","love"].forEach(k=>{ C[k]=[...R[k], ...C[k].slice(R[k].length)]; }); if(R.finish) C.finish=R.finish; C.loveRealN=R.love.length; })(window.CONTENT, window.CONTENT_REAL);</script>
 <script>
 (function(){
 const C = window.CONTENT;
@@ -1235,7 +1235,7 @@ function mergeBy(local, remote, partner, newestFirst){
   return [...mine, ...theirs].sort((a,b)=>newestFirst ? (b.at||0)-(a.at||0) : (a.at||0)-(b.at||0)); }
 function applyPartner(P, partner){
   if(partner==="her"){ if(P.her) S.her=Object.assign({}, S.her, P.her); S.letter.her=(P.letter||{}).her||""; S.secrets.her=(P.secrets||{}).her||""; }
-  else { S.letter.andrew=(P.letter||{}).andrew||""; S.secrets.andrew=(P.secrets||{}).andrew||""; S.stkMeta=Object.assign({}, S.stkMeta, P.stkMeta||{}); S.custom=P.custom||S.custom||[];
+  else { S.letter.andrew=(P.letter||{}).andrew||""; S.secrets.andrew=(P.secrets||{}).andrew||""; S.stkMeta=Object.assign({}, S.stkMeta, P.stkMeta||{}); S.custom=P.custom||S.custom||[]; if(P.aLove) S.aLove=P.aLove;
     if(P.tripUnlocked) S.tripUnlocked=true;
     const have=new Set(S.wallet.map(w=>w.uid)); (P.wallet||[]).filter(w=>w.from==="andrew" && !have.has(w.uid)).forEach(w=>S.wallet.unshift(Object.assign({},w))); }   // coupons Andrew gave her in ⚙️
   if(P.calm && P.calm[partner]) S.calm[partner]=P.calm[partner];
@@ -1260,7 +1260,7 @@ function applyPartner(P, partner){
 let syncBusy=false, partnerAt=0;
 async function syncPartner(){ if(!HOSTED || !S.device || syncBusy) return; syncBusy=true;
   try{ const partner=S.device==="her"?"andrew":"her", r=await fetch("/api/state?who="+partner,{cache:"no-store"}).then(r=>r.json());
-    if(r && r.state && r.at!==partnerAt){ const snap=()=>JSON.stringify([S.her,S.letter,S.secrets,S.stkMeta,S.custom,S.calm,S.notes,S.agreements,S.wins,S.checkins,S.jar,S.ex,S.wallet,S.tripUnlocked,S.match,S.stk]), before=snap();
+    if(r && r.state && r.at!==partnerAt){ const snap=()=>JSON.stringify([S.her,S.letter,S.secrets,S.stkMeta,S.custom,S.calm,S.notes,S.agreements,S.wins,S.checkins,S.jar,S.ex,S.wallet,S.tripUnlocked,S.match,S.stk,S.aLove]), before=snap();
       applyPartner(r.state, partner); partnerAt=r.at;
       const changed = snap()!==before;
       if(!changed){ syncBusy=false; return; }   // only real changes are saved (no back-and-forth between the phones)
@@ -1355,7 +1355,14 @@ const triesLeft = () => TRIES + week().extra - week().used;
 S.mastered ||= {her:{trivia:[],love:[],finish:[]}, andrew:{trivia:[],love:[],finish:[]}};
 const MASTERY = ["trivia","love"];
 const M = () => S.mastered[isA()?"andrew":"her"];
+function aLoveItems(){ /* V90: love questions Andrew writes inside the app; wrong options he skipped are borrowed from his other answers */
+  const real=C.love.slice(0, C.loveRealN||C.love.length), mine=S.aLove||[];
+  const answers=[...real.map(q=>q.opts?q.opts[0]:null).filter(Boolean), ...mine.map(x=>({en:x.a,es:x.a}))];
+  return mine.map((x,i)=>{ const w=(x.w||[]).filter(Boolean).map(l=>({en:l,es:l})), pool=answers.filter(o=>o.es!==x.a && !w.some(y=>y.es===o.es));
+    for(let k=0; w.length<3 && k<pool.length; k++) w.push(pool[(i*3+k*5)%pool.length]);
+    return {en:x.q, es:x.q, a:0, opts:[{en:x.a,es:x.a}, ...[...new Map(w.map(o=>[o.es,o])).values()].slice(0,3)], key:"a"+x.at}; }); }
 function poolFor(kind){ // items with stable keys
+  if(!isA() && kind==="love" && C.loveRealN) return [...C.love.slice(0, C.loveRealN).map(x=>({...x, key:x.en})), ...aLoveItems()];
   const src = isA() ? S.her[kind].map(x=>({...x, key:"h"+x.at})) : C[kind].map(x=>({...x, key:x.en}));
   return src;
 }
@@ -1377,7 +1384,7 @@ Object.assign(T.es,{renewS:"Nuevos intentos",backS:"Vuelves a jugar",weeksS:"sem
 Object.assign(T.en,{backOn:"back {d}",renewToast:"{n} tries left · new ones {d}",stShort:"Streak",stkShort:"Stickers",exclusiveS:"Fill everything → secret coupon",exclusiveReadyS:"Done! Open it in Wait and Win",exclusiveGotS:"Secret coupon won ✓"});
 Object.assign(T.es,{backOn:"vuelven {d}",renewToast:"Te quedan {n} intentos · nuevos el {d}",stShort:"Racha",stkShort:"Monas",exclusiveS:"Llénalo todo → cupón secreto",exclusiveReadyS:"¡Listo! Ábrelo en Espera y gana",exclusiveGotS:"Cupón secreto ganado ✓"});
 function cornerCount(kind){ const total=poolFor(kind).length; if(!total) return ""; const n=Math.min(M()[kind].length,total); return `<span class="gcount" aria-label="${t("mastLbl")}: ${n}/${total}">✓ ${n}/${total}</span>`; }
-const masteredAll = () => MASTERY.every(k=>poolFor(k).length && !remaining(k).length);
+const masteredAll = () => MASTERY.every(k=>poolFor(k).length && !remaining(k).length) && (isA() || !C.loveRealN || (S.aLove||[]).length>=10);  /* V90: her love pool is only complete once Andrew wrote his 10 */
 
 /* ---------- coupons ---------- */
 const byId = id => C.coupons.find(c=>c.id===id);
@@ -2169,7 +2176,7 @@ function renderAndrewPlay(){
       const empty = g.id!=="deep" && g.id!=="finish" && !has[g.id] && !(g.id==="scratch" && hasC),   /* V88: her questions are enough to play; with no coupon of hers yet a win pays a coin */ monthly = g.id==="deep" && deepDone, allDone = !empty && MASTERY.includes(g.id) && !remaining(g.id).length; let off = (left<=0 && g.id!=="deep") || empty || monthly || allDone;
       let tag = g.id==="deep" && deepPending ? t("exTag") : empty ? t("soon") : allDone ? t("allDone") : monthly ? t("monthDone") : left<=0 && g.id!=="deep" ? t("locked") : "";
       if(g.id==="finish"){ const mc=matchCard(left); off=mc.off; tag=mc.tag; }
-      return gameCard(g, {attr:"ag", why: empty?"empty":allDone?"all":monthly?"month":"week", off, tag, num:String(i+1).padStart(2,"0"), q:t("g_"+g.id+"_A"), btn:g.id==="deep"?"openBtn":"playBtn"});}).join("")}</div>${pushCardHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}${(()=>{ const l=specialListA(); return waitTileHTML(l.some(x=>x.ready&&!x.claimed), l).replace('data-game="wait"','data-await'); })()}</div>`;
+      return gameCard(g, {attr:"ag", why: empty?"empty":allDone?"all":monthly?"month":"week", off, tag, num:String(i+1).padStart(2,"0"), q:t("g_"+g.id+"_A"), btn:g.id==="deep"?"openBtn":"playBtn"});}).join("")}</div>${pushCardHTML()}${aLoveRemHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}${(()=>{ const l=specialListA(); return waitTileHTML(l.some(x=>x.ready&&!x.claimed), l).replace('data-game="wait"','data-await'); })()}</div>`;
   document.querySelectorAll("[data-ag]").forEach(b=>b.onclick=()=>{
     if(b.getAttribute("aria-disabled")==="true") return toast(b.dataset.why==="empty"?t("needHer"):b.dataset.why==="all"?t("allDone"):b.dataset.why==="month"?t("monthDone"):t("weekNext",{d:nextReset()}));
     curGame=b.dataset.ag;
@@ -2966,7 +2973,7 @@ Object.assign(T.en, {stkTitle:"Sticker album", tabAlbum:"Album",
   eggTitle:"You found a secret!", eggCount:"Secrets found: {n}/{t}", eggHint:"There are {t} hidden in the app. Tap where you least expect it.",
   eggBonus:"+1 coin", eggEmpty:"{a} hasn't hidden anything here yet.", surpA:"Surprises for Indiana", surpH:"Surprises for Andrew",
   surpLetter:"Your sealed letter (each line is revealed on its own)", surpSecrets:"Hidden secrets (one per line, found in order)",
-  surpStories:"Titles and stories of the stickers", surpTitlePh:"Short title", surpStoryPh:"The story behind it", soundOn:"Sounds on",
+  surpStories:"Titles and stories of the stickers", surpStoriesHint:"Grey text is a suggestion. Whatever you type replaces it on both phones.", surpTitlePh:"Short title", surpStoryPh:"The story behind it", soundOn:"Sounds on",
   whoNone:"Neither", mtLabel:"Pick the same as {n}", mtSaved:"Your answers are saved", mtWait:"When {n} answers the same 5, you'll see how many matched. Every 2 matches in a row gives you both a coin.", mtSame:"Same answer!", mtSameTag:"Same", mtDiff:"{n} picked something else", mtScore:"You matched {n} of {t}", mtCoins:"+{n} coins for each of you", mtNone:"No coins this time. You need 2 matches in a row for a coin.", mtBonus:"All 5 matched! You both won a bonus coupon.", mtYourTurn:"Your turn", mtWaitTag:"Waiting for {n}", mtResTag:"Result!", mtDoneTag:"Done this round", mtYou:"You",
   gq_finish:"Will you both pick the same?", gr_finish:"2 matches = a coin each · 5 = bonus", g_finish_A:"Answer the same 5 as Indiana. If you match, you both win.", sec_finish_s:"Write a situation. You both answer it; there's no right answer, you win if you match", g_finish_s:"Both of you answer the same 5. Every 2 matches in a row = a coin each; all 5 = a bonus coupon. One miss ends it.",
   tw1T:"Welcome to Casita Huma!", tw1:"Here you play, earn coins and win coupons you can use whenever you want. They never expire. Let me show you around.", twStart:"Show me",
@@ -2979,7 +2986,7 @@ Object.assign(T.en, {stkTitle:"Sticker album", tabAlbum:"Album",
   tw11T:"News", tw11:"Here you see what Andrew does: when he plays, wins or uses a coupon.",
   tw12T:"Your tab, Indiana", tw12:"This is your part: write your questions and coupons for Andrew. If you fill it all in, you win a super exclusive bonus. 🤫", twGo:"Let's play!",
   twA1T:"Welcome to Casita Huma!", twA1:"You play too: win coins and the coupons Indiana made for you. Let me show you around.", twA2:"You get your own 2 tries every 4 days. Every win gives you a coin, and every 3 wins, one of her coupons.", twA3:"Questions Indiana wrote about herself, with 4 options. It unlocks once she writes them in her tab.", twA4:"Pick what Indiana would want in each situation.", twA7:"Ask her one deep question a month and answer hers by voice note. It doesn't use a try.", twA8:"The coupons you win from Indiana land here. Use them whenever you want.", twA11:"Here you see what Indiana does: when she plays, wins or uses a coupon.", twA12T:"Your settings", twA12:"Locked with your code: add questions and coupons, reset tries and replay this tour.", aWipeT:"Start from zero", aWipeD:"Leaves this phone like new: games, coins, coupons, stickers, notes and both welcome tours. It asks who is playing again.", aWipeBtn:"Reset everything", aWipeQ:"Reset everything?", aWipeWarn:"Everything saved on this phone is erased and can't be recovered. The app opens like the first time.", aWipeYes:"Yes, erase it", ag_game:"Game", ag_game_d:"Tries, this round's plays, gift a coupon and the trip gift.", ag_her:"What she added", ag_her_d:"Everything Indiana has written in her tab, section by section.", ag_surp:"Surprises", ag_surp_d:"Her sealed letter, hidden secrets and the stickers made from your photos.", ag_app:"App", ag_app_d:"Welcome tours, test date, who this phone belongs to and starting from zero.", pushT:"Turn on notifications", pushD:"So you find out when the other one plays, wins or uses a coupon, even with the phone locked.", pushNeedApp:"Notifications work when the app is added to the Home Screen and opened from its icon.", pushBtn:"Turn on", pushOn:"Notifications on", pushHello:"All set! This is how your Casita Huma notifications will look.", pushDenied:"Notifications are blocked. Turn them on in Settings → Notifications → Casita Huma.", pushFail:"Couldn't turn them on. Try again in a moment.", pushSetT:"Notifications", pushPreview:"They work in the installed app on the iPhone, not in this preview.", pushIsOn:"On for this phone.", pushIsOff:"Off for this phone.", pushTest:"Send me a test", pushTestToast:"Lock your phone now: it arrives in 5 seconds.", pushTestBody:"Test notification: it works! 🦆", pushNone:"This phone isn't subscribed yet. Turn notifications on first.", ideasT:"Ideas (tap one)", ideasMore:"Other ideas", twSkip:"Skip", devT:"Who are you?", devD:"This phone stays set to one person.", devNow:"This phone is {n}'s.", devChange:"Change person", twAgainT:"Welcome tour", twAgainD:"Shows the welcome tour again, the way each of you sees it the first time.", twAgain:"Show the tour",
-  remT:"Fill in your tab", remD:"Super exclusive bonus waiting · {d} of {n} sections",
+  remT:"Fill in your tab", alRemT:"Write your Love Language questions", alBtn:"My Love Language questions ({n})", alT:"Your Love Language questions", alD:"Indiana guesses what you would need. You have {n} of {g}. They reach her phone by themselves.", alQ:"Situation or question", alQPh:"I had a terrible day at work. What do I need when I get home?", alA:"What you really need", alAPh:"A hug and something fun to watch", alW:"Answers that sound right but aren't (optional)", alWPh:"Wrong answer", alAdd:"Add question", alSaved:"Saved ✓", remD:"Super exclusive bonus waiting · {d} of {n} sections",
   coinWon:"+1 coin", nextCup:"Next coupon", winsOf:"{n}/3 wins", qOf:"Question {i} of {n}", guessOf:"What would {n} answer?", guessSay:"What would {n} say?", isRight:"Right", yourPick:"Your pick", toCoupon:"{n} of 3 wins for your next coupon", couponWon:"3 wins! You won a coupon.", noMore:"You already won every coupon of that kind. Here's a coin instead.",
   coins:"Coins", tries:"Tries", renew:"New tries on {d}", mkTitle:"Make a new sticker", mkLead:"Upload a photo of us. It takes the album's design by itself.",
   mkFile:"Choose photo", mkFrame:"Shape", fr_arch:"Arch", fr_heart:"Heart", fr_stamp:"Stamp", fr_circle:"Circle", fr_cut:"Cut-out (PNG without background)",
@@ -2996,7 +3003,7 @@ Object.assign(T.es, {stkTitle:"Álbum de monas", tabAlbum:"Álbum",
   eggTitle:"¡Encontraste un secreto!", eggCount:"Secretos encontrados: {n}/{t}", eggHint:"Hay {t} escondidos en la app. Toca donde menos lo esperas.",
   eggBonus:"+1 moneda", eggEmpty:"{a} todavía no esconde nada aquí.", surpA:"Sorpresas para Indiana", surpH:"Sorpresas para Andrew",
   surpLetter:"Tu carta sellada (cada renglón se revela por separado)", surpSecrets:"Secretos escondidos (uno por renglón, salen en orden)",
-  surpStories:"Títulos e historias de las monas", surpTitlePh:"Título corto", surpStoryPh:"La historia detrás", soundOn:"Sonidos",
+  surpStories:"Títulos e historias de las monas", surpStoriesHint:"El texto gris es una sugerencia. Lo que escribas la reemplaza en los dos teléfonos.", surpTitlePh:"Título corto", surpStoryPh:"La historia detrás", soundOn:"Sonidos",
   whoNone:"Ninguno", mtLabel:"Elige igual que {n}", mtSaved:"Tus respuestas quedaron guardadas", mtWait:"Cuando {n} responda las mismas 5, verán en cuántas coincidieron. Cada 2 iguales seguidas les da una moneda a los dos.", mtSame:"¡Igualitos!", mtSameTag:"Iguales", mtDiff:"{n} eligió otra cosa", mtScore:"Coincidieron en {n} de {t}", mtCoins:"+{n} monedas para cada uno", mtNone:"Esta vez no hubo monedas. Necesitan 2 iguales seguidas para una.", mtBonus:"¡Coincidieron en las 5! Los dos ganan un cupón de bono.", mtYourTurn:"Te toca", mtWaitTag:"Esperando a {n}", mtResTag:"¡Resultado!", mtDoneTag:"Listo esta ronda", mtYou:"Tú",
   gq_finish:"¿Elegirán lo mismo?", gr_finish:"2 iguales = 1 moneda c/u · 5 = bono", g_finish_A:"Responde las mismas 5 que Indiana. Si coinciden, ganan los dos.", sec_finish_s:"Escribe una situación. Los dos la responden; no hay respuesta correcta, ganan si coinciden", g_finish_s:"Los dos responden las mismas 5. Cada 2 iguales seguidas = 1 moneda para cada uno; las 5 = cupón de bono. Si una no coincide, se acaba.",
   tw1T:"¡Bienvenida a Casita Huma!", tw1:"Aquí juegas, ganas monedas y cupones que puedes usar cuando quieras. Nunca caducan. Te enseño rapidito.", twStart:"Enséñame",
@@ -3009,7 +3016,7 @@ Object.assign(T.es, {stkTitle:"Álbum de monas", tabAlbum:"Álbum",
   tw11T:"Novedades", tw11:"Aquí ves lo que hace Andrew: cuando juega, gana o usa un cupón.",
   tw12T:"Tu tab, Indiana", tw12:"Esta es tu parte: escribe tus preguntas y tus cupones para Andrew. Si lo llenas todo, te ganas un bono súper exclusivo. 🤫", twGo:"¡A jugar!",
   twA1T:"¡Bienvenido a Casita Huma!", twA1:"Tú también juegas: ganas monedas y los cupones que Indiana hizo para ti. Te enseño rapidito.", twA2:"Tienes tus propios 2 intentos cada 4 días. Cada victoria te da una moneda, y cada 3, uno de sus cupones.", twA3:"Preguntas que Indiana escribió sobre ella, con 4 opciones. Se activa cuando ella las escriba en su tab.", twA4:"Elige lo que Indiana querría en cada situación.", twA7:"Hazle una pregunta profunda al mes y contesta la suya con nota de voz. No gasta intentos.", twA8:"Aquí llegan los cupones que le ganas a Indiana. Úsalos cuando quieras.", twA11:"Aquí ves lo que hace Indiana: cuando juega, gana o usa un cupón.", twA12T:"Tus ajustes", twA12:"Con tu código: agregas preguntas y cupones, reinicias intentos y vuelves a ver esta bienvenida.", aWipeT:"Empezar de cero", aWipeD:"Deja este teléfono como nuevo: juegos, monedas, cupones, monas, notas y las dos bienvenidas. Vuelve a preguntar quién juega.", aWipeBtn:"Reiniciar todo", aWipeQ:"¿Reiniciar todo?", aWipeWarn:"Se borra todo lo guardado en este teléfono y no se puede recuperar. La app abre como la primera vez.", aWipeYes:"Sí, borrar todo", ag_game:"Juego", ag_game_d:"Intentos, jugadas de estos días, regalar un cupón y el regalo del viaje.", ag_her:"Lo que ella agregó", ag_her_d:"Todo lo que Indiana ha escrito en su tab, por sección.", ag_surp:"Sorpresas", ag_surp_d:"Su carta sellada, los secretos escondidos y las monas hechas con sus fotos.", ag_app:"App", ag_app_d:"Bienvenidas, fecha de prueba, de quién es este teléfono y empezar de cero.", pushT:"Activa los avisos", pushD:"Para que te enteres cuando el otro juega, gana o usa un cupón, aunque el celular esté bloqueado.", pushNeedApp:"Los avisos funcionan cuando la app está en la pantalla de inicio y la abres desde su ícono.", pushBtn:"Activar", pushOn:"Avisos activados", pushHello:"¡Listo! Así te van a llegar los avisos de Casita Huma.", pushDenied:"Los avisos están bloqueados. Actívalos en Ajustes → Notificaciones → Casita Huma.", pushFail:"No se pudieron activar. Intenta otra vez en un momento.", pushSetT:"Notificaciones", pushPreview:"Funcionan en la app instalada en el iPhone, no en esta vista previa.", pushIsOn:"Activadas en este teléfono.", pushIsOff:"Desactivadas en este teléfono.", pushTest:"Mándame una de prueba", pushTestToast:"Bloquea tu celular ya: llega en 5 segundos.", pushTestBody:"Notificación de prueba: ¡funciona! 🦆", pushNone:"Este teléfono todavía no está suscrito. Primero activa los avisos.", ideasT:"Ideas (toca una)", ideasMore:"Otras ideas", twSkip:"Saltar", devT:"¿Quién eres?", devD:"Este teléfono queda para una sola persona.", devNow:"Este teléfono es de {n}.", devChange:"Cambiar de persona", twAgainT:"Bienvenida", twAgainD:"Muestra otra vez el recorrido de bienvenida, como lo ve cada uno la primera vez.", twAgain:"Ver la bienvenida",
-  remT:"Llena tu tab", remD:"Te espera un bono súper exclusivo · {d} de {n} secciones",
+  remT:"Llena tu tab", alRemT:"Escribe tus preguntas de Lenguaje del amor", alBtn:"Mis preguntas de Lenguaje del amor ({n})", alT:"Tus preguntas de Lenguaje del amor", alD:"Indiana adivina lo que tú necesitarías. Llevas {n} de {g}. Le llegan solas a su teléfono.", alQ:"Situación o pregunta", alQPh:"Tuve un día horrible en el trabajo. ¿Qué necesito al llegar a casa?", alA:"Lo que de verdad necesitas", alAPh:"Un abrazito y algo para ver", alW:"Respuestas que suenan bien pero no son (opcional)", alWPh:"Respuesta incorrecta", alAdd:"Añadir pregunta", alSaved:"Guardada ✓", remD:"Te espera un bono súper exclusivo · {d} de {n} secciones",
   coinWon:"+1 moneda", nextCup:"Próximo cupón", winsOf:"{n}/3 victorias", qOf:"Pregunta {i} de {n}", guessOf:"¿Qué respondería {n}?", guessSay:"¿Qué diría {n}?", isRight:"Correcta", yourPick:"Tu respuesta", toCoupon:"{n} de 3 victorias para tu próximo cupón", couponWon:"¡3 victorias! Te ganaste un cupón.", noMore:"Ya ganaste todos los cupones de ese tipo. Te doy una moneda.",
   coins:"Monedas", tries:"Intentos", renew:"Nuevos intentos el {d}", mkTitle:"Crear una mona nueva", mkLead:"Sube una foto de los dos. Toma el diseño del álbum sola.",
   mkFile:"Elegir foto", mkFrame:"Forma", fr_arch:"Arco", fr_heart:"Corazón", fr_stamp:"Estampilla", fr_circle:"Círculo", fr_cut:"Recorte (PNG sin fondo)",
@@ -3024,7 +3031,7 @@ let welcomeCoinNow=false; ["her","andrew"].forEach(p=>{ const o=S.stk[p]; if(!o.
 if(welcomeCoinNow){ save(); setTimeout(()=>{ toast(L()==="es"?"🪙 ¡Te regalamos una moneda de bienvenida!":"🪙 Here’s a welcome coin for you!"); try{ sfx("coin"); }catch(e){} }, 5200); }
 S.letter ||= {andrew:"", her:""}; S.letterSeen ||= {}; S.secrets ||= {andrew:"", her:""}; S.eggs ||= {her:[], andrew:[]};
 S.stkMeta ||= {}; if(S.stkCap){ for(const k in S.stkCap){ (S.stkMeta[k] ||= {}).story = S.stkCap[k]; } delete S.stkCap; }
-S.custom ||= [];
+S.custom ||= []; S.aLove ||= [];
 if(S.sound===undefined) S.sound = true;
 const ST = () => S.stk[me()];
 const PAGE = 6, CUTS = 21, BGS = ["var(--blue)","var(--pink)","var(--lav)","#f6efc0","#92c2ec","var(--rose2)"];
@@ -3276,9 +3283,9 @@ function surprisesHTML(author){
   return `<div class="card surp"><h4>${t(author==="andrew"?"surpA":"surpH")}</h4>
     <div class="field"><label for="sLetter">${t("surpLetter")}</label><textarea id="sLetter" style="min-height:120px">${esc(S.letter[author]||"")}</textarea></div>
     <div class="field"><label for="sSecrets">${t("surpSecrets")}</label><textarea id="sSecrets" style="min-height:90px">${esc(S.secrets[author]||"")}</textarea></div>
-    ${author==="andrew"?`<p class="hint"><b>${t("surpStories")}</b></p><div class="stories">${stickers().map(s=>`<div class="story"><div class="mini">${monaHTML(s,{shiny:false})}</div><div class="story-f">
-      <input type="text" data-title="${s.id}" maxlength="18" placeholder="${esc(t("surpTitlePh"))}" value="${esc(s.title)}" aria-label="${esc(t("surpTitlePh"))} ${s.n}">
-      <input type="text" data-story="${s.id}" maxlength="160" placeholder="${esc(t("surpStoryPh"))}" value="${esc(s.story)}" aria-label="${esc(t("surpStoryPh"))} ${s.n}">
+    ${author==="andrew"?`<button type="button" class="btn small ghost" data-alove style="margin:4px 0 12px">💌 ${t("alBtn",{n:(S.aLove||[]).length})}</button><p class="hint"><b>${t("surpStories")}</b><br>${t("surpStoriesHint")}</p><div class="stories">${stickers().map(s=>`<div class="story"><div class="mini">${monaHTML(s,{shiny:false})}</div><div class="story-f">
+      <input type="text" data-title="${s.id}" maxlength="18" placeholder="${esc((MONA_DEF[s.id]||[])[0]||t("surpTitlePh"))}" value="${esc((S.stkMeta[s.id]||{}).title||"")}" aria-label="${esc(t("surpTitlePh"))} ${s.n}">
+      <textarea rows="2" style="min-height:0;resize:vertical" data-story="${s.id}" maxlength="240" placeholder="${esc((MONA_DEF[s.id]||[])[1]||t("surpStoryPh"))}" aria-label="${esc(t("surpStoryPh"))} ${s.n}">${esc((S.stkMeta[s.id]||{}).story||"")}</textarea>
       ${s.custom?`<button type="button" class="linkbtn" data-delstk="${s.id}">${t("remove")}</button>`:""}</div></div>`).join("")}</div>
       <label class="hint" style="display:flex;gap:8px;align-items:center;margin-top:10px"><input type="checkbox" id="sSound" ${S.sound!==false?"checked":""}> ${t("soundOn")}</label>`:""}
     <button class="btn small" type="button" id="sSave">${t("save")}</button></div>
@@ -3404,6 +3411,28 @@ function startTour(force){
   addEventListener("resize", ()=>{ if(document.getElementById("tour")) show(); }, {once:true});
   show();
 }
+
+function aLoveRemHTML(){
+  if(!isA() || !C.loveRealN || (S.aLove||[]).length>=10) return ""; const n=(S.aLove||[]).length;
+  return `<button type="button" class="fill-tile" data-alove><img class="peek" src="${duck("lobbyboy")}" alt=""><span class="ft-t"><b>${t("alRemT")}</b><span class="meter"><i style="width:${Math.round(100*n/10)}%"></i></span></span><span class="mt-n">${n}/${10}</span><span class="go" aria-hidden="true">→</span></button>`;
+}
+var aLoveTm=null, aLoveNew=0;
+function openALove(){
+  const L=S.aLove||(S.aLove=[]), n=L.length;
+  openSheet(`<h3 style="margin:0 0 4px">💌 ${t("alT")}</h3><p class="hint" style="margin:0 0 12px">${t("alD",{n,g:10})}</p>
+    <form id="alF" class="card" style="margin:0 0 14px">
+      <div class="field"><label for="alQ">${t("alQ")}</label><textarea id="alQ" maxlength="200" style="min-height:64px" placeholder="${esc(t("alQPh"))}" required></textarea></div>
+      <div class="field"><label for="alA">${t("alA")}</label><input id="alA" type="text" maxlength="120" placeholder="${esc(t("alAPh"))}" required></div>
+      <div class="field"><label>${t("alW")}</label>${[1,2,3].map(k=>`<input type="text" class="alW" maxlength="120" placeholder="${esc(t("alWPh"))} ${k}" style="margin-top:${k>1?6:0}px">`).join("")}</div>
+      <button class="btn small" type="submit">${t("alAdd")}</button></form>
+    ${n?`<div class="ex">${L.map((x,i)=>`<div class="item card" style="margin:0 0 8px"><small class="hint">#${i+1}</small><p style="margin:2px 0;font-weight:700">${esc(x.q)}</p><p style="margin:0">✓ ${esc(x.a)}</p>${(x.w||[]).filter(Boolean).length?`<p class="hint" style="margin:2px 0 0">✗ ${(x.w||[]).filter(Boolean).map(esc).join(" · ")}</p>`:""}<button type="button" class="linkbtn" data-aldel="${x.at}">${t("remove")}</button></div>`).join("")}</div>`:""}`);
+  $("#alF").onsubmit=e=>{ e.preventDefault(); const q=$("#alQ").value.trim(), a=$("#alA").value.trim(); if(!q||!a) return;
+    L.push({q, a, w:[...document.querySelectorAll(".alW")].map(i=>i.value.trim()).filter(Boolean), at:Date.now()}); save(); toast(t("alSaved"));
+    aLoveNew++; clearTimeout(aLoveTm); aLoveTm=setTimeout(()=>{ if(aLoveNew) notify(`Andrew wrote ${aLoveNew} new Love Language question${aLoveNew>1?"s":""} for you 💌`, `Andrew escribió ${aLoveNew} pregunta${aLoveNew>1?"s":""} nueva${aLoveNew>1?"s":""} de Lenguaje del amor para ti 💌`); aLoveNew=0; }, 8000);
+    if(tab==="play") render(); openALove(); };
+  document.querySelectorAll("[data-aldel]").forEach(b=>b.onclick=()=>{ const at=+b.dataset.aldel; S.aLove=L.filter(x=>x.at!==at); save(); if(tab==="play") render(); openALove(); });
+}
+document.addEventListener("click", e=>{ if(e.target.closest("[data-alove]")) openALove(); });
 function herReminderHTML(){
   if(isA()) return ""; const p=sideProgress(); if(p.done) return "";
   return `<button type="button" class="fill-tile" data-gotab="her"><img class="peek" src="${duck("farmer")}" alt=""><span class="ft-t"><b>${t("remT")}</b><span class="meter"><i style="width:${Math.round(100*p.d/p.n)}%"></i></span></span><span class="mt-n">${p.d}/${p.n}</span><span class="go" aria-hidden="true">→</span></button>`;
