@@ -1043,7 +1043,7 @@ html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infi
     <div class="lang" role="group" aria-label="Language">
       <button id="lang-es" type="button">ES</button><button id="lang-en" type="button">EN</button>
     </div>
-    <div class="logo"><img class="us" src="ducks/us.webp" alt="Casita Huma"><div><h1 class="sr">Casita Huma</h1><small id="tagline">Diversión pura</small></div></div>
+    <div class="logo"><img class="us" src="ducks/us.webp" alt="Casita Huma" role="button" tabindex="0" style="cursor:pointer"><div><h1 class="sr">Casita Huma</h1><small id="tagline">Diversión pura</small></div></div>
     <div class="tools"><button type="button" id="bell" class="bell" aria-label="Activity"><img src="ducks/lobbyboy.webp" alt=""><span id="bbadge" class="badge" hidden></span></button><button type="button" id="gear" class="gear" aria-label="Settings">⚙️</button></div>
   </header>
   <div class="who" id="who"></div>
@@ -1212,7 +1212,55 @@ S.aWallet ||= []; if(!S.aWelcome){ S.aWelcome=true; if(!S.aWallet.some(w=>w.from
 S.activity ||= []; S.ex ||= []; S.notes ||= []; S.checkins ||= []; S.photos ||= []; S.agreements ||= []; S.calm ||= {her:{},andrew:{}}; S.wins ||= []; S.jar ||= []; S.streakOwed ||= {}; S.aWeeks ||= {}; S.weeks ||= {};
 const me = () => isA() ? "andrew" : "her", other = () => isA() ? "her" : "andrew";
 const nameOf = p => p==="andrew" ? "Andrew" : "Indiana";
-function notify(en, es){ S.activity.unshift({to:other(), from:me(), en, es, at:Date.now(), seen:false}); S.activity = S.activity.slice(0,200); save(); pushSend(other(), es); }
+function notify(en, es){ const at=Date.now(), id=me()+"-"+at+"-"+Math.random().toString(36).slice(2,6);
+  S.activity.unshift({id, to:other(), from:me(), en, es, at, seen:false}); S.activity = S.activity.slice(0,200); save();
+  if(!HOSTED) return;   // V87: the server keeps a feed for the other phone (its Novedades) and sends the lock-screen push
+  fetch("/api/push",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({a:"send",to:other(),title:"Casita Huma",body:es,feed:{id,from:me(),en,es,at}}),keepalive:true}).catch(()=>{}); }
+/* V87: bring in what the other person did (their notes for this phone wait on the server) */
+let feedBusy=false;
+async function pullFeed(){ if(!HOSTED || !S.device || feedBusy) return; feedBusy=true;
+  try{ const r=await fetch("/api/push?feed="+me(),{cache:"no-store"}).then(r=>r.json()); const items=(r&&r.items)||[];
+    const have=new Set(S.activity.map(a=>a.id).filter(Boolean)); let added=0;
+    for(const it of items.slice().reverse()){ if(!it.id || have.has(it.id)) continue; S.activity.unshift({id:it.id, to:me(), from:it.from, en:it.en, es:it.es, at:it.at, seen:false}); added++; }
+    if(added){ S.activity.sort((a,b)=>b.at-a.at); S.activity=S.activity.slice(0,200); save(); const n=S.activity.filter(a=>a.to===me() && !a.seen).length, bb=document.getElementById("bbadge"); if(bb){ bb.textContent=n; bb.hidden=!n; } }
+  }catch(e){} feedBusy=false; }
+addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") pullFeed(); });
+setInterval(()=>{ if(document.visibilityState==="visible") pullFeed(); }, 120000);
+/* V87: bring over what the other person wrote on their phone (from their server copy): her questions and coupons,
+   letters, secrets, Andrew's mona titles and stickers, shared therapy items, gifts and the monthly question.
+   Each person's own items are the truth for that person, so deletions carry over too. Private notes never cross. */
+const authorOf = x => x && (x.by || x.from) || "";
+function mergeBy(local, remote, partner, newestFirst){
+  const mine=(local||[]).filter(x=>authorOf(x)!==partner), theirs=(remote||[]).filter(x=>authorOf(x)===partner && !x.priv);
+  return [...mine, ...theirs].sort((a,b)=>newestFirst ? (b.at||0)-(a.at||0) : (a.at||0)-(b.at||0)); }
+function applyPartner(P, partner){
+  if(partner==="her"){ if(P.her) S.her=Object.assign({}, S.her, P.her); S.letter.her=(P.letter||{}).her||""; S.secrets.her=(P.secrets||{}).her||""; }
+  else { S.letter.andrew=(P.letter||{}).andrew||""; S.secrets.andrew=(P.secrets||{}).andrew||""; S.stkMeta=Object.assign({}, S.stkMeta, P.stkMeta||{}); S.custom=P.custom||S.custom||[];
+    if(P.tripUnlocked) S.tripUnlocked=true;
+    const have=new Set(S.wallet.map(w=>w.uid)); (P.wallet||[]).filter(w=>w.from==="andrew" && !have.has(w.uid)).forEach(w=>S.wallet.unshift(Object.assign({},w))); }   // coupons Andrew gave her in ⚙️
+  if(P.calm && P.calm[partner]) S.calm[partner]=P.calm[partner];
+  S.notes=mergeBy(S.notes, P.notes, partner, true); S.agreements=mergeBy(S.agreements, P.agreements, partner, true); S.wins=mergeBy(S.wins, P.wins, partner, true);
+  S.checkins=mergeBy(S.checkins, P.checkins, partner, false); S.jar=mergeBy(S.jar, P.jar, partner, false);
+  // monthly question: the asker owns the question, whoever answers owns the answer
+  const ex=mergeBy(S.ex.map(e=>({...e, at:e.askedAt})), (P.ex||[]).map(e=>({...e, at:e.askedAt})), partner, false).map(({at,...e})=>e);
+  for(const e of ex){ const o=(P.ex||[]).find(x=>x.month===e.month && x.from===e.from), l=S.ex.find(x=>x.month===e.month && x.from===e.from);
+    e.answer = (l&&l.answer) || (o&&o.answer) || null; }
+  S.ex=ex;
+}
+let syncBusy=false, partnerAt=0;
+async function syncPartner(){ if(!HOSTED || !S.device || syncBusy) return; syncBusy=true;
+  try{ const partner=S.device==="her"?"andrew":"her", r=await fetch("/api/state?who="+partner,{cache:"no-store"}).then(r=>r.json());
+    if(r && r.state && r.at!==partnerAt){ const before=JSON.stringify([S.her,S.letter,S.secrets,S.stkMeta,S.custom,S.calm,S.notes,S.agreements,S.wins,S.checkins,S.jar,S.ex,S.wallet,S.tripUnlocked]);
+      applyPartner(r.state, partner); partnerAt=r.at;
+      const changed = JSON.stringify([S.her,S.letter,S.secrets,S.stkMeta,S.custom,S.calm,S.notes,S.agreements,S.wins,S.checkins,S.jar,S.ex,S.wallet,S.tripUnlocked])!==before;
+      if(!changed){ syncBusy=false; return; }   // only real changes are saved (no back-and-forth between the phones)
+      save(); const ae=document.activeElement, typing=ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);
+      if(!typing && $("#sheet").hidden && !document.getElementById("tour") && !document.querySelector(".stage, .quiz")) render(); } }catch(e){}
+  syncBusy=false; }
+const syncAll=()=>{ pullFeed(); syncPartner(); };
+addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") syncPartner(); });
+setInterval(()=>{ if(document.visibilityState==="visible") syncPartner(); }, 120000);
+setTimeout(syncAll, 2500);
 /* lock-screen notifications (installed app only): Netlify function /api/push relays Web Push to the other phone */
 const PUSH_OK = () => HOSTED && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
 const STANDALONE = () => navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
@@ -1226,7 +1274,7 @@ async function pushSubscribe(ask){
   let sub = await reg.pushManager.getSubscription();
   if(!sub){ const {key} = await fetch("/api/push").then(r=>r.json()); sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64u(key)}); }
   const res = await fetch("/api/push",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({a:"sub",who:me(),sub:sub.toJSON()})}).then(r=>r.json());
-  if(res && res.ok){ S.pushOn = true; S.pushAt = Date.now(); save(); return true; }
+  if(res && res.ok){ S.pushOn = true; S.pushAt = Date.now(); S.pushWho = me(); save(); return true; }
   return false;
 }
 async function enablePush(btn){
@@ -1243,7 +1291,12 @@ function pushCardHTML(){
   return can ? `<button type="button" class="slim" data-pushon><span aria-hidden="true">🔔</span><b>${t("pushT")}</b><i aria-hidden="true">→</i></button>` : "";
 }
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-pushon]"); if(b) enablePush(b); const tb=e.target.closest("[data-pushtest]"); if(tb){ pushSend(me(), t("pushTestBody"), 5000).then(r=>{ if(!r||!r.sent) toast(t("pushNone")); }); toast(t("pushTestToast")); } });
-setTimeout(()=>{ if(HOSTED && S.pushOn && PUSH_OK() && Notification.permission==="granted" && Date.now()-(S.pushAt||0) > 864e5) pushSubscribe(false).catch(()=>{}); }, 4000);
+/* V87: trust the phone, not the saved flag: a reinstalled app (or data restored from the server) has no subscription
+   even if pushOn says so, so the "turn on notifications" card comes back; a live one is re-sent to the server daily */
+setTimeout(async()=>{ if(!HOSTED || !PUSH_OK()) return;
+  try{ const reg=await navigator.serviceWorker.ready, sub=await reg.pushManager.getSubscription();
+    if(!sub || Notification.permission!=="granted"){ if(S.pushOn){ S.pushOn=false; save(); if($("#sheet").hidden) render(); } return; }
+    if(!S.pushOn || S.pushWho!==me() || Date.now()-(S.pushAt||0) > 864e5) pushSubscribe(false).catch(()=>{}); }catch(e){} }, 4000);
 function save(){ S.savedAt=Date.now(); try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} backupSoon(); }
 /* V83: server copy of each phone's data (Netlify function /api/state). Every save is sent a moment later; on open, if the
    server holds a newer copy (or this phone lost its data), the app restores it. Photos made in the sticker maker stay on the phone. */
@@ -2041,6 +2094,8 @@ $("#bell").onclick=()=>{ const mine=S.activity.filter(a=>a.to===me());
   openSheet(`<h3>${t("feedTitle")}</h3><p class="hint">${t("feedNote")}</p><ul class="feed">${mine.length?mine.map(a=>`<li class="${a.seen?"":"new"}">${esc(a[L()]||a.en)}<small>${fmt(a.at)}</small></li>`).join(""):`<li>${t("feedEmpty")}</li>`}</ul>`);
   mine.forEach(a=>a.seen=true); save(); };
 $("#gear").onclick=()=>{ tab="andrew"; render(); window.scrollTo(0,0); };
+/* V87: tapping our silhouette goes back to the games (the 5-tap secret still counts) */
+$(".logo .us").addEventListener("click",()=>{ window.scrollTo({top:0,behavior:"smooth"}); if(tab==="play") return; tab="play"; render(); sceneSoon(); const v=$("#view"); v.classList.remove("view-in"); void v.offsetWidth; v.classList.add("view-in"); });
 $("#lang-es").onclick=()=>{S.lang="es";save();render();};
 $("#lang-en").onclick=()=>{S.lang="en";save();render();};
 
@@ -2083,6 +2138,7 @@ function renderPlay(){
     const id=b.dataset.game;
     if(id==="wait") return openWait();
     if(b.getAttribute("aria-disabled")==="true") return toast(MASTERY.includes(id)&&!remaining(id).length?t("allDone"):id==="deep"&&S.months[monthKey()]?t("monthDone"):t("weekNext",{d:nextReset()}));
+    curGame=id;
     ({trivia:()=>openQuiz("trivia"), love:openLove, scratch:openScratch, deep:openDeep, finish:openMatch})[id]();
   });
 }
@@ -2106,6 +2162,7 @@ function renderAndrewPlay(){
       return gameCard(g, {attr:"ag", why: empty?"empty":allDone?"all":monthly?"month":"week", off, tag, num:String(i+1).padStart(2,"0"), q:t("g_"+g.id+"_A"), btn:g.id==="deep"?"openBtn":"playBtn"});}).join("")}</div>${pushCardHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}${(()=>{ const l=specialListA(); return waitTileHTML(l.some(x=>x.ready&&!x.claimed), l).replace('data-game="wait"','data-await'); })()}</div>`;
   document.querySelectorAll("[data-ag]").forEach(b=>b.onclick=()=>{
     if(b.getAttribute("aria-disabled")==="true") return toast(b.dataset.why==="empty"?t("needHer"):b.dataset.why==="all"?t("allDone"):b.dataset.why==="month"?t("monthDone"):t("weekNext",{d:nextReset()}));
+    curGame=b.dataset.ag;
     ({trivia:()=>openQuiz("trivia"), love:openLove, scratch:openScratch, deep:openDeep, finish:openMatch})[b.dataset.ag]();
   });
 }
@@ -2161,8 +2218,9 @@ function waitTileHTML(ready, list){
   const next = list.filter(s=>!s.claimed && typeof s.days==="number").sort((a,b)=>a.days-b.days)[0];
   const when = ready ? t("today") : next ? (next.days===1?t("tomorrow"):t("inDays",{n:next.days})) : t("soon");
   return `<button type="button" class="mini-tile t-wait" data-game="wait"><span class="esp">${t("special")}</span><img class="peek" src="${duck("sunbed")}" alt=""><b>${t("g_wait")}</b><span class="mt-n ${ready?"hot":""}">${esc(when)}</span></button>`; }
+let curGame="";
 function showResult(won, extraHTML=""){
-  let html;
+  let html; const g=won||curGame, gEn=T.en["g_"+g]||g, gEs=T.es["g_"+g]||g;
   if(won){ const r = winRewards(won);
     html = `<div class="result"><h3>${t("win")}</h3>${extraHTML}<p class="coin-won"><span class="coin-spin">🪙</span> ${t("coinWon")}</p>
       ${r.got ? `<p class="note" style="text-align:center">${t("couponWon")}</p>${ticketHTML(W()[0],{bare:true})}` : winDots(r.n)}
@@ -2171,6 +2229,10 @@ function showResult(won, extraHTML=""){
     html = `<div class="result"><img class="big sticker" src="${duck("donotdisturb")}" alt=""><h3>${t("lose")}</h3><p class="hint">${t("loseSub")}</p>${extraHTML}${winDots(ST().wins%3)}
       <div class="row-btns"><button class="btn" type="button" data-close>${t("close")}</button></div></div>`;
   }
+  /* V87: the other phone hears about every game, not only coupon wins (a coupon win already sent its own note) */
+  if(g && g!=="finish" && !(won && W()[0] && Date.now()-(W()[0].at||0)<4000)){
+    if(won) notify(`${nameOf(me())} played ${gEn} and won a coin 🪙`, `${nameOf(me())} jugó ${gEs} y ganó una moneda 🪙`);
+    else notify(`${nameOf(me())} played ${gEn}. No luck this time`, `${nameOf(me())} jugó ${gEs}. Esta vez no ganó`); }
   openSheet(html); if(won){ sfx("win"); setTimeout(()=>sfx("coin"),450); confetti(); } else sfx("lose");
   const go = $("#panel [data-go]"); if(go) go.onclick=()=>{ tab="wallet"; walletTab="avail"; closeSheet(); };
 }
