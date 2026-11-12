@@ -1064,8 +1064,8 @@ html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infi
 </div></div>
 <div id="sheet" class="sheet" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
 
-<script src="content.js"></script>
-<script src="real.js"></script>
+<script src="content.js?v=e5bd1b5a6e"></script>
+<script src="real.js?v=e5bd1b5a6e"></script>
 <script>/* Andrew's real questions go first; placeholders only fill up to 20 */
 (function(C,R){ if(!R) return; ["trivia","love"].forEach(k=>{ C[k]=[...R[k], ...C[k].slice(R[k].length)]; }); if(R.finish) C.finish=R.finish; })(window.CONTENT, window.CONTENT_REAL);</script>
 <script>
@@ -3461,6 +3461,10 @@ document.addEventListener("pointerdown", e=>{
 })();
 </script>
 
-<script>if("serviceWorker" in navigator){ addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{})); }</script>
+<script>/* updates arrive by themselves: check for a new version whenever the app comes back to the screen, and reload once it is installed (never in the middle of a game) */
+if("serviceWorker" in navigator){ const hadSW=!!navigator.serviceWorker.controller; let reloading=false;
+  addEventListener("load",()=>navigator.serviceWorker.register("sw.js").then(reg=>{ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") reg.update().catch(()=>{}); }); }).catch(()=>{}));
+  const go=()=>{ if(reloading) return; const sh=document.getElementById("sheet"); if(sh && !sh.hidden && document.visibilityState==="visible"){ setTimeout(go,4000); return; } reloading=true; location.reload(); };
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(hadSW) go(); }); }</script>
 </body>
 </html>
