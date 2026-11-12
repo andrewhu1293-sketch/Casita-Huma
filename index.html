@@ -775,6 +775,8 @@ main#view.home::before{display:none}
 .town .smoke{transform-box:fill-box;transform-origin:50% 100%;animation:smoke 3.2s ease-out infinite;opacity:0}
 .town .smoke.b{animation-delay:-1.6s}
 .town .wheel{animation:wspin 18s linear infinite}
+.town .marquee.lit circle{animation:bulb .5s steps(1) infinite}.town .marquee.lit circle:nth-child(even){animation-delay:-.25s}
+@keyframes bulb{50%{fill:#b97884}}
 @keyframes wspin{to{transform:rotate(360deg)}}
 @keyframes sway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
 @keyframes smoke{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:.9}100%{opacity:0;transform:translate(4px,-16px) scale(1.3)}}
@@ -1411,6 +1413,26 @@ const TOWN = (()=>{
       `<path d="M${-5*s} 0 V${-12*s} H${5*s} V0Z" fill="${B}"/>`+
       `<line x1="${-w/2-1*s}" y1="${-h+9*s}" x2="${-w/2-1*s}" y2="${-h+12*s}" stroke="${B}" stroke-width="${1*s}"/><ellipse cx="${-w/2-1*s}" cy="${-h+14.5*s}" rx="${2.6*s}" ry="${3.2*s}" fill="${B}"/>`+
       `<line x1="${w/2+1*s}" y1="${-h+9*s}" x2="${w/2+1*s}" y2="${-h+12*s}" stroke="${B}" stroke-width="${1*s}"/><ellipse cx="${w/2+1*s}" cy="${-h+14.5*s}" rx="${2.6*s}" ry="${3.2*s}" fill="${B}"/>`; };
+  /* V76: a movie theater (marquee with bulbs that light up when they go in, blade sign, posters) */
+  const cinema = (s=1) => { const w=40*s, h=30*s; let bulbs="";
+    for(let i=0;i<9;i++) bulbs+=`<circle cx="${(-w*0.42+i*w*0.105).toFixed(1)}" cy="${-h+1.6*s}" r="${1.1*s}" fill="${Wn}"/><circle cx="${(-w*0.42+i*w*0.105).toFixed(1)}" cy="${-h+11.4*s}" r="${1.1*s}" fill="${Wn}"/>`;
+    return `<rect x="${-4*s}" y="${-h-26*s}" width="${8*s}" height="${24*s}" rx="${2*s}" fill="${B}"/>`+
+      ["C","I","N","E"].map((c,i)=>`<text x="0" y="${-h-20.5*s+i*5.6*s}" text-anchor="middle" font-family="Oswald, 'Bebas Neue', Impact, sans-serif" font-weight="700" font-size="${5.2*s}" fill="${Wn}">${c}</text>`).join("")+
+      `<rect x="${-w/2}" y="${-h}" width="${w}" height="${h}" rx="${1.5*s}" fill="${A}"/>`+
+      `<path d="M${-w/2-2*s} ${-h} L0 ${-h-6*s} L${w/2+2*s} ${-h}Z" fill="${B}"/>`+
+      `<rect x="${-w/2-3*s}" y="${-h+0*s}" width="${w+6*s}" height="${13*s}" rx="${2*s}" fill="${B}"/><g class="marquee">${bulbs}</g>`+
+      `<text x="0" y="${-h+9*s}" text-anchor="middle" font-family="Oswald, 'Bebas Neue', Impact, sans-serif" font-weight="700" font-size="${6.4*s}" letter-spacing="${.8*s}" fill="${Wn}">NOW SHOWING</text>`+
+      `<rect x="${-w/2+3*s}" y="${-14*s}" width="${7*s}" height="${10*s}" rx="${1*s}" fill="${Wn}"/><rect x="${w/2-10*s}" y="${-14*s}" width="${7*s}" height="${10*s}" rx="${1*s}" fill="${Wn}"/>`+
+      `<path d="M${-6*s} 0 V${-12*s} H${6*s} V0Z" fill="${B}"/><line x1="0" y1="${-12*s}" x2="0" y2="0" stroke="${A}" stroke-width="${.8*s}"/>`; };
+  /* V77: Paris (the plane trip's destination on the far side of the planet) */
+  const eiffel = (s=1) => `<path d="M${-18*s} 0 Q${-9*s} ${-24*s} ${-3.2*s} ${-62*s} L${-1.2*s} ${-92*s} L${1.2*s} ${-92*s} L${3.2*s} ${-62*s} Q${9*s} ${-24*s} ${18*s} 0 L${10*s} 0 Q0 ${-16*s} ${-10*s} 0Z" fill="${B}"/>`+
+      `<rect x="${-11*s}" y="${-24*s}" width="${22*s}" height="${3*s}" rx="1" fill="${B}"/><rect x="${-6.5*s}" y="${-52*s}" width="${13*s}" height="${2.6*s}" rx="1" fill="${B}"/><rect x="${-.5*s}" y="${-100*s}" width="${1*s}" height="${9*s}" fill="${B}"/>`;
+  const haussmann = (s=1) => { const w=30*s, h=34*s; let win=""; for(let r=0;r<3;r++) for(let c=0;c<3;c++) win+=`<rect x="${-w/2+4*s+c*8.4*s}" y="${-h+5*s+r*9*s}" width="${4.6*s}" height="${6*s}" rx="${.8*s}" fill="${Wn}"/>`;
+    return `<rect x="${-w/2}" y="${-h}" width="${w}" height="${h}" rx="${1*s}" fill="${A}"/><path d="M${-w/2-1.5*s} ${-h} L${-w/2+4*s} ${-h-9*s} L${w/2-4*s} ${-h-9*s} L${w/2+1.5*s} ${-h}Z" fill="${B}"/>`+
+      `<rect x="${-w/2+6*s}" y="${-h-7*s}" width="${3.4*s}" height="${4*s}" rx="1" fill="${Wn}"/><rect x="${w/2-9.4*s}" y="${-h-7*s}" width="${3.4*s}" height="${4*s}" rx="1" fill="${Wn}"/>`+win+
+      `<rect x="${-w/2}" y="${-h+11.5*s}" width="${w}" height="${1.4*s}" fill="${B}"/><rect x="${-4*s}" y="${-9*s}" width="${8*s}" height="${9*s}" rx="${4*s}" fill="${B}"/>`; };
+  const arc = (s=1) => `<path d="M${-17*s} 0 V${-30*s} H${17*s} V0 H${7*s} V${-12*s} A${7*s} ${7*s} 0 0 0 ${-7*s} ${-12*s} V0Z" fill="${B}"/><rect x="${-19*s}" y="${-35*s}" width="${38*s}" height="${5*s}" rx="1" fill="${B}"/><rect x="${-14*s}" y="${-26*s}" width="${28*s}" height="${2*s}" fill="${Wn}" opacity=".6"/>`;
+  const lamp = (s=1) => `<rect x="${-.9*s}" y="${-24*s}" width="${1.8*s}" height="${24*s}" fill="${B}"/><path d="M${-3.5*s} ${-24*s} L0 ${-30*s} L${3.5*s} ${-24*s}Z" fill="${B}"/><rect x="${-3*s}" y="${-2*s}" width="${6*s}" height="${2*s}" fill="${B}"/>`;
   const tree = (s=1, cls="") => `<g class="sway ${cls}"><rect x="${-2.6*s}" y="${-16*s}" width="${5.2*s}" height="${16*s}" rx="${2.6*s}" fill="${B}"/><circle cx="0" cy="${-26*s}" r="${13*s}" fill="${A}"/><circle cx="${-8*s}" cy="${-19*s}" r="${8*s}" fill="${A}"/><circle cx="${8*s}" cy="${-20*s}" r="${8.5*s}" fill="${A}"/></g>`;
   const pine = (s=1, cls="") => `<g class="sway ${cls}"><rect x="${-2.2*s}" y="${-10*s}" width="${4.4*s}" height="${10*s}" rx="2" fill="${B}"/><path d="M0 ${-46*s} Q${3*s} ${-40*s} ${11*s} ${-24*s} Q${14*s} ${-16*s} ${15*s} ${-12*s} Q0 ${-7*s} ${-15*s} ${-12*s} Q${-14*s} ${-16*s} ${-11*s} ${-24*s} Q${-3*s} ${-40*s} 0 ${-46*s}Z" fill="${B}"/></g>`;
   const bush = (s=1) => `<circle cx="${-6*s}" cy="${-5*s}" r="${6*s}" fill="${A}"/><circle cx="${4*s}" cy="${-6*s}" r="${7*s}" fill="${A}"/><circle cx="${12*s}" cy="${-4*s}" r="${4.5*s}" fill="${A}"/>`;
@@ -1419,7 +1441,7 @@ const TOWN = (()=>{
     [-338, house(.95)], [-300, bush(1)], [-262, tree(.9)],
     [-200, palm(1,"c",-1)], [-168, house(1,true)],
     [-72, chinese(.95)], [-30, palm(.9,"b")],
-    [34, tree(.8,"c")], [80, colombian(.9)],
+    [36, cinema(.95)], [80, colombian(.9)],
     [126, kbbq(1)], [172, palm(1.05)], [206, tree(.95,"b")],
     [250, house(.95)], [288, palm(1,"c",-1)], [318, bush(1)], [350, house(1)],
     [392, tree(1.05)], [432, house(.95,true)], [470, pine(1,"b")]
@@ -1435,7 +1457,10 @@ const TOWN = (()=>{
     [-215, palm(1.1,"b")], [-176, lifeguard(1)], [-140, palm(1,"c",-1)], [-108, palm(.9)],
     [-40, pier(1.1)], [52, smsign(1.1)], [100, palm(1.15,"b",-1)], [132, palm(.95,"c")], [172, lifeguard(.95)], [210, palm(1.05)]
   ]);
-  return `<svg class="town" viewBox="0 0 1000 140" aria-hidden="true"><defs><clipPath id="worldclip"><rect x="-200" y="-400" width="1400" height="600"/></clipPath><filter id="mono" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.0918 0.1805 0.0337 0 0.659 0.1542 0.3033 0.0565 0 0.376 0.1413 0.2779 0.0518 0 0.431 0 0 0 1 0"/></filter></defs><g clip-path="url(#worldclip)"><g class="world">${items.map(([dx,html])=>g(dx,html)).join("")}${LA}${SM}</g></g></svg>`;
+  const PARIS = hood(180, [
+    [-178, tree(.95,"b")], [-148, haussmann(1)], [-116, haussmann(.92)], [-90, lamp(1)], [8, eiffel(1)], [62, arc(1)], [96, lamp(1)], [126, haussmann(1)], [158, tree(1,"c")], [186, haussmann(.95)]
+  ]);
+  return `<svg class="town" viewBox="0 0 1000 140" aria-hidden="true"><defs><clipPath id="worldclip"><rect x="-200" y="-400" width="1400" height="600"/></clipPath><filter id="mono" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.0918 0.1805 0.0337 0 0.659 0.1542 0.3033 0.0565 0 0.376 0.1413 0.2779 0.0518 0 0.431 0 0 0 1 0"/></filter></defs><g clip-path="url(#worldclip)"><g class="world">${items.map(([dx,html])=>g(dx,html)).join("")}${LA}${SM}${PARIS}</g></g></svg>`;
 })();
 function planetTop(){ return `<div class="planet-top" aria-hidden="true">${TOWN}</div>`; }
 /* a little Duckoo walks from one house to the next along the planet, once a minute.
@@ -1496,17 +1521,29 @@ function duckKiss(svg){
 /* V74: the world turns to visit Los Angeles (Hollywood, then Santa Monica) and comes home */
 let touring = false;
 function townBusy(svg){ return !svg || touring || !!svg.querySelector(".walker,.cat,.prop"); }
+let hwN=0;
 function worldTour(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
   const svg=document.querySelector("svg.town"); if(townBusy(svg)) return; const w=svg.querySelector(".world"); if(!w) return;
   touring=true; const MOVE=5200, HOLD=7000, stops=[0,-120,-240,-360], t0=performance.now();
+  /* V78: under the Hollywood sign two Duckoos are making out, one on top of the other */
+  const [na,nb]=[["richman","richwoman"],["farmer","peach"],["traveler","apron"],["caveman","gardener"]][(hwN++)%4]; let lov=null, hearts=0;
+  const done=()=>{ w.removeAttribute("transform"); touring=false; if(lov){ lov.forEach(x=>x.g.remove()); lov=null; } };
   const step = now => {
-    if(!w.isConnected){ touring=false; return; }
+    if(!w.isConnected){ done(); return; }
     const t=now-t0, leg=Math.floor(t/(MOVE+HOLD));
-    if(leg>=3){ w.removeAttribute("transform"); touring=false; return; }
+    if(leg>=3){ done(); return; }
     const k=Math.min(1,(t-leg*(MOVE+HOLD))/MOVE), a=stops[leg]+(stops[leg+1]-stops[leg])*ease(k);
     w.setAttribute("transform",`rotate(${a.toFixed(2)} ${PCX} ${PCY})`);
-    if(leg===2 && k>=1){ w.removeAttribute("transform"); touring=false; return; }
+    const h=t-MOVE;                                   // time since Hollywood arrived
+    if(h>200 && h<HOLD-100){
+      if(!lov){ lov=[makeWalker(svg,na), makeWalker(svg,nb)]; }
+      const u=h/1000, fade=Math.min(1,u/.6,(HOLD/1000-.1-u)/.6), X=26, rock=Math.sin(u*7.5), sl=Math.sin(u*3.7);
+      lov[0].set(X,{rot:-86, hop:-1, sc:.72*fade+.2, op:fade});                                          // lying back on the grass
+      lov[1].set(X+2+1.6*rock,{rot:-94+5*sl, hop:12+2.2*Math.abs(rock), sc:.72*fade+.2, op:fade, left:true}); // on top, rocking
+      if(hearts<9 && u>.8+hearts*.62){ hearts++; popHeart(svg, X-20+((hearts*7)%16), hearts%3===0?"♥♥":"♥"); }
+    } else if(lov){ lov.forEach(x=>x.g.remove()); lov=null; }
+    if(leg===2 && k>=1){ done(); return; }
     requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -1540,8 +1577,8 @@ function duckCats(){
     if(t<T1){ const k=t/T1, e=ease(k), ap=out(k);
       D1.set(home+(-146-home)*e, {hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, sc:.45+.55*ap, op:ap});
       D2.set(home+(-102-home)*e, {hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7, sc:.45+.55*ap, op:ap});
-      K1.set(home+(-104-home)*Math.min(1,e*1.2), {hop:Math.abs(Math.sin(ph*1.6))*3, run:Math.sin(ph*2)*30, sc:.5+.5*ap, op:ap});
-      K2.set(home+(-128-home)*Math.min(1,e*1.3), {hop:Math.abs(Math.sin(ph*1.6+1))*3, run:Math.sin(ph*2+1)*30, sc:.5+.5*ap, op:ap});
+      K1.set(home+(-124-home)*Math.min(1,e*1.2), {hop:Math.abs(Math.sin(ph*1.6))*3, run:Math.sin(ph*2)*30, sc:.5+.5*ap, op:ap});
+      K2.set(home+(-124+22*Math.sin(-1.1)-home)*Math.min(1,e*1.3), {hop:Math.abs(Math.sin(ph*1.6+1))*3, run:Math.sin(ph*2+1)*30, sc:.5+.5*ap, op:ap});
     } else if(t<T1+T2){ const u=(t-T1)/1000, w=1.5;
       // the cats chase each other between the two Duckoos; the Duckoos bounce and turn to watch
       const x1=-124+22*Math.sin(u*w), x2=-124+22*Math.sin(u*w-1.1), v1=Math.cos(u*w), v2=Math.cos(u*w-1.1);
@@ -1568,12 +1605,16 @@ function popHeart(svg, dx, txt){ const ns="http://www.w3.org/2000/svg", p=planet
 const SCENE_PAIRS=[["traveler","peach"],["richman","richwoman"],["farmer","apron"],["caveman","gardener"]];
 /* V75: they walk from home to the Korean BBQ place, go in to eat (the grill smokes, hearts), and walk home full */
 let bbqN=0;
-function duckBBQ(){
+function duckBBQ(){ goOut(126, bbqN++, "bbq"); }
+/* V76: same outing, to the movies: the marquee lights chase while they watch, and they come out holding hands */
+let movieN=0;
+function duckMovie(){ goOut(36, movieN++ +1, "movie"); }
+function goOut(door, n, kind){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
   const svg=document.querySelector("svg.town"); if(townBusy(svg)) return;
-  const [na,nb]=SCENE_PAIRS[(bbqN++)%SCENE_PAIRS.length], A=makeWalker(svg,na), Bw=makeWalker(svg,nb);
-  const home=-168, door=126, T1=6500, T2=1000, T3=4600, T4=1000, T5=6500, t0=performance.now(); let puffs=0, hearts=0;
-  const kill=()=>{ A.g.remove(); Bw.g.remove(); svg.querySelectorAll(".bbqpuff").forEach(x=>x.remove()); };
+  const [na,nb]=SCENE_PAIRS[n%SCENE_PAIRS.length], A=makeWalker(svg,na), Bw=makeWalker(svg,nb), mq=svg.querySelector(".marquee");
+  const home=-168, T1=kind==="movie"?7400:6500, T2=1000, T3=kind==="movie"?5200:4600, T4=1000, T5=kind==="movie"?7400:6500, t0=performance.now(); let puffs=0, hearts=0;
+  const kill=()=>{ A.g.remove(); Bw.g.remove(); svg.querySelectorAll(".bbqpuff").forEach(x=>x.remove()); if(mq) mq.classList.remove("lit"); };
   const step = now => {
     if(!A.g.isConnected){ kill(); return; }
     const t=now-t0, ph=t/170;
@@ -1584,9 +1625,10 @@ function duckBBQ(){
       A.set(door-6+4*k,{sc:.45+.55*f, op:f}); Bw.set(door+6-4*k,{sc:.45+.55*f, op:f, left:true});
     } else if(t<T1+T2+T3){ const u=(t-T1-T2);         // eating: the grill smokes and hearts float up
       A.set(door,{op:0}); Bw.set(door,{op:0});
-      if(puffs<Math.floor(u/420)){ puffs++; const pf=propAt(svg,`<circle r="${3+Math.random()*2.5}" fill="#f4e0e4" class="bbqpuff"/>`,"bbqpuff"); pf.set(door+12+(Math.random()*8-4),48); setTimeout(()=>pf.g.remove(),2300); }
-      if(hearts<3 && u>900+hearts*1200){ hearts++; popHeart(svg, door-14+hearts*7); }
-    } else if(t<T1+T2+T3+T4){ const k=(t-T1-T2-T3)/T4;  // out again
+      if(kind==="movie"){ if(mq) mq.classList.add("lit"); if(hearts<3 && u>1000+hearts*1300){ hearts++; popHeart(svg, door-8+hearts*5, hearts===2?"★":"♥"); } }
+      else if(puffs<Math.floor(u/420)){ puffs++; const pf=propAt(svg,`<circle r="${3+Math.random()*2.5}" fill="#f4e0e4" class="bbqpuff"/>`,"bbqpuff"); pf.set(door+12+(Math.random()*8-4),48); setTimeout(()=>pf.g.remove(),2300); }
+      if(kind!=="movie" && hearts<3 && u>900+hearts*1200){ hearts++; popHeart(svg, door-14+hearts*7); }
+    } else if(t<T1+T2+T3+T4){ const k=(t-T1-T2-T3)/T4; if(mq) mq.classList.remove("lit");  // out again
       A.set(door-2-4*k,{sc:.45+.55*k, op:k, left:true}); Bw.set(door+2+4*k,{sc:.45+.55*k, op:k, left:true});
     } else { const k=Math.min(1,(t-T1-T2-T3-T4)/T5), e=ease(k), f=Math.min(1,(1-k)/.06);
       A.set(door-6+(home-door+6)*e,{hop:Math.abs(Math.sin(ph*.8))*2, rot:Math.sin(ph*.8)*9, sc:.45+.55*f, op:f, left:true});
@@ -1641,10 +1683,211 @@ function duckHyrox(){
   };
   requestAnimationFrame(step);
 }
+/* V76: ceramics on the lawn: she sits at a potter's wheel, a vase grows as it spins, he comes out to watch, and they carry it home */
+let potN=0;
+function duckPottery(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
+  const svg=document.querySelector("svg.town"); if(townBusy(svg)) return;
+  const [na,nb]=[["apron","farmer"],["peach","traveler"],["richwoman","richman"],["gardener","caveman"]][(potN++)%4], A=makeWalker(svg,na), Bw=makeWalker(svg,nb), C="#b97884", L2="#f4e0e4";
+  const wheel=propAt(svg,`<rect x="-10" y="-11" width="20" height="3" rx="1.5" fill="${C}"/><rect x="-1.5" y="-9" width="3" height="5" fill="${C}"/><rect x="-11" y="-4" width="22" height="4" rx="1.5" fill="${C}"/><rect x="-7" y="-13.5" width="14" height="2.5" rx="1.2" fill="${C}" class="pdisc"/>`);
+  const pot=propAt(svg,""), pin=pot.g.firstChild;
+  const potShape=(g,tt)=>{ const h=3+15*g, wb=5+1.5*g, wm=5+4*g, wn=3.4+.6*(1-g), up=0;
+    const d=`M${-wb} 0 C${-wm-1} ${-h*.35} ${-wm} ${-h*.55} ${-wn} ${-h*.85} L${-wn-1.2*g} ${-h} L${wn+1.2*g} ${-h} L${wn} ${-h*.85} C${wm} ${-h*.55} ${wm+1} ${-h*.35} ${wb} 0Z`;
+    const m1=Math.sin(tt*9)*wm*.7, m2=Math.sin(tt*9+2.1)*wm*.7;
+    pin.innerHTML=`<path d="${d}" fill="${C}"/>`+(g<1?`<line x1="${m1.toFixed(1)}" y1="${(-h*.2).toFixed(1)}" x2="${m1.toFixed(1)}" y2="${(-h*.7).toFixed(1)}" stroke="${L2}" stroke-width=".9" stroke-linecap="round"/><line x1="${m2.toFixed(1)}" y1="${(-h*.25).toFixed(1)}" x2="${m2.toFixed(1)}" y2="${(-h*.6).toFixed(1)}" stroke="${L2}" stroke-width=".7" stroke-linecap="round" opacity=".7"/>`:`<path d="M${-wm+1} ${(-h*.45).toFixed(1)} Q0 ${(-h*.38).toFixed(1)} ${wm-1} ${(-h*.45).toFixed(1)}" stroke="${L2}" stroke-width="1" fill="none"/>`); };
+  const home=-168, W=-110, T1=3000, T2=7000, T3=1600, T4=4600, t0=performance.now(); let hearts=0;
+  const kill=()=>[A,Bw,wheel,pot].forEach(x=>x.g.remove());
+  const step = now => {
+    if(!A.g.isConnected){ kill(); return; }
+    const t=now-t0, ph=t/170;
+    if(t<T1){ const k=t/T1, e=ease(k), ap=Math.min(1,k/.12);
+      wheel.set(W,0,ap); potShape(0,0); pot.set(W,13.5,ap);
+      A.set(home+(W-14-home)*e,{hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, sc:.45+.55*ap, op:ap});
+      Bw.set(home,{op:0});
+    } else if(t<T1+T2){ const u=(t-T1)/1000, g=Math.min(1,u/5.6), k=(t-T1)/T2;   // throwing the pot
+      wheel.set(W,0,1); potShape(g,u); pot.set(W,13.5,1);
+      A.set(W-14,{rot:8+Math.sin(u*6)*3, hop:Math.abs(Math.sin(u*3))*.8, sc:.96});
+      const kb=Math.min(1,Math.max(0,(u-2)/2.4)), eb=ease(kb);                    // he comes out to watch
+      Bw.set(home+(W-36-home)*eb,{hop:kb<1?Math.abs(Math.sin(ph+1))*2.4:Math.abs(Math.sin(u*2))*1.2, rot:kb<1?Math.sin(ph+1)*7:0, sc:.45+.55*Math.min(1,kb/.15), op:Math.min(1,kb/.15)});
+      if(hearts<2 && u>5+hearts*1.3){ hearts++; popHeart(svg, hearts===1?W-36:W-14); }
+    } else if(t<T1+T2+T3){ const k=(t-T1-T2)/T3;          // she lifts it up to show him
+      wheel.set(W,0,1); potShape(1,0); pot.set(W-6*k,13.5+18*Math.sin(k*Math.PI/2),1);
+      A.set(W-14+4*k,{hop:3*Math.sin(k*Math.PI)}); Bw.set(W-36,{hop:Math.abs(Math.sin(k*9))*3});
+      if(hearts<3 && k>.5){ hearts++; popHeart(svg, W-10, "★"); }
+    } else { const k=Math.min(1,(t-T1-T2-T3)/T4), e=ease(k), f=Math.min(1,(1-k)/.12);
+      wheel.set(W,0,f); const ax=W-10+(home+4-(W-10))*e;
+      A.set(ax,{hop:Math.abs(Math.sin(ph))*2*f, rot:Math.sin(ph)*6, sc:.45+.55*f, op:f, left:true}); pot.set(ax-2,30+Math.abs(Math.sin(ph))*2*f,f);
+      Bw.set(W-36+(home-6-(W-36))*e,{hop:Math.abs(Math.sin(ph+1))*2*f, rot:Math.sin(ph+1)*6, sc:.45+.55*f, op:f, left:true});
+      if(k>=1){ kill(); return; } }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+/* V76: CrossFit on the lawn: barbell clean & press for one, box jumps on the WOD box for the other, then a high five */
+let cfN=0;
+function duckCrossfit(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
+  const svg=document.querySelector("svg.town"); if(townBusy(svg)) return;
+  const [na,nb]=SCENE_PAIRS[(cfN++ +1)%SCENE_PAIRS.length], A=makeWalker(svg,na), Bw=makeWalker(svg,nb), C="#b97884", L2="#f4e0e4";
+  const bar=propAt(svg,`<rect x="-15" y="-1" width="30" height="2" rx="1" fill="${C}"/><rect x="-14" y="-6" width="3.4" height="12" rx="1" fill="${C}"/><rect x="10.6" y="-6" width="3.4" height="12" rx="1" fill="${C}"/><rect x="-17.4" y="-4.5" width="2.6" height="9" rx="1" fill="${C}"/><rect x="14.8" y="-4.5" width="2.6" height="9" rx="1" fill="${C}"/>`);
+  const box=propAt(svg,`<rect x="-9" y="-13" width="18" height="13" rx="1.5" fill="${C}"/><text x="0" y="-4.4" text-anchor="middle" font-family="Oswald, 'Bebas Neue', Impact, sans-serif" font-weight="700" font-size="6.4" letter-spacing=".5" fill="${L2}">WOD</text>`);
+  const home=-168, BX=-102, AX=-146, T0=2400, T1=7200, T2=2000, T3=4600, t0=performance.now(); let hearts=0;
+  const kill=()=>[A,Bw,bar,box].forEach(x=>x.g.remove());
+  const step = now => {
+    if(!A.g.isConnected){ kill(); return; }
+    const t=now-t0, ph=t/170;
+    if(t<T0){ const k=t/T0, e=ease(k), ap=Math.min(1,k/.15);
+      bar.set(AX+2,6,ap); box.set(BX,0,ap);
+      A.set(home+(AX-home)*e,{hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, sc:.45+.55*ap, op:ap});
+      Bw.set(home+(BX-14-home)*e,{hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7, sc:.45+.55*ap, op:ap});
+    } else if(t<T0+T1){ const u=(t-T0)/1000, c=(u%2.4)/2.4;
+      // A: deadlift -> clean -> press overhead -> back down (one rep every 2.4 s)
+      const keys=[[0,6,.9],[.18,14,.95],[.32,22,.86],[.45,24,1],[.62,44,1.02],[.78,44,1.02],[.9,14,.95],[1,6,.9]];
+      let i=0; while(i<keys.length-2 && c>keys[i+1][0]) i++; const [c0,h0,s0]=keys[i],[c1,h1,s1]=keys[i+1], f=ease(Math.min(1,(c-c0)/(c1-c0)));
+      const hb=h0+(h1-h0)*f, sq=s0+(s1-s0)*f; bar.set(AX+2,hb,1);
+      A.set(AX,{sc:sq, rot:hb<20?6*(1-hb/20):0});
+      // B: box jumps, hop up onto the box and step back down
+      const cb=(u%1.6)/1.6, jx = cb<.4 ? BX-14+14*ease(cb/.4) : cb<.6 ? BX : BX-14*ease((cb-.6)/.4)+0*0;
+      const jh = cb<.4 ? 13*ease(cb/.4)+10*Math.sin(cb/.4*Math.PI) : cb<.6 ? 13 : 13*(1-ease((cb-.6)/.4)), sqB = cb<.08||(cb>.92)?.9:1;
+      Bw.set(cb<.6?jx:BX-14*ease((cb-.6)/.4), {hop:jh, sc:sqB, left:cb>=.6});
+      box.set(BX,0,1);
+    } else if(t<T0+T1+T2){ const k=(t-T0-T1)/T2, e=ease(Math.min(1,k*1.6));   // high five in the middle
+      bar.set(AX+2,6,1); box.set(BX,0,1);
+      const mid=(AX+BX-14)/2-2; A.set(AX+(mid-6-AX)*e,{hop:k>.55?7*Math.sin((k-.55)/.45*Math.PI):Math.abs(Math.sin(ph))*2, rot:k>.55?-12:0});
+      Bw.set(BX-14+(mid+6-(BX-14))*e,{hop:k>.55?7*Math.sin((k-.55)/.45*Math.PI):Math.abs(Math.sin(ph+1))*2, rot:k>.55?12:0, left:true});
+      if(hearts<1 && k>.6){ hearts++; popHeart(svg, mid, "★"); }
+    } else { const k=Math.min(1,(t-T0-T1-T2)/T3), e=ease(k), f=Math.min(1,(1-k)/.12), mid=(AX+BX-14)/2-2;
+      if(hearts<2){ hearts++; popHeart(svg, mid); }
+      bar.set(AX+2,6,f); box.set(BX,0,f);
+      A.set(mid-6+(home-(mid-6))*e,{hop:Math.abs(Math.sin(ph))*2.2*f, rot:Math.sin(ph)*7, sc:.45+.55*f, op:f, left:true});
+      Bw.set(mid+6+(home+8-(mid+6))*e,{hop:Math.abs(Math.sin(ph+1))*2.2*f, rot:Math.sin(ph+1)*7, sc:.45+.55*f, op:f, left:true});
+      if(k>=1){ kill(); return; } }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+/* V77: plane trip: they board a little plane on the lawn, the world turns under them to Paris, they enjoy it, fly back and go home */
+let tripN=0;
+function duckTrip(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
+  const svg=document.querySelector("svg.town"); if(townBusy(svg)) return; const w=svg.querySelector(".world"); if(!w) return;
+  const [na,nb]=SCENE_PAIRS[(tripN++)%SCENE_PAIRS.length], A=makeWalker(svg,na), Bw=makeWalker(svg,nb), C="#b97884", L2="#f4e0e4";
+  const plane=propAt(svg,`<path d="M-20 -6 Q-21 -12 -14 -12 L12 -12 Q20 -12 23 -7 Q20 -3 12 -3 L-14 -3 Q-20 -3 -20 -6Z" fill="${C}"/><path d="M-19 -11 L-23 -21 L-17 -21 L-11 -12Z" fill="${C}"/><path d="M-4 -7 L4 -7 L-4 2 L-9 2Z" fill="${C}"/><circle cx="3" cy="-8.6" r="1.5" fill="${L2}"/><circle cx="8" cy="-8.6" r="1.5" fill="${L2}"/><circle cx="13" cy="-8.6" r="1.5" fill="${L2}"/><path d="M17 -10 Q20.5 -9.6 21.4 -7.6 L17 -7.6Z" fill="${L2}"/><rect x="-10" y="-3" width="1.6" height="4" fill="${C}"/><rect x="11" y="-3" width="1.6" height="4" fill="${C}"/><circle cx="-9.2" cy="1.6" r="1.6" fill="${C}"/><circle cx="11.8" cy="1.6" r="1.6" fill="${C}"/>`);
+  touring=true;
+  const home=-168, PH=-96, PP=-34, SKY=[-46,56];
+  const seg=[3000,900,2300,6000,2300,900,2600,1600,2600,900,2300,6000,2300,900,4200]; const at=[0]; seg.forEach(d=>at.push(at[at.length-1]+d));
+  const t0=performance.now(); let hearts=0;
+  const kill=()=>{ [A,Bw,plane].forEach(x=>x.g.remove()); w.removeAttribute("transform"); touring=false; };
+  const rot=a=>w.setAttribute("transform",`rotate(${a.toFixed(2)} ${PCX} ${PCY})`);
+  const fly=(k,x0,u0,x1,u1)=>{ const e=ease(k); return [x0+(x1-x0)*e, u0+(u1-u0)*e]; };
+  const step = now => {
+    if(!A.g.isConnected || !w.isConnected){ kill(); return; }
+    const t=now-t0, ph=t/170; let i=0; while(i<seg.length-1 && t>=at[i+1]) i++; const k=Math.min(1,(t-at[i])/seg[i]);
+    const hide=()=>{ A.set(PH,{op:0}); Bw.set(PH,{op:0}); };
+    if(i===0){ const e=ease(k), ap=Math.min(1,k/.12); plane.set(PH,0,Math.min(1,k/.3));                 // walk to the plane
+      A.set(home+(PH-14-home)*e,{hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, sc:.45+.55*ap, op:ap});
+      Bw.set(home-10+(PH-24-home+10)*e,{hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7, sc:.45+.55*ap, op:ap}); }
+    else if(i===1){ plane.set(PH,0,1); A.set(PH-14+4*k,{sc:1-.5*k, op:1-k}); Bw.set(PH-24+8*k,{sc:1-.5*k, op:1-k}); }   // board
+    else if(i===2){ const [x,u]=fly(k,PH,0,SKY[0],SKY[1]); plane.set(x,u,1,-14*Math.sin(k*Math.PI)); hide(); }         // take off
+    else if(i===3){ rot(-180*ease(k)); plane.set(SKY[0],SKY[1]+Math.sin(t/400)*2,1); hide(); }                          // fly to Paris
+    else if(i===4){ rot(-180); const [x,u]=fly(k,SKY[0],SKY[1],PP,0); plane.set(x,u,1,8*Math.sin(k*Math.PI)); hide(); } // land
+    else if(i===5){ plane.set(PP,0,1); A.set(PP-12-4*k,{sc:.5+.5*k, op:k}); Bw.set(PP-20-8*k,{sc:.5+.5*k, op:k}); }    // get out
+    else if(i===6){ const e=ease(k); A.set(PP-16+(4-PP+16)*e,{hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7}); Bw.set(PP-28+(-8-PP+28)*e,{hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7}); plane.set(PP,0,1); }
+    else if(i===7){ A.set(4,{hop:Math.abs(Math.sin(ph*.7))*3, rot:-10*Math.sin(k*Math.PI), left:true}); Bw.set(-8,{hop:Math.abs(Math.sin(ph*.7+1))*3, rot:10*Math.sin(k*Math.PI)}); plane.set(PP,0,1);
+      if(hearts<3 && k>hearts*.3){ hearts++; popHeart(svg, -2+(hearts-2)*6); } }                                    // enjoy Paris
+    else if(i===8){ const e=ease(k); A.set(4+(PP-14-4)*e,{hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, left:true}); Bw.set(-8+(PP-24+8)*e,{hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7, left:true}); plane.set(PP,0,1); }
+    else if(i===9){ plane.set(PP,0,1); A.set(PP-14+4*k,{sc:1-.5*k, op:1-k}); Bw.set(PP-24+8*k,{sc:1-.5*k, op:1-k}); }   // board again
+    else if(i===10){ const [x,u]=fly(k,PP,0,SKY[0],SKY[1]); plane.set(x,u,1,-14*Math.sin(k*Math.PI)); hide(); }
+    else if(i===11){ rot(-180-180*ease(k)); plane.set(SKY[0],SKY[1]+Math.sin(t/400)*2,1); hide(); }                     // fly home
+    else if(i===12){ w.removeAttribute("transform"); const [x,u]=fly(k,SKY[0],SKY[1],PH,0); plane.set(x,u,1,8*Math.sin(k*Math.PI)); hide(); }
+    else if(i===13){ plane.set(PH,0,1); A.set(PH-12-4*k,{sc:.5+.5*k, op:k, left:true}); Bw.set(PH-20-8*k,{sc:.5+.5*k, op:k, left:true}); }
+    else { const e=ease(k), f=Math.min(1,(1-k)/.15); plane.set(PH,0,Math.min(1,(1-k)/.4));                          // walk home, in the door
+      A.set(PH-16+(home-PH+16)*e,{hop:Math.abs(Math.sin(ph))*2.4*f, rot:Math.sin(ph)*7, sc:.45+.55*f, op:f, left:true});
+      Bw.set(PH-28+(home+8-PH+28)*e,{hop:Math.abs(Math.sin(ph+1))*2.4*f, rot:Math.sin(ph+1)*7, sc:.45+.55*f, op:f, left:true});
+      if(k>=1){ kill(); return; } }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+/* V78: bubble bath: they hop into a clawfoot tub on the lawn, bubbles and hearts float up, a little rubber duck bobs, then home */
+let tubN=0;
+function duckTub(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
+  const svg=document.querySelector("svg.town"); if(townBusy(svg)) return;
+  const [na,nb]=SCENE_PAIRS[(tubN++ +3)%SCENE_PAIRS.length], A=makeWalker(svg,na), Bw=makeWalker(svg,nb), C="#b97884", L2="#f4e0e4";
+  const T=-122;
+  const tub=propAt(svg,`<path d="M-21 -17 H21 Q21 -3 11 -2 H-11 Q-21 -3 -21 -17Z" fill="${C}"/><rect x="-23" y="-19" width="46" height="3.4" rx="1.7" fill="${C}"/><circle cx="-13" cy="-1" r="2.2" fill="${C}"/><circle cx="13" cy="-1" r="2.2" fill="${C}"/><path d="M19 -19 V-27 Q19 -30 15 -30" stroke="${C}" stroke-width="1.6" fill="none"/>`+
+    [-16,-10,-4,2,8,14].map((x,i)=>`<circle cx="${x}" cy="${-20-(i%2)*1.6}" r="${3.6+(i%3)*.6}" fill="${L2}"/>`).join(""));
+  const ducky=propAt(svg,`<ellipse cx="0" cy="-2" rx="3.6" ry="2.2" fill="#f2c94c"/><circle cx="2" cy="-5" r="2" fill="#f2c94c"/><path d="M3.6 -5 L5.6 -4.4 L3.6 -3.8Z" fill="#e8955a"/>`);
+  const home=-168, T0=3200, T1=1400, T2=7600, T3=1200, T4=4200, t0=performance.now(); let bub=0, hearts=0;
+  const kill=()=>{ [A,Bw,tub,ducky].forEach(x=>x.g.remove()); svg.querySelectorAll(".tubbub").forEach(x=>x.remove()); };
+  svg.appendChild(tub.g); // keep the tub in front of the Duckoos so they sit inside it
+  const step = now => {
+    if(!A.g.isConnected){ kill(); return; }
+    const t=now-t0, ph=t/170;
+    if(t<T0){ const k=t/T0, e=ease(k), ap=Math.min(1,k/.12); tub.set(T,0,Math.min(1,k/.3)); ducky.set(T+4,17,0);
+      A.set(home+(T-30-home)*e,{hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, sc:.45+.55*ap, op:ap});
+      Bw.set(home-12+(T-40-home+12)*e,{hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7, sc:.45+.55*ap, op:ap}); }
+    else if(t<T0+T1){ const k=(t-T0)/T1, a=Math.min(1,k*1.6), b=Math.max(0,Math.min(1,(k-.3)*1.6));   // hop in, one after the other
+      tub.set(T,0,1); ducky.set(T+4,17,k);
+      A.set(T-30+(T+6+30)*ease(a),{hop:a<1?14*Math.sin(a*Math.PI)+4*ease(a):4});
+      Bw.set(T-40+(T-8+40)*ease(b),{hop:b<1?16*Math.sin(b*Math.PI)+4*ease(b):4}); }
+    else if(t<T0+T1+T2){ const u=(t-T0-T1)/1000;                                                       // soak: lean together, bubbles, hearts
+      tub.set(T,0,1); ducky.set(T+2+5*Math.sin(u*1.3),17+1.2*Math.sin(u*3),1,8*Math.sin(u*2));
+      const lean=Math.min(1,u/1.2); A.set(T+6-2*lean,{hop:4+Math.sin(u*2)*.8, rot:-14*lean, left:true}); Bw.set(T-8+2*lean,{hop:4+Math.sin(u*2+1)*.8, rot:14*lean});
+      if(bub<Math.floor(u/.3)){ bub++; const b=propAt(svg,`<circle r="${1.6+Math.random()*2.2}" fill="none" stroke="${C}" stroke-width=".8"/>`,"tubbub"); const x0=T-18+Math.random()*36, born=performance.now();
+        const fl=()=>{ const q=(performance.now()-born)/2200; if(q>=1||!b.g.isConnected){ b.g.remove(); return; } b.set(x0+Math.sin(q*9)*3,20+q*34,1-q); requestAnimationFrame(fl); }; requestAnimationFrame(fl); }
+      if(hearts<4 && u>1.2+hearts*1.5){ hearts++; popHeart(svg, T-1); } }
+    else if(t<T0+T1+T2+T3){ const k=(t-T0-T1-T2)/T3;                                                   // hop out
+      tub.set(T,0,1); ducky.set(T+4,17,1-k);
+      A.set(T+6+(T+30-T-6)*ease(k),{hop:4-4*ease(k)+12*Math.sin(k*Math.PI)}); Bw.set(T-8+(T+20-T+8)*ease(k),{hop:4-4*ease(k)+12*Math.sin(k*Math.PI)}); }
+    else { const k=Math.min(1,(t-T0-T1-T2-T3)/T4), e=ease(k), f=Math.min(1,(1-k)/.12); tub.set(T,0,Math.min(1,(1-k)/.5));
+      A.set(T+30+(home-T-30)*e,{hop:Math.abs(Math.sin(ph))*2.2*f, rot:Math.sin(ph)*7, sc:.45+.55*f, op:f, left:true});
+      Bw.set(T+20+(home+10-T-20)*e,{hop:Math.abs(Math.sin(ph+1))*2.2*f, rot:Math.sin(ph+1)*7, sc:.45+.55*f, op:f, left:true});
+      if(k>=1){ kill(); return; } }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+/* V78: dancing on the lawn: music notes, side steps, twirls, and a dip at the end */
+let danceN=0;
+function duckDance(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
+  const svg=document.querySelector("svg.town"); if(townBusy(svg)) return;
+  const [na,nb]=SCENE_PAIRS[(danceN++ +1)%SCENE_PAIRS.length], A=makeWalker(svg,na), Bw=makeWalker(svg,nb);
+  const home=-168, M=-124, T0=3000, T1=9600, T2=1800, T3=4200, t0=performance.now(); let notes=0;
+  const kill=()=>[A,Bw].forEach(x=>x.g.remove());
+  const step = now => {
+    if(!A.g.isConnected){ kill(); return; }
+    const t=now-t0, ph=t/170;
+    if(t<T0){ const k=t/T0, e=ease(k), ap=Math.min(1,k/.12);
+      A.set(home+(M+9-home)*e,{hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, sc:.45+.55*ap, op:ap});
+      Bw.set(home-10+(M-9-home+10)*e,{hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7, sc:.45+.55*ap, op:ap}); }
+    else if(t<T0+T1){ const u=(t-T0)/1000, beat=u/.5, bp=beat%1, part=Math.floor(u/2.4)%4;
+      const bounce=Math.abs(Math.sin(beat*Math.PI))*4;
+      if(notes<Math.floor(u/.8)){ notes++; popHeart(svg, M-14+((notes*11)%28), notes%2?"♪":"♫"); }
+      if(part===0){ const sx=Math.sin(beat*Math.PI/2)*7; A.set(M+9+sx,{hop:bounce, rot:Math.sin(beat*Math.PI)*12}); Bw.set(M-9+sx,{hop:bounce, rot:Math.sin(beat*Math.PI)*12}); }        // side steps together
+      else if(part===1){ const fl=Math.floor(beat*2)%2===0; A.set(M+9,{hop:bounce*1.2, left:fl}); Bw.set(M-9,{hop:bounce*1.2, left:!fl}); }                               // twirls
+      else if(part===2){ const sw=Math.sin(beat*Math.PI); A.set(M+9-3*Math.abs(sw),{hop:bounce*.6, rot:-16*sw, left:true}); Bw.set(M-9+3*Math.abs(sw),{hop:bounce*.6, rot:-16*sw}); } // sway close
+      else { const j=Math.abs(Math.sin(beat*Math.PI*.5)); A.set(M+9,{hop:9*j, rot:8*Math.sin(beat*Math.PI)}); Bw.set(M-9,{hop:9*(1-j), rot:-8*Math.sin(beat*Math.PI)}); } }      // jumps, taking turns
+    else if(t<T0+T1+T2){ const k=(t-T0-T1)/T2, d=Math.sin(Math.min(1,k*1.5)*Math.PI/2)*(k>.8?1-(k-.8)/.2:1);   // the dip
+      A.set(M+6,{rot:-18*d, left:true}); Bw.set(M-6-2*d,{rot:-55*d, hop:-2*d});
+      if(notes<99 && k>.4){ notes=99; popHeart(svg, M); } }
+    else { const k=Math.min(1,(t-T0-T1-T2)/T3), e=ease(k), f=Math.min(1,(1-k)/.12);
+      A.set(M+6+(home-M-6)*e,{hop:Math.abs(Math.sin(ph))*2.6*f, rot:Math.sin(ph)*9, sc:.45+.55*f, op:f, left:true});
+      Bw.set(M-6+(home+10-M+6)*e,{hop:Math.abs(Math.sin(ph+1))*2.6*f, rot:Math.sin(ph+1)*9, sc:.45+.55*f, op:f, left:true});
+      if(k>=1){ kill(); return; } }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
 /* one scene at a time, about every 22 s: kiss, cats, a stroll, a trip around the world */
-const SCENES=[()=>duckKiss(), duckCats, duckBBQ, duckWalk, duckHyrox, worldTour]; let sceneN=0; window.__town={worldTour,duckCats,duckKiss,duckWalk,duckBBQ,duckHyrox,busy:()=>touring};
+const SCENES=[()=>duckKiss(), duckCats, duckBBQ, duckPottery, duckMovie, duckCrossfit, duckWalk, duckHyrox, worldTour, duckTrip, duckTub, duckDance]; window.__town={worldTour,duckCats,duckKiss,duckWalk,duckBBQ,duckMovie,duckHyrox,duckPottery,duckCrossfit,duckTrip,duckTub,duckDance,busy:()=>touring};
+/* V77: random order: every scene plays once (shuffled) before any repeats, never the same one twice in a row */
+let sceneBag=[], lastScene=-1;
+function nextScene(){ if(!sceneBag.length){ sceneBag=SCENES.map((_,i)=>i); for(let i=sceneBag.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [sceneBag[i],sceneBag[j]]=[sceneBag[j],sceneBag[i]]; } if(sceneBag[0]===lastScene) sceneBag.push(sceneBag.shift()); } lastScene=sceneBag.shift(); return SCENES[lastScene]; }
 let sceneTimer = setTimeout(sceneTick, 5000);
-function sceneTick(){ clearTimeout(sceneTimer); if(!document.hidden && !townBusy(document.querySelector("svg.town"))) SCENES[(sceneN++)%SCENES.length](); sceneTimer=setTimeout(sceneTick, 22000); }
+function sceneTick(){ clearTimeout(sceneTimer); if(window.__noScenes) return; if(!document.hidden && !townBusy(document.querySelector("svg.town"))) nextScene()(); sceneTimer=setTimeout(sceneTick, 22000); }
 /* V75: every time a tab opens, the next scene in the list plays right away */
 function sceneSoon(){ clearTimeout(sceneTimer); sceneTimer=setTimeout(sceneTick, 900); }
 /* ---------- UI shell ---------- */
