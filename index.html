@@ -1246,13 +1246,23 @@ function applyPartner(P, partner){
   for(const e of ex){ const o=(P.ex||[]).find(x=>x.month===e.month && x.from===e.from), l=S.ex.find(x=>x.month===e.month && x.from===e.from);
     e.answer = (l&&l.answer) || (o&&o.answer) || null; }
   S.ex=ex;
+  /* V88: ¿Quién es más probable?: both phones play the same 5 of the 50 and see each other's answers; each phone pays its own player once */
+  if(P.match){ S.match ||= {}; const cp=x=>JSON.parse(JSON.stringify(x));
+    for(const k in P.match){ const pr=P.match[k], lr=S.match[k]; if(!pr || !pr.qs) continue;
+      if(!lr){ S.match[k]=cp(pr); }
+      else if(lr.qs.join("|")!==pr.qs.join("|")){ const la=lr.her||lr.andrew, pa=pr.her||pr.andrew;
+        if((pa && !la) || (!!pa===!!la && (pr.at||0) < (lr.at||Infinity))) S.match[k]=cp(pr); }
+      else { if(pr[partner]) lr[partner]=cp(pr[partner]); if(pr.result && !lr.result) lr.result=cp(pr.result); }
+      const r=S.match[k];
+      if(r.result && r.result.by!==me() && !(r.result.paid||{})[me()]){ (r.result.paid ||= {})[me()]=true; ST().coins += r.result.coins||0; if(r.result.bonus && !awardRaw("regular","match")) ST().coins++; } }
+    S.matchUsed=[...new Set([...(S.matchUsed||[]), ...(P.matchUsed||[])])]; }
 }
 let syncBusy=false, partnerAt=0;
 async function syncPartner(){ if(!HOSTED || !S.device || syncBusy) return; syncBusy=true;
   try{ const partner=S.device==="her"?"andrew":"her", r=await fetch("/api/state?who="+partner,{cache:"no-store"}).then(r=>r.json());
-    if(r && r.state && r.at!==partnerAt){ const before=JSON.stringify([S.her,S.letter,S.secrets,S.stkMeta,S.custom,S.calm,S.notes,S.agreements,S.wins,S.checkins,S.jar,S.ex,S.wallet,S.tripUnlocked]);
+    if(r && r.state && r.at!==partnerAt){ const snap=()=>JSON.stringify([S.her,S.letter,S.secrets,S.stkMeta,S.custom,S.calm,S.notes,S.agreements,S.wins,S.checkins,S.jar,S.ex,S.wallet,S.tripUnlocked,S.match,S.stk]), before=snap();
       applyPartner(r.state, partner); partnerAt=r.at;
-      const changed = JSON.stringify([S.her,S.letter,S.secrets,S.stkMeta,S.custom,S.calm,S.notes,S.agreements,S.wins,S.checkins,S.jar,S.ex,S.wallet,S.tripUnlocked])!==before;
+      const changed = snap()!==before;
       if(!changed){ syncBusy=false; return; }   // only real changes are saved (no back-and-forth between the phones)
       save(); const ae=document.activeElement, typing=ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);
       if(!typing && $("#sheet").hidden && !document.getElementById("tour") && !document.querySelector(".stage, .quiz")) render(); } }catch(e){}
@@ -2139,7 +2149,7 @@ function renderPlay(){
     if(id==="wait") return openWait();
     if(b.getAttribute("aria-disabled")==="true") return toast(MASTERY.includes(id)&&!remaining(id).length?t("allDone"):id==="deep"&&S.months[monthKey()]?t("monthDone"):t("weekNext",{d:nextReset()}));
     curGame=id;
-    ({trivia:()=>openQuiz("trivia"), love:openLove, scratch:openScratch, deep:openDeep, finish:openMatch})[id]();
+    ({trivia:()=>openQuiz("trivia"), love:openLove, scratch:openScratch, deep:openDeep, finish:()=>HOSTED ? syncPartner().finally(openMatch) : openMatch()})[id]();
   });
 }
 const GAMES_A = [
@@ -2154,16 +2164,16 @@ function renderAndrewPlay(){
   const has = {trivia:H.trivia.length, love:H.love.length, finish:H.finish.length, deep:1, scratch:1};
   $("#view").innerHTML = `
     ${triesHTML()}
-    ${cloudTitle(t("gamesA"))}<p class="lead">${hasC?t("pickA"):t("needHer")}</p>
+    ${cloudTitle(t("gamesA"))}<p class="lead">${hasC||H.trivia.length||H.love.length?t("pickA"):t("needHer")}</p>
     ${planetTop()}<div class="games">${GAMES_A.map((g,i)=>{
-      const empty = g.id!=="deep" && g.id!=="finish" && (!hasC || !has[g.id]), monthly = g.id==="deep" && deepDone, allDone = !empty && MASTERY.includes(g.id) && !remaining(g.id).length; let off = (left<=0 && g.id!=="deep") || empty || monthly || allDone;
+      const empty = g.id!=="deep" && g.id!=="finish" && !has[g.id] && !(g.id==="scratch" && hasC),   /* V88: her questions are enough to play; with no coupon of hers yet a win pays a coin */ monthly = g.id==="deep" && deepDone, allDone = !empty && MASTERY.includes(g.id) && !remaining(g.id).length; let off = (left<=0 && g.id!=="deep") || empty || monthly || allDone;
       let tag = g.id==="deep" && deepPending ? t("exTag") : empty ? t("soon") : allDone ? t("allDone") : monthly ? t("monthDone") : left<=0 && g.id!=="deep" ? t("locked") : "";
       if(g.id==="finish"){ const mc=matchCard(left); off=mc.off; tag=mc.tag; }
       return gameCard(g, {attr:"ag", why: empty?"empty":allDone?"all":monthly?"month":"week", off, tag, num:String(i+1).padStart(2,"0"), q:t("g_"+g.id+"_A"), btn:g.id==="deep"?"openBtn":"playBtn"});}).join("")}</div>${pushCardHTML()}<div class="duo">${streakHTML()}${stkCardHTML()}${(()=>{ const l=specialListA(); return waitTileHTML(l.some(x=>x.ready&&!x.claimed), l).replace('data-game="wait"','data-await'); })()}</div>`;
   document.querySelectorAll("[data-ag]").forEach(b=>b.onclick=()=>{
     if(b.getAttribute("aria-disabled")==="true") return toast(b.dataset.why==="empty"?t("needHer"):b.dataset.why==="all"?t("allDone"):b.dataset.why==="month"?t("monthDone"):t("weekNext",{d:nextReset()}));
     curGame=b.dataset.ag;
-    ({trivia:()=>openQuiz("trivia"), love:openLove, scratch:openScratch, deep:openDeep, finish:openMatch})[b.dataset.ag]();
+    ({trivia:()=>openQuiz("trivia"), love:openLove, scratch:openScratch, deep:openDeep, finish:()=>HOSTED ? syncPartner().finally(openMatch) : openMatch()})[b.dataset.ag]();
   });
 }
 function useTry(game, won){ const w=week(); w.used++; w.log.push({game,won,at:Date.now()}); const wk=(isA()?S.aWeeks:S.weeks); (wk[weekKey()] ||= {used:0,extra:0,log:[]}).used++; save(); checkStreak(); }
@@ -2296,7 +2306,7 @@ const MATCH = {ask:5, opts:["andrew","her","both","none"]};
 function matchPool(){ return [...C.finish.map(x=>({key:x.en, en:x.en, es:x.es})), ...S.her.finish.map(x=>({key:"h"+x.at, en:x.s, es:x.s}))]; }
 function matchRound(){ S.match ||= {}; S.matchUsed ||= []; const k="P"+periodIdx(); let r=S.match[k];
   if(!r){ const pool=matchPool(); if(pool.length<MATCH.ask) return null; const used=new Set(S.matchUsed); let fresh=pool.filter(q=>!used.has(q.key)); if(fresh.length<MATCH.ask){ S.matchUsed=[]; fresh=pool; }
-    const qs=shuffle(fresh).slice(0,MATCH.ask).map(q=>q.key); S.matchUsed.push(...qs); r=S.match[k]={qs, her:null, andrew:null, result:null}; save(); }
+    const qs=shuffle(fresh).slice(0,MATCH.ask).map(q=>q.key); S.matchUsed.push(...qs); r=S.match[k]={qs, her:null, andrew:null, result:null, at:Date.now()}; save(); }
   return r; }
 function matchQ(key){ const q=matchPool().find(x=>x.key===key); return q ? (L()==="es"?q.es:q.en) : key; }
 function matchState(){ const r=(S.match||{})["P"+periodIdx()]; if(!r) return "new"; if(r.result) return "done"; if(r[me()]) return "waiting"; if(r[other()]) return "yourTurn"; return "new"; }
@@ -2332,8 +2342,9 @@ function openMatch(){
     r[me()] = {ans:mine, at:Date.now()};
     if(!theirs){ save(); notify(`${nameOf(me())} played Who's more likely? Answer the same 5 and see if you match.`, `${nameOf(me())} jugó ¿Quién es más probable? Responde las mismas 5 y vean si coinciden.`); return matchSaved(); }
     const n = marks.filter(x=>x===true).length, coins = Math.floor(n/2), bonus = n===r.qs.length;
-    ["her","andrew"].forEach(p=>asPlayer(p, ()=>{ ST().coins += coins; if(bonus && !awardRaw("regular","match")) ST().coins++; }));
-    r.result = {n, coins, bonus, by:me(), at:Date.now(), seen:{}};
+    const payTo = HOSTED ? [me()] : ["her","andrew"];
+    payTo.forEach(p=>asPlayer(p, ()=>{ ST().coins += coins; if(bonus && !awardRaw("regular","match")) ST().coins++; }));
+    r.result = {n, coins, bonus, by:me(), at:Date.now(), seen:{}, paid:Object.fromEntries(payTo.map(p=>[p,true]))};
     const w=week(); if(w.log.length) w.log[w.log.length-1].won = n>0; save(); badge();
     notify(`Who's more likely: you matched ${n} of ${r.qs.length}. +${coins} coins each${bonus?" and a bonus coupon":""}.`, `¿Quién es más probable?: coincidieron en ${n} de ${r.qs.length}. +${coins} monedas para cada uno${bonus?" y un cupón de bono":""}.`);
     matchResult(r, true);

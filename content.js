@@ -159,7 +159,7 @@ window.CONTENT = {
     { id: "herbday", month: 1, day: 7, duck: "richwoman", en: "Your birthday", es: "Tu cumpleaños" },
     { id: "valentine", month: 2, day: 14, duck: "peach", en: "Valentine's Day", es: "Día de San Valentín" }
   ],
-  herSideGoal: { deep: 3, coupons: 10, bigcoupons: 7, trivia: 10, love: 8, finish: 8 }
+  herSideGoal: { deep: 3, coupons: 10, bigcoupons: 7, trivia: 25, love: 10, finish: 8 }
   ,
   // Therapy chapter: quick reminders based on Fight Right (John & Julie Gottman). Paraphrased, not quotes.
   fightRight: [
