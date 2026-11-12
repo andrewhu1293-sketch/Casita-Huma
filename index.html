@@ -994,6 +994,8 @@ h3.hx-ch span{display:grid;place-items:center;width:30px;height:30px;border-radi
 /* V70: kiss hearts on the planet + psychedelic celebration */
 .bbqpuff circle,circle.bbqpuff{animation:bbqup 2.2s ease-out both;transform-box:fill-box;transform-origin:50% 50%}
 @keyframes bbqup{0%{opacity:0;transform:translateY(0) scale(.5)}25%{opacity:.95}100%{opacity:0;transform:translateY(-26px) scale(1.8)}}
+.town .flash{fill:#fffdf8;animation:flash .7s ease-out both;transform-box:fill-box;transform-origin:50% 50%}
+@keyframes flash{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(3.2)}100%{opacity:0;transform:scale(5)}}
 .kissheart{fill:#b97884;animation:kissup 2.4s ease-out both;transform-box:fill-box;transform-origin:50% 50%}
 @keyframes kissup{0%{opacity:0;transform:translateY(6px) scale(.4)}20%{opacity:1;transform:translateY(0) scale(1.2)}100%{opacity:0;transform:translateY(-34px) scale(.9)}}
 html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infinite}
@@ -1053,7 +1055,7 @@ html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infi
   <button type="button" data-tab="wallet"><img src="ducks/ketchup.webp" alt=""><span><span data-t="tabWallet"></span><span id="wbadge" class="badge" hidden></span></span></button>
   <button type="button" data-tab="therapy"><img src="ducks/rabbit.webp" alt=""><span data-t="tabTherapy"></span></button>
   <button type="button" data-tab="album"><img src="ducks/jamtoast.webp" alt=""><span data-t="tabAlbum"></span></button>
-  <button type="button" data-tab="her"><img src="ducks/apron.webp" alt=""><span data-t="tabHer"></span></button>
+  <button type="button" data-tab="her"><img src="ducks/richwoman.webp" alt=""><span data-t="tabHer"></span></button>
 </div></nav>
 
 <div id="splash" aria-hidden="true"><div class="sp-inner">
@@ -1379,8 +1381,8 @@ const TOWN = (()=>{
     const fr=(ang,len)=>{ const r=ang*Math.PI/180, ex=tx+Math.cos(r)*len, ey=-h+Math.sin(r)*len, cx=tx+Math.cos(r)*len*.5, cy=-h+Math.sin(r)*len*.5-7*s; return `<path d="M${tx} ${-h} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}" stroke="${B}" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`; };
     return `<g class="sway ${cls}"><path d="M0 0 Q${2*s*lean} ${-h*.5} ${tx} ${-h}" stroke="${B}" stroke-width="${3*s}" fill="none" stroke-linecap="round"/>`+
       [[-170,15],[-140,17],[-100,13],[-60,13],[-30,17],[0,15]].map(([a,l])=>fr(a,l*s)).join("")+`<circle cx="${tx}" cy="${-h+1*s}" r="${2.4*s}" fill="${B}"/></g>`; };
-  const hollywood = (s=1) => `<path d="M${-80*s} 2 Q${-50*s} ${-38*s} ${-8*s} ${-44*s} Q${36*s} ${-48*s} ${80*s} 2Z" fill="${A}"/>`+
-      `<text x="0" y="${-28*s}" text-anchor="middle" font-family="Oswald, 'Bebas Neue', Impact, sans-serif" font-weight="700" font-size="${12*s}" letter-spacing="${1.4*s}" fill="${Wn}" transform="rotate(-4 0 ${-28*s})">HOLLYWOOD</text>`;
+  const hollywood = (s=1) => { const e=(R-Math.sqrt(R*R-(80*s)**2))+3; return `<path d="M${-80*s} ${e} Q${-50*s} ${-38*s} ${-8*s} ${-44*s} Q${36*s} ${-48*s} ${80*s} ${e} Q0 ${-e+6} ${-80*s} ${e}Z" fill="${A}"/>`+
+      `<text x="0" y="${-28*s}" text-anchor="middle" font-family="Oswald, 'Bebas Neue', Impact, sans-serif" font-weight="700" font-size="${12*s}" letter-spacing="${1.4*s}" fill="${Wn}" transform="rotate(-4 0 ${-28*s})">HOLLYWOOD</text>`; };
   const observatory = (s=1) => `<rect x="${-22*s}" y="${-12*s}" width="${44*s}" height="${12*s}" fill="${A}"/><path d="M${-9*s} ${-12*s} A${9*s} ${9*s} 0 0 1 ${9*s} ${-12*s}Z" fill="${B}"/>`+
       `<path d="M${-22*s} ${-12*s} A${5*s} ${5*s} 0 0 1 ${-12*s} ${-12*s}Z M${12*s} ${-12*s} A${5*s} ${5*s} 0 0 1 ${22*s} ${-12*s}Z" fill="${B}"/><rect x="${-2*s}" y="${-7*s}" width="${4*s}" height="${7*s}" rx="${2*s}" fill="${Wn}"/>`;
   const capitol = (s=1) => { let d=""; for(let i=0;i<7;i++){ const w=(15-i*0.9)*s; d+=`<rect x="${-w/2}" y="${-(i+1)*6*s}" width="${w}" height="${5*s}" rx="${2.5*s}" fill="${i%2?B:A}"/>`; }
@@ -1433,6 +1435,13 @@ const TOWN = (()=>{
       `<rect x="${-w/2}" y="${-h+11.5*s}" width="${w}" height="${1.4*s}" fill="${B}"/><rect x="${-4*s}" y="${-9*s}" width="${8*s}" height="${9*s}" rx="${4*s}" fill="${B}"/>`; };
   const arc = (s=1) => `<path d="M${-17*s} 0 V${-30*s} H${17*s} V0 H${7*s} V${-12*s} A${7*s} ${7*s} 0 0 0 ${-7*s} ${-12*s} V0Z" fill="${B}"/><rect x="${-19*s}" y="${-35*s}" width="${38*s}" height="${5*s}" rx="1" fill="${B}"/><rect x="${-14*s}" y="${-26*s}" width="${28*s}" height="${2*s}" fill="${Wn}" opacity=".6"/>`;
   const lamp = (s=1) => `<rect x="${-.9*s}" y="${-24*s}" width="${1.8*s}" height="${24*s}" fill="${B}"/><path d="M${-3.5*s} ${-24*s} L0 ${-30*s} L${3.5*s} ${-24*s}Z" fill="${B}"/><rect x="${-3*s}" y="${-2*s}" width="${6*s}" height="${2*s}" fill="${B}"/>`;
+  /* V79: mountains for the road trip + hike (snow caps, zig-zag trail, summit flag) */
+  const mountain = (s=1) => { const H=74*s, W=86*s, e=(R-Math.sqrt(R*R-W*W))+3;
+    return `<path d="M${-W*0.2} ${e} L${W*0.42} ${-H*0.72} Q${W*0.5} ${-H*0.78} ${W*0.58} ${-H*0.7} L${W*1.15} ${e}Z" fill="${B}"/>`+
+      `<path d="M${-W} ${e} L${-W*0.08} ${-H} Q0 ${-H-4*s} ${W*0.08} ${-H} L${W} ${e} Q0 ${-e+8} ${-W} ${e}Z" fill="${A}"/>`+
+      `<path d="M${-W*0.2} ${-H*0.78} L${-W*0.08} ${-H} Q0 ${-H-4*s} ${W*0.08} ${-H} L${W*0.2} ${-H*0.78} L${W*0.1} ${-H*0.72} L0 ${-H*0.8} L${-W*0.1} ${-H*0.7}Z" fill="${Wn}"/>`+
+      `<path d="M${-W*0.62} ${-H*0.06} L${-W*0.18} ${-H*0.24} L${-W*0.44} ${-H*0.42} L${-W*0.06} ${-H*0.58}" stroke="${Wn}" stroke-width="${1.6*s}" fill="none" stroke-dasharray="${3*s} ${2.6*s}" stroke-linecap="round"/>`+
+      `<rect x="${-0.6*s}" y="${-H-16*s}" width="${1.2*s}" height="${13*s}" fill="${B}"/><path d="M${0.6*s} ${-H-16*s} L${9*s} ${-H-12.5*s} L${0.6*s} ${-H-9*s}Z" fill="${B}"/>`; };
   const tree = (s=1, cls="") => `<g class="sway ${cls}"><rect x="${-2.6*s}" y="${-16*s}" width="${5.2*s}" height="${16*s}" rx="${2.6*s}" fill="${B}"/><circle cx="0" cy="${-26*s}" r="${13*s}" fill="${A}"/><circle cx="${-8*s}" cy="${-19*s}" r="${8*s}" fill="${A}"/><circle cx="${8*s}" cy="${-20*s}" r="${8.5*s}" fill="${A}"/></g>`;
   const pine = (s=1, cls="") => `<g class="sway ${cls}"><rect x="${-2.2*s}" y="${-10*s}" width="${4.4*s}" height="${10*s}" rx="2" fill="${B}"/><path d="M0 ${-46*s} Q${3*s} ${-40*s} ${11*s} ${-24*s} Q${14*s} ${-16*s} ${15*s} ${-12*s} Q0 ${-7*s} ${-15*s} ${-12*s} Q${-14*s} ${-16*s} ${-11*s} ${-24*s} Q${-3*s} ${-40*s} 0 ${-46*s}Z" fill="${B}"/></g>`;
   const bush = (s=1) => `<circle cx="${-6*s}" cy="${-5*s}" r="${6*s}" fill="${A}"/><circle cx="${4*s}" cy="${-6*s}" r="${7*s}" fill="${A}"/><circle cx="${12*s}" cy="${-4*s}" r="${4.5*s}" fill="${A}"/>`;
@@ -1443,8 +1452,7 @@ const TOWN = (()=>{
     [-72, chinese(.95)], [-30, palm(.9,"b")],
     [36, cinema(.95)], [80, colombian(.9)],
     [126, kbbq(1)], [172, palm(1.05)], [206, tree(.95,"b")],
-    [250, house(.95)], [288, palm(1,"c",-1)], [318, bush(1)], [350, house(1)],
-    [392, tree(1.05)], [432, house(.95,true)], [470, pine(1,"b")]
+    [250, house(.95)], [288, palm(1,"c",-1)]
   ];
   const gA = (deg, inner) => { const a=deg*Math.PI/180, x=CX+R*Math.sin(a), y=cy-R*Math.cos(a); return `<g transform="translate(${x.toFixed(1)} ${(y+1).toFixed(1)}) rotate(${deg.toFixed(2)})">${inner}</g>`; };
   const at = (c, dx) => c + Math.asin(dx/R)*180/Math.PI;
@@ -1457,10 +1465,13 @@ const TOWN = (()=>{
     [-215, palm(1.1,"b")], [-176, lifeguard(1)], [-140, palm(1,"c",-1)], [-108, palm(.9)],
     [-40, pier(1.1)], [52, smsign(1.1)], [100, palm(1.15,"b",-1)], [132, palm(.95,"c")], [172, lifeguard(.95)], [210, palm(1.05)]
   ]);
+  const MOUNT = hood(60, [
+    [-200, pine(1.1,"b")], [-176, pine(.9,"c")], [-112, pine(1)], [24, mountain(1)], [128, pine(1.1,"c")], [150, pine(.9)], [176, mountain(.7)], [212, pine(1,"b")]
+  ]);
   const PARIS = hood(180, [
     [-178, tree(.95,"b")], [-148, haussmann(1)], [-116, haussmann(.92)], [-90, lamp(1)], [8, eiffel(1)], [62, arc(1)], [96, lamp(1)], [126, haussmann(1)], [158, tree(1,"c")], [186, haussmann(.95)]
   ]);
-  return `<svg class="town" viewBox="0 0 1000 140" aria-hidden="true"><defs><clipPath id="worldclip"><rect x="-200" y="-400" width="1400" height="600"/></clipPath><filter id="mono" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.0918 0.1805 0.0337 0 0.659 0.1542 0.3033 0.0565 0 0.376 0.1413 0.2779 0.0518 0 0.431 0 0 0 1 0"/></filter></defs><g clip-path="url(#worldclip)"><g class="world">${items.map(([dx,html])=>g(dx,html)).join("")}${LA}${SM}${PARIS}</g></g></svg>`;
+  return `<svg class="town" viewBox="0 0 1000 140" aria-hidden="true"><defs><clipPath id="worldclip"><rect x="-200" y="-400" width="1400" height="600"/></clipPath><filter id="mono" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.0918 0.1805 0.0337 0 0.659 0.1542 0.3033 0.0565 0 0.376 0.1413 0.2779 0.0518 0 0.431 0 0 0 1 0"/></filter></defs><g clip-path="url(#worldclip)"><g class="world">${items.map(([dx,html])=>g(dx,html)).join("")}${LA}${SM}${PARIS}${MOUNT}</g></g></svg>`;
 })();
 function planetTop(){ return `<div class="planet-top" aria-hidden="true">${TOWN}</div>`; }
 /* a little Duckoo walks from one house to the next along the planet, once a minute.
@@ -1881,8 +1892,59 @@ function duckDance(){
   };
   requestAnimationFrame(step);
 }
+/* V79: road trip: out of the house into a little car, the planet turns to the mountains, they hike up, take a photo at the top, hike down and drive home */
+let hikeN=0;
+function carHTML(spin, flip, heads){ const C="#b97884", L2="#f4e0e4", sp=a=>`<line x1="${(Math.cos(a)*2.6).toFixed(2)}" y1="${(Math.sin(a)*2.6).toFixed(2)}" x2="${(-Math.cos(a)*2.6).toFixed(2)}" y2="${(-Math.sin(a)*2.6).toFixed(2)}" stroke="${L2}" stroke-width=".9"/>`;
+  const wheel=x=>`<g transform="translate(${x} -3.6)"><circle r="3.6" fill="${C}"/>${sp(spin)}${sp(spin+Math.PI/2)}</g>`;
+  return `<g transform="scale(${flip?-1:1} 1)"><path d="M-17 -5 Q-17 -10 -12 -10 L-8 -10 L-4 -17 Q-3 -18 -1 -18 L8 -18 Q10 -18 11 -16 L14 -10 L16 -10 Q19 -10 19 -6 L19 -4 L-17 -4Z" fill="${C}"/>`+
+    `<path d="M-2.6 -16.4 L2.6 -16.4 L2.6 -10.8 L-6 -10.8Z" fill="${L2}"/><path d="M4.2 -16.4 L8 -16.4 Q9 -16.4 9.6 -15.2 L12 -10.8 L4.2 -10.8Z" fill="${L2}"/>`+
+    (heads?`<circle cx="0" cy="-12.6" r="2.4" fill="${C}"/><circle cx="7.4" cy="-12.6" r="2.4" fill="${C}"/>`:"")+
+    `<rect x="17" y="-8.6" width="2.4" height="1.6" rx=".6" fill="${L2}"/>${wheel(-10)}${wheel(11)}</g>`; }
+function duckHike(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches || document.hidden) return;
+  const svg=document.querySelector("svg.town"); if(townBusy(svg)) return; const w=svg.querySelector(".world"); if(!w) return;
+  const [na,nb]=SCENE_PAIRS[(hikeN++ +2)%SCENE_PAIRS.length], A=makeWalker(svg,na), Bw=makeWalker(svg,nb), C="#b97884";
+  const car=propAt(svg,""), cin=car.g.firstChild; touring=true;
+  const home=-168, PARK=-120, DRV=-60, H=74, MW=86, MC=24, up=x=>Math.max(0,H*(1-Math.abs(x-MC)/MW));
+  const seg=[2600,800,1600,5200,800,4600,2800,3800,800,5200,1600,800,3600]; const at=[0]; seg.forEach(d=>at.push(at[at.length-1]+d));
+  const t0=performance.now(); let flashes=0, spin=0, last=t0;
+  const kill=()=>{ [A,Bw,car].forEach(x=>x.g.remove()); w.removeAttribute("transform"); touring=false; };
+  const rot=a=>w.setAttribute("transform",`rotate(${a.toFixed(2)} ${PCX} ${PCY})`);
+  const hide=()=>{ A.set(DRV,{op:0}); Bw.set(DRV,{op:0}); };
+  const step = now => {
+    if(!A.g.isConnected || !w.isConnected){ kill(); return; }
+    const t=now-t0, ph=t/170; let i=0; while(i<seg.length-1 && t>=at[i+1]) i++; const k=Math.min(1,(t-at[i])/seg[i]);
+    const moving=[2,3,9,10].includes(i); if(moving) spin+=(now-last)/60*(i>=9?-1:1); last=now;
+    const drawCar=(x,flip,heads,op=1)=>{ cin.innerHTML=carHTML(spin,flip,heads); car.set(x,0,op); };
+    if(i===0){ const e=ease(k), ap=Math.min(1,k/.12); drawCar(PARK,false,false,Math.min(1,k/.3));
+      A.set(home+(PARK-14-home)*e,{hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, sc:.45+.55*ap, op:ap});
+      Bw.set(home-10+(PARK-24-home+10)*e,{hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7, sc:.45+.55*ap, op:ap}); }
+    else if(i===1){ drawCar(PARK,false,k>.6); A.set(PARK-14+8*k,{sc:1-.5*k, op:1-k}); Bw.set(PARK-24+14*k,{sc:1-.5*k, op:1-k}); }
+    else if(i===2){ drawCar(PARK+(DRV-PARK)*ease(k),false,true); hide(); }                                           // drive off
+    else if(i===3){ rot(-60*ease(k)); drawCar(DRV+Math.sin(t/300)*.6,false,true); hide(); }                           // the planet turns to the mountains
+    else if(i===4){ rot(-60); drawCar(DRV,false,k<.4); A.set(DRV-4-6*k,{sc:.5+.5*k, op:k}); Bw.set(DRV+4+2*k,{sc:.5+.5*k, op:k}); }
+    else if(i===5){ rot(-60); drawCar(DRV,false,false); const e=ease(k), xa=DRV-10+(-2-DRV+10)*e, xb=DRV+6+(10-DRV-6)*e;   // hike up the trail
+      A.set(xa,{hop:up(xa)+Math.abs(Math.sin(ph*.8))*2, rot:Math.sin(ph*.8)*8-8}); Bw.set(xb,{hop:up(xb)+Math.abs(Math.sin(ph*.8+1))*2, rot:Math.sin(ph*.8+1)*8-8}); }
+    else if(i===6){ rot(-60); drawCar(DRV,false,false);                                                                // selfie at the top: flash, flash, heart
+      A.set(-2,{hop:up(-2), rot:10*Math.sin(Math.min(1,k*3)*Math.PI/2)}); Bw.set(10,{hop:up(10), rot:-8*Math.sin(Math.min(1,k*3)*Math.PI/2), left:true});
+      if(flashes<2 && k>.25+flashes*.35){ flashes++; const p=planetPos(4), f=document.createElementNS("http://www.w3.org/2000/svg","circle"); f.setAttribute("cx",p.x.toFixed(1)); f.setAttribute("cy",(p.y-up(4)-30).toFixed(1)); f.setAttribute("r","4"); f.setAttribute("class","flash"); svg.appendChild(f); setTimeout(()=>f.remove(),700); }
+      if(flashes===2 && k>.9){ flashes=3; popHeart(svg, 4); } }
+    else if(i===7){ rot(-60); drawCar(DRV,false,false); const e=ease(k), xa=-2+(DRV-4+2)*e, xb=10+(DRV+4-10)*e;          // hike down
+      A.set(xa,{hop:up(xa)+Math.abs(Math.sin(ph*.9))*2, rot:Math.sin(ph*.9)*8+6, left:true}); Bw.set(xb,{hop:up(xb)+Math.abs(Math.sin(ph*.9+1))*2, rot:Math.sin(ph*.9+1)*8+6, left:true}); }
+    else if(i===8){ rot(-60); drawCar(DRV,true,k>.6); A.set(DRV-4+4*k,{sc:1-.5*k, op:1-k, left:true}); Bw.set(DRV+4-4*k,{sc:1-.5*k, op:1-k, left:true}); }
+    else if(i===9){ rot(-60+60*ease(k)); drawCar(DRV+Math.sin(t/300)*.6,true,true); hide(); }                           // drive back home
+    else if(i===10){ w.removeAttribute("transform"); drawCar(DRV+(PARK-DRV)*ease(k),true,true); hide(); }
+    else if(i===11){ drawCar(PARK,true,k<.4); A.set(PARK-12-4*k,{sc:.5+.5*k, op:k, left:true}); Bw.set(PARK-4-6*k,{sc:.5+.5*k, op:k, left:true}); }
+    else { const e=ease(k), f=Math.min(1,(1-k)/.15); drawCar(PARK,true,false,Math.min(1,(1-k)/.4));
+      A.set(PARK-16+(home-PARK+16)*e,{hop:Math.abs(Math.sin(ph))*2.4*f, rot:Math.sin(ph)*7, sc:.45+.55*f, op:f, left:true});
+      Bw.set(PARK-10+(home+10-PARK+10)*e,{hop:Math.abs(Math.sin(ph+1))*2.4*f, rot:Math.sin(ph+1)*7, sc:.45+.55*f, op:f, left:true});
+      if(k>=1){ kill(); return; } }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
 /* one scene at a time, about every 22 s: kiss, cats, a stroll, a trip around the world */
-const SCENES=[()=>duckKiss(), duckCats, duckBBQ, duckPottery, duckMovie, duckCrossfit, duckWalk, duckHyrox, worldTour, duckTrip, duckTub, duckDance]; window.__town={worldTour,duckCats,duckKiss,duckWalk,duckBBQ,duckMovie,duckHyrox,duckPottery,duckCrossfit,duckTrip,duckTub,duckDance,busy:()=>touring};
+const SCENES=[()=>duckKiss(), duckCats, duckBBQ, duckPottery, duckMovie, duckCrossfit, duckWalk, duckHyrox, worldTour, duckTrip, duckTub, duckDance, duckHike]; window.__town={worldTour,duckCats,duckKiss,duckWalk,duckBBQ,duckMovie,duckHyrox,duckPottery,duckCrossfit,duckTrip,duckTub,duckDance,duckHike,busy:()=>touring};
 /* V77: random order: every scene plays once (shuffled) before any repeats, never the same one twice in a row */
 let sceneBag=[], lastScene=-1;
 function nextScene(){ if(!sceneBag.length){ sceneBag=SCENES.map((_,i)=>i); for(let i=sceneBag.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [sceneBag[i],sceneBag[j]]=[sceneBag[j],sceneBag[i]]; } if(sceneBag[0]===lastScene) sceneBag.push(sceneBag.shift()); } lastScene=sceneBag.shift(); return SCENES[lastScene]; }
@@ -3155,7 +3217,7 @@ const TOUR = [
   {sel:'nav.bar [data-tab="therapy"]', duck:"rabbit", t:"tabTherapy", d:"tw9"},
   {sel:'nav.bar [data-tab="album"]', duck:"jamtoast", t:"tabAlbum", d:"tw10"},
   {sel:"#bell", duck:"lobbyboy", t:"tw11T", d:"tw11"},
-  {sel:'nav.bar [data-tab="her"]', duck:"apron", t:"tw12T", d:"tw12", last:true}
+  {sel:'nav.bar [data-tab="her"]', duck:"richwoman", t:"tw12T", d:"tw12", last:true}
 ];
 const TOUR_A = [
   {duck:"doorman", t:"twA1T", d:"twA1"},
