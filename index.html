@@ -1581,29 +1581,31 @@ function duckCats(){
   const pairs=[["apron","farmer"],["richwoman","richman"],["peach","traveler"],["gardener","caveman"]], [na,nb]=pairs[(catN++)%pairs.length];
   const D1=makeWalker(svg,na), D2=makeWalker(svg,nb), K1=makeCat(svg,true), K2=makeCat(svg,false);
   const home=-168, T1=3400, T2=7600, T3=3600, t0=performance.now(), ns="http://www.w3.org/2000/svg"; let heart=0;
-  const out=(k)=>Math.min(1,k/.12);
+  // V81: one continuous motion. Same wobble clocks in every phase, the cats come to a stop before the play starts
+  // and before they walk home (the chase amplitude ramps in and out), so nothing ever snaps or jumps.
+  const C1=-124, C2=-138, AMP=22, W=1.5, RAMP=1300, out=(k)=>Math.min(1,k/.12), sm=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+  const face=[false,false], last=[null,null];
+  const catAt=(K,i,x,o)=>{ if(last[i]!=null){ const d=x-last[i]; if(d<-.02) face[i]=true; else if(d>.02) face[i]=false; } last[i]=x; K.set(x,Object.assign(o,{left:face[i]})); };
   const step = now => {
     if(!D1.g.isConnected){ [D1,D2,K1,K2].forEach(x=>x.g.remove()); return; }
-    const t=now-t0, ph=t/170;
+    const t=now-t0, ph=t/170, dh=k=>({hop:Math.abs(Math.sin(ph+k))*2.6, rot:Math.sin(ph+k)*7}), ch=k=>({hop:Math.abs(Math.sin(ph*1.6+k))*3.4, run:Math.sin(ph*2+k)*30});
     if(t<T1){ const k=t/T1, e=ease(k), ap=out(k);
-      D1.set(home+(-146-home)*e, {hop:Math.abs(Math.sin(ph))*2.4, rot:Math.sin(ph)*7, sc:.45+.55*ap, op:ap});
-      D2.set(home+(-102-home)*e, {hop:Math.abs(Math.sin(ph+1))*2.4, rot:Math.sin(ph+1)*7, sc:.45+.55*ap, op:ap});
-      K1.set(home+(-124-home)*Math.min(1,e*1.2), {hop:Math.abs(Math.sin(ph*1.6))*3, run:Math.sin(ph*2)*30, sc:.5+.5*ap, op:ap});
-      K2.set(home+(-124+22*Math.sin(-1.1)-home)*Math.min(1,e*1.3), {hop:Math.abs(Math.sin(ph*1.6+1))*3, run:Math.sin(ph*2+1)*30, sc:.5+.5*ap, op:ap});
-    } else if(t<T1+T2){ const u=(t-T1)/1000, w=1.5;
+      D1.set(home+(-146-home)*e, Object.assign(dh(0),{sc:.45+.55*ap, op:ap}));
+      D2.set(home+(-102-home)*e, Object.assign(dh(1),{sc:.45+.55*ap, op:ap}));
+      catAt(K1,0,home+(C1-home)*e, Object.assign(ch(0),{sc:.5+.5*ap, op:ap}));
+      catAt(K2,1,home+(C2-home)*e, Object.assign(ch(1),{sc:.5+.5*ap, op:ap}));
+    } else if(t<T1+T2){ const r=t-T1, u=r/1000, A=AMP*sm(r/RAMP)*sm((T2-r)/RAMP);
       // the cats chase each other between the two Duckoos; the Duckoos bounce and turn to watch
-      const x1=-124+22*Math.sin(u*w), x2=-124+22*Math.sin(u*w-1.1), v1=Math.cos(u*w), v2=Math.cos(u*w-1.1);
-      K1.set(x1,{hop:Math.abs(Math.sin(u*9))*4, run:Math.sin(u*14)*32, left:v1<0});
-      K2.set(x2,{hop:Math.abs(Math.sin(u*9+1))*4, run:Math.sin(u*14+1)*32, left:v2<0});
-      D1.set(-146,{hop:Math.abs(Math.sin(u*4))*3, rot:Math.sin(u*3)*6, left:x1<-146});
-      D2.set(-102,{hop:Math.abs(Math.sin(u*4+1.5))*3, rot:Math.sin(u*3+1)*6, left:true});
+      const x1=C1+A*Math.sin(u*W), x2=C2+A*Math.sin(u*W-1.1);
+      catAt(K1,0,x1,ch(0)); catAt(K2,1,x2,ch(1));
+      D1.set(-146,dh(0));
+      D2.set(-102,Object.assign(dh(1),{left:true}));
       if(heart<2 && u>2+heart*3){ heart++; const p=planetPos(heart===1?-146:-102); const h=document.createElementNS(ns,"text"); h.textContent="♥"; h.setAttribute("class","kissheart"); h.setAttribute("x",p.x.toFixed(1)); h.setAttribute("y",(p.y-40).toFixed(1)); h.setAttribute("font-size","11"); svg.appendChild(h); setTimeout(()=>h.remove(),2600); }
     } else { const k=Math.min(1,(t-T1-T2)/T3), e=ease(k), f=Math.min(1,(1-k)/.12);
-      const from=[-146,-102,-124+22*Math.sin(T2/1000*1.5),-124+22*Math.sin(T2/1000*1.5-1.1)];
-      D1.set(from[0]+(home-from[0])*e,{hop:Math.abs(Math.sin(ph))*2.4*f, rot:Math.sin(ph)*7, sc:.45+.55*f, op:f, left:true});
-      D2.set(from[1]+(home+6-from[1])*e,{hop:Math.abs(Math.sin(ph+1))*2.4*f, rot:Math.sin(ph+1)*7, sc:.45+.55*f, op:f, left:true});
-      K1.set(from[2]+(home-from[2])*Math.min(1,e*1.15),{hop:Math.abs(Math.sin(ph*1.6))*3*f, run:Math.sin(ph*2)*30, sc:.5+.5*f, op:f, left:true});
-      K2.set(from[3]+(home-from[3])*Math.min(1,e*1.1),{hop:Math.abs(Math.sin(ph*1.6+1))*3*f, run:Math.sin(ph*2+1)*30, sc:.5+.5*f, op:f, left:true});
+      D1.set(-146+(home-(-146))*e, Object.assign(dh(0),{sc:.45+.55*f, op:f, left:true}));
+      D2.set(-102+(home+6-(-102))*e, Object.assign(dh(1),{sc:.45+.55*f, op:f, left:true}));
+      catAt(K1,0,C1+(home-C1)*e, Object.assign(ch(0),{sc:.5+.5*f, op:f}));
+      catAt(K2,1,C2+(home-C2)*e, Object.assign(ch(1),{sc:.5+.5*f, op:f}));
       if(k>=1){ [D1,D2,K1,K2].forEach(x=>x.g.remove()); return; } }
     requestAnimationFrame(step);
   };
