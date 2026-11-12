@@ -2903,7 +2903,7 @@ S.stkMeta ||= {}; if(S.stkCap){ for(const k in S.stkCap){ (S.stkMeta[k] ||= {}).
 S.custom ||= [];
 if(S.sound===undefined) S.sound = true;
 const ST = () => S.stk[me()];
-const PAGE = 6, CUTS = 10, BGS = ["var(--blue)","var(--pink)","var(--lav)","#f6efc0","#92c2ec","var(--rose2)"];
+const PAGE = 6, CUTS = 21, BGS = ["var(--blue)","var(--pink)","var(--lav)","#f6efc0","#92c2ec","var(--rose2)"];
 function stickers(){
   const base = [...Array(CUTS)].map((_,i)=>({id:"p"+(i+1), src:`people/p${i+1}.webp`, frame:"cut"}));
   const cus = S.custom.slice().sort((a,b)=>a.at-b.at).map(c=>({id:c.id, custom:true, frame:c.frame}));
@@ -3299,7 +3299,7 @@ function pickDevice(){
     setTimeout(()=>{ title.classList.add("name"); title.innerHTML="Casita Huma".split(" ").map((w,wi)=>`<div>${[...w].map((c,i)=>`<span style="animation-delay:${wi*0.18+i*0.04}s">${esc(c)}</span>`).join("")}</div>`).join(""); setTimeout(close,1500); },250); };
   /* our photos AND Duckoos pop in all over the screen while it loads (V67: lots more of them) */
   const DK=["concierge","peach","traveler","bellboy","richwoman","gardener","sunbed","lobbyboy","doorman","rabbit","pig","farmer","founder","suitcasekid","tiger","ketchup","pancake","avocado","lemonade","mushroom","caveman","apron","jamtoast","scarecrow","orange","potato"].sort(()=>Math.random()-.5).slice(0,16);
-  const pics=[...[...Array(CUTS)].map((_,i)=>({src:`people/p${i+1}.webp`, w:[30,40]})), ...DK.map(d=>({src:duck(d), w:[16,22], dk:true}))].sort(()=>Math.random()-.5);
+  const pics=[...[...Array(CUTS)].map((_,i)=>i+1).sort(()=>Math.random()-.5).slice(0,12).map(i=>({src:`people/p${i}.webp`, w:[30,40]})), ...DK.map(d=>({src:duck(d), w:[16,22], dk:true}))].sort(()=>Math.random()-.5);
   const cols=4, rowsN=Math.ceil(pics.length/cols), spots=[];
   for(let r=0;r<rowsN;r++) for(let c=0;c<cols;c++) spots.push([c*25-6+(r%2?8:0), r*(96/rowsN)-4]);
   spots.sort(()=>Math.random()-.5);
