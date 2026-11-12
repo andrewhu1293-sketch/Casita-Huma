@@ -2946,6 +2946,9 @@ Object.assign(T.es, {stkTitle:"Álbum de monas", tabAlbum:"Álbum",
 const blankStk = () => ({own:{}, shiny:{}, coins:0, wins:0, loose:[], pages:[]});
 S.stk ||= {}; S.stk.her ||= blankStk(); S.stk.andrew ||= blankStk();
 ["her","andrew"].forEach(p=>{ const o=S.stk[p]; if(o.packs){ o.coins=(o.coins||0)+o.packs; delete o.packs; } o.coins ||= 0; o.wins ||= 0; o.loose ||= []; o.pages ||= []; o.own ||= {}; o.shiny ||= {}; });
+/* V86: one welcome coin for each player, given once (Andrew asked) */
+let welcomeCoinNow=false; ["her","andrew"].forEach(p=>{ const o=S.stk[p]; if(!o.welcomeCoin){ o.welcomeCoin=true; o.coins=(o.coins||0)+1; welcomeCoinNow=true; } });
+if(welcomeCoinNow){ save(); setTimeout(()=>{ toast(L()==="es"?"🪙 ¡Te regalamos una moneda de bienvenida!":"🪙 Here’s a welcome coin for you!"); try{ sfx("coin"); }catch(e){} }, 5200); }
 S.letter ||= {andrew:"", her:""}; S.letterSeen ||= {}; S.secrets ||= {andrew:"", her:""}; S.eggs ||= {her:[], andrew:[]};
 S.stkMeta ||= {}; if(S.stkCap){ for(const k in S.stkCap){ (S.stkMeta[k] ||= {}).story = S.stkCap[k]; } delete S.stkCap; }
 S.custom ||= [];
