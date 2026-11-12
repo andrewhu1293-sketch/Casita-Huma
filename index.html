@@ -1244,7 +1244,23 @@ function pushCardHTML(){
 }
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-pushon]"); if(b) enablePush(b); const tb=e.target.closest("[data-pushtest]"); if(tb){ pushSend(me(), t("pushTestBody"), 5000).then(r=>{ if(!r||!r.sent) toast(t("pushNone")); }); toast(t("pushTestToast")); } });
 setTimeout(()=>{ if(HOSTED && S.pushOn && PUSH_OK() && Notification.permission==="granted" && Date.now()-(S.pushAt||0) > 864e5) pushSubscribe(false).catch(()=>{}); }, 4000);
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function save(){ S.savedAt=Date.now(); try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} backupSoon(); }
+/* V83: server copy of each phone's data (Netlify function /api/state). Every save is sent a moment later; on open, if the
+   server holds a newer copy (or this phone lost its data), the app restores it. Photos made in the sticker maker stay on the phone. */
+let bkTimer=null;
+function backupSoon(){ if(!HOSTED || !S.device) return; clearTimeout(bkTimer); bkTimer=setTimeout(backupNow,1500); }
+function backupNow(keep){ clearTimeout(bkTimer); bkTimer=null; if(!HOSTED || !S.device) return Promise.resolve(null);
+  const body=JSON.stringify({who:S.device, at:S.savedAt||Date.now(), state:S});
+  return fetch("/api/state",{method:"PUT",headers:{"content-type":"application/json"},body,keepalive:!!keep && body.length<60000}).then(r=>r.json()).then(r=>{ if(r&&r.ok){ S.backupAt=r.at; try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} } return r; }).catch(()=>null); }
+addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden" && bkTimer) backupNow(true); });
+addEventListener("pagehide",()=>{ if(bkTimer) backupNow(true); });
+async function restoreFromServer(){ if(!HOSTED || !S.device) return false;
+  try{ const r=await fetch("/api/state?who="+S.device,{cache:"no-store"}).then(r=>r.json());
+    if(r && r.state && (r.at||0) > (S.savedAt||0)+1000){ const keepDev=S.device; S=Object.assign(fresh(), r.state); S.device=keepDev; try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} location.reload(); return true; }
+    if(!r || !r.state || (S.savedAt||0) > (r.at||0)) backupNow(); }catch(e){}
+  setTimeout(imgSweep, 3000); return false; }
+async function imgSweep(){ S.imgUp ||= {}; for(const c of S.custom||[]){ if(S.imgUp[c.id]) continue;   // photos made before the server copy existed
+  try{ const b=await idb.get("s-"+c.id); if(!b) continue; const r=await fetch("/api/state?img="+encodeURIComponent(c.id),{method:"PUT",headers:{"content-type":b.type||"image/png"},body:b}); if(r.ok){ S.imgUp[c.id]=1; save(); } }catch(e){} } }
 
 const L = () => S.lang;
 function t(k, v){ let s = (T[L()]||T.en)[k] ?? T.en[k] ?? k; if(v) for(const x in v) s = s.replaceAll("{"+x+"}", v[x]); return s; }
@@ -2644,6 +2660,7 @@ function renderHer(){
     ${textCard("letter","sLetter","lobbyboy",S.letter.her||"",lines(S.letter.her).length)}
     ${textCard("secrets","sSecrets","donotdisturb",S.secrets.her||"",lines(S.secrets.her).length)}</div>`;
   document.querySelectorAll("details[data-sec]").forEach(d=>d.addEventListener("toggle",()=>{ if(d.open) openSec=d.dataset.sec; }));
+  let htm=null; ["#sLetter","#sSecrets"].forEach(id=>{ const el=$(id); if(el) el.addEventListener("input",()=>{ clearTimeout(htm); htm=setTimeout(()=>{ S.letter.her=$("#sLetter").value; S.secrets.her=$("#sSecrets").value; save(); },350); }); });
   document.querySelectorAll("[data-savetext]").forEach(b=>b.onclick=()=>{ const had=lines(S.letter.her).length+lines(S.secrets.her).length;
     S.letter.her=$("#sLetter").value; S.secrets.her=$("#sSecrets").value; save(); toast(t("saved"));
     if(lines(S.letter.her).length+lines(S.secrets.her).length>had) notify("Indiana added a surprise for you", "Indiana agregó una sorpresa para ti"); render(); });
@@ -2857,7 +2874,7 @@ function renderAndrew(){
   $("#aGive").onclick=()=>{ const id=$("#aGiveSel").value; S.wallet.unshift({uid:"w"+Date.now(),cid:id,at:Date.now(),from:"andrew",usedAt:null}); save(); toast(t("aGiven")); badge(); };
   $("#aSave").onclick=()=>{ S.testDate=$("#aDate").value; S.worker=$("#aWorker").value.trim(); save(); toast(t("saved")); render(); };
   $("#aLock").onclick=()=>{ andrewOpen=false; render(); };
-  if($("#aDev")) $("#aDev").onclick=()=>{ delete S.device; andrewOpen=false; tab="play"; save(); render(); pickDevice(); };
+  if($("#aDev")) $("#aDev").onclick=async()=>{ await backupNow(); delete S.device; andrewOpen=false; tab="play"; save(); render(); pickDevice(); };
   document.querySelectorAll("[data-rtour]").forEach(b=>b.onclick=()=>{ const w=b.dataset.rtour; S.tourSeen ||= {}; S.tourSeen[w]=false; if(!HOSTED) S.player=w; tab="play"; andrewOpen=false; save(); render(); startTour(true); });
 }
 
@@ -2986,7 +3003,10 @@ function slotHTML(s){
   return own ? monaHTML(s,{button:true, dup: own>1?own:0, slot:s.id}) : `<div class="stk miss" data-slot="${s.id}"><span>${pad(s.n)}</span></div>`;
 }
 const thumbCache = {};
-async function stkURL(id){ if(thumbCache[id]) return thumbCache[id]; try{ const b=await idb.get("s-"+id); if(b) return thumbCache[id]=URL.createObjectURL(b); }catch(e){} return ""; }
+async function stkURL(id){ if(thumbCache[id]) return thumbCache[id]; try{ const b=await idb.get("s-"+id); if(b) return thumbCache[id]=URL.createObjectURL(b); }catch(e){}
+  if(HOSTED){ try{ const r=await fetch("/api/state?img="+encodeURIComponent(id)); if(r.ok){ const b=await r.blob(); if(b.size){ try{ await idb.put("s-"+id,b); }catch(e){} return thumbCache[id]=URL.createObjectURL(b); } } }catch(e){} }  // V83: photo comes back from the server copy
+  return ""; }
+function imgBackup(id, blob){ if(!HOSTED || !blob) return; fetch("/api/state?img="+encodeURIComponent(id),{method:"PUT",headers:{"content-type":blob.type||"application/octet-stream"},body:blob}).catch(()=>{}); }
 const fillThumbs = () => document.querySelectorAll("img[data-k^='s-']").forEach(async im=>{ if(!im.getAttribute("src")) im.src = await stkURL(im.dataset.k.slice(2)); });
 
 /* sealed letter: one line per share of the album filled */
@@ -3184,6 +3204,11 @@ function surprisesHTML(author){
     ${author==="andrew"?makerHTML():""}`;
 }
 function bindSurprises(author){
+  /* V83: everything typed here saves by itself as you type (the Guardar button is just a confirmation) */
+  let tm=null; const auto=()=>{ clearTimeout(tm); tm=setTimeout(()=>{ S.letter[author]=$("#sLetter").value; S.secrets[author]=$("#sSecrets").value;
+    document.querySelectorAll("[data-title]").forEach(i=>(S.stkMeta[i.dataset.title] ||= {}).title=i.value.trim());
+    document.querySelectorAll("[data-story]").forEach(i=>(S.stkMeta[i.dataset.story] ||= {}).story=i.value.trim()); save(); },350); };
+  document.querySelectorAll("#sLetter,#sSecrets,[data-title],[data-story]").forEach(i=>{ i.addEventListener("input",auto); i.addEventListener("change",auto); });
   $("#sSave").onclick=()=>{ S.letter[author]=$("#sLetter").value; S.secrets[author]=$("#sSecrets").value;
     document.querySelectorAll("[data-title]").forEach(i=>(S.stkMeta[i.dataset.title] ||= {}).title=i.value.trim());
     document.querySelectorAll("[data-story]").forEach(i=>(S.stkMeta[i.dataset.story] ||= {}).story=i.value.trim());
@@ -3224,7 +3249,7 @@ function bindMaker(){
       $("#mkFrame").value = mkAlpha ? "cut" : ($("#mkFrame").value==="cut" ? "arch" : $("#mkFrame").value);
       $("#mkAdd").disabled=false; mkPreview(); }catch(err){ toast(t("alFail")); } };
   $("#mkAdd").onclick = async () => { if(!mkBlob) return; const id="c"+Date.now().toString(36);
-    try{ await idb.put("s-"+id, mkBlob); }catch(e){ return toast(t("alFail")); }
+    try{ await idb.put("s-"+id, mkBlob); }catch(e){ return toast(t("alFail")); } imgBackup(id, mkBlob); (S.imgUp ||= {})[id]=1;
     S.custom.push({id, frame:$("#mkFrame").value, at:Date.now()}); S.stkMeta[id]={title:$("#mkT").value.trim(), story:$("#mkS").value.trim()};
     thumbCache[id]=mkURL; mkURL=""; mkBlob=null; save();
     notify("Andrew added a new sticker to the album", "Andrew agregó una mona nueva al álbum"); toast(t("mkAdded")); render(); };
@@ -3307,12 +3332,16 @@ function pickDevice(){
   openSheet(`<div class="result"><img class="big sticker" src="${duck("doorman")}" alt=""><h3>${t("devT")}</h3><p class="hint">${t("devD")}</p>
     <div class="row-btns"><button class="btn" type="button" data-dev="her">Indiana</button><button class="btn ghost" type="button" data-dev="andrew">Andrew</button></div></div>`);
   $("#panel [data-close]").remove();
-  const set = who => { S.device = who; S.player = who; save(); closeSheet(); setTimeout(()=>startTour(false),300); };
+  const set = async who => { closeSheet();
+    // V83: a phone that lost its data (or a new phone) gets that person's server copy back before anything is saved over it
+    if(HOSTED){ try{ const r=await fetch("/api/state?who="+who,{cache:"no-store"}).then(r=>r.json());
+      if(r && r.state){ S=Object.assign(fresh(), r.state); S.device=who; S.player=who; localStorage.setItem(KEY, JSON.stringify(S)); location.reload(); return; } }catch(e){} }
+    S.device = who; S.player = who; save(); setTimeout(()=>startTour(false),300); };
   $('#panel [data-dev="her"]').onclick = () => set("her");
   $('#panel [data-dev="andrew"]').onclick = () => set("andrew");
 }
 (function waitSplash(n=0){ if(document.getElementById("splash") && n<40) return setTimeout(()=>waitSplash(n+1),300);
-  setTimeout(()=>{ if(HOSTED && !S.device) return pickDevice(); startTour(false); },250); })();
+  setTimeout(()=>{ if(HOSTED && !S.device) return pickDevice(); restoreFromServer().then(r=>{ if(!r) startTour(false); }); },250); })();
 
 /* splash: pink LOADING screen counts to 100%, then the name pops up */
 (function(){
