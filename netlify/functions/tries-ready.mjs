@@ -1,15 +1,15 @@
-// Casita Huma: on the morning tries renew (every 4 days from 9 Nov 2026, Los Angeles time),
+// Casita Huma: on the morning tries renew (13 Nov 2026, then every 3 days, Los Angeles time),
 // send both phones a push saying they can play again. Runs daily at 17:00 UTC (9 am PST / 10 am PDT).
 import webpush from "web-push";
 import { getStore } from "@netlify/blobs";
 
-const TZ = "America/Los_Angeles", PERIOD = 4, EPOCH = Date.UTC(2026, 10, 9);
+const TZ = "America/Los_Angeles", FIRST = 4, PERIOD = 3, EPOCH = Date.UTC(2026, 10, 9);
 
 function laDay(now = new Date()) {
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now).map(x => [x.type, x.value]));
   return { key: `${p.year}-${p.month}-${p.day}`, n: Math.round((Date.UTC(+p.year, +p.month - 1, +p.day) - EPOCH) / 864e5) };
 }
-const isResetDay = (now) => { const { n } = laDay(now); return n > 0 && n % PERIOD === 0; };
+const isResetDay = (now) => { const { n } = laDay(now); return n >= FIRST && (n - FIRST) % PERIOD === 0; };
 
 const MSG = {
   her:    { title: "¡Ya puedes jugar! 🎟️", body: "Tienes 2 intentos nuevos en Casita Huma. ¡A ganar cupones!" },
