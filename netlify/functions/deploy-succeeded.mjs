@@ -5,9 +5,9 @@ import { getStore } from "@netlify/blobs";
 
 // What's new: change the id and the text on each update you want announced (same id = no new push).
 const NOTE = {
-  id: "v95-reset",
+  id: "v96-novedades",
   title: "Casita Huma se actualizó ✨",
-  body: "Arreglado: cuando Andrew reinicia los intentos de Indiana, ahora sí le llegan a su teléfono.",
+  body: "Novedades tiene nuevo diseño: íconos, títulos cortos y todo agrupado por día. Toca el patito de arriba 🔔",
 };
 
 export default async () => {

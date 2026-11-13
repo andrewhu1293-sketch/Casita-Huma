@@ -182,6 +182,18 @@ details.sec-card .list:empty{display:none}
 .bell{position:relative;border:2px solid var(--line);background:var(--card);border-radius:999px;width:42px;height:42px;padding:0;display:flex;align-items:center;justify-content:center}
 .bell img{width:30px;height:30px;object-fit:contain}
 .bell .badge{position:absolute;top:-6px;right:-6px;margin:0}
+.fhead{display:flex;align-items:center;gap:8px;margin:0 0 6px} .fhead span{font-size:1.6rem} .fhead h3{margin:0}
+.fday{margin:14px 0 6px;font-family:var(--f-round);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.feed2{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.feed2 .fc{position:relative;display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:10px 12px}
+.feed2 .fc.new{border-color:var(--red);box-shadow:0 2px 0 rgba(226,85,66,.15)}
+.feed2 .fi{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:1.35rem}
+.feed2 .ft{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;font-family:var(--f-round)}
+.feed2 .ft b{font-size:.95rem;font-weight:800;color:var(--ink);line-height:1.2}
+.feed2 .fd{font-size:.82rem;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.feed2 small{font-size:.7rem;color:var(--ink-soft)}
+.feed2 .fdot{position:absolute;top:10px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--red)}
+.fempty{text-align:center;padding:30px 0;color:var(--ink-soft);font-family:var(--f-round)} .fempty span{font-size:2.4rem}
 .feed{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
 .feed li{background:var(--card);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow)}
 .feed li.new{background:var(--butter)}
@@ -1074,8 +1086,8 @@ html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infi
 </div></div>
 <div id="sheet" class="sheet" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
 
-<script src="content.js?v=5cc38169a5"></script>
-<script src="real.js?v=5cc38169a5"></script>
+<script src="content.js?v=ed19186efe"></script>
+<script src="real.js?v=ed19186efe"></script>
 <script>/* Andrew's real questions go first; placeholders only fill up to 20 */
 (function(C,R){ if(!R) return; ["trivia","love"].forEach(k=>{ C[k]=[...R[k], ...C[k].slice(R[k].length)]; }); if(R.finish) C.finish=R.finish; C.loveRealN=R.love.length; })(window.CONTENT, window.CONTENT_REAL);</script>
 <script>
@@ -2122,8 +2134,47 @@ function render(){
   adoptTown();
 }
 document.querySelectorAll("nav.bar button").forEach(b=>b.addEventListener("click",()=>{ tab=b.dataset.tab; render(); sceneSoon(); window.scrollTo(0,0); const v=$("#view"); v.classList.remove("view-in"); void v.offsetWidth; v.classList.add("view-in"); }));
-$("#bell").onclick=()=>{ const mine=S.activity.filter(a=>a.to===me());
-  openSheet(`<h3>${t("feedTitle")}</h3><p class="hint">${t("feedNote")}</p><ul class="feed">${mine.length?mine.map(a=>`<li class="${a.seen?"":"new"}">${esc(a[L()]||a.en)}<small>${fmt(a.at)}</small></li>`).join(""):`<li>${t("feedEmpty")}</li>`}</ul>`);
+/* V96: Novedades as icon cards: a big icon, a short title, one small detail line, grouped by day */
+const FEED_KINDS = [
+  [/coincidieron en (\d+) de (\d+)/i, "🤝", "#cfe3f7", m=>L()==="es"?`Coincidieron en ${m[1]} de ${m[2]}`:`You matched ${m[1]} of ${m[2]}`, a=>{ const c=(a.es.match(/\+(\d+) monedas/)||[])[1]; return (c?`🪙 +${c}`:"")+(/cupón de bono/.test(a.es)?"  🎟️ +1":""); }],
+  [/jugó ¿Quién es más probable/i, "🤔", "#efe1fb", ()=>L()==="es"?"¡Te toca! ¿Quién es más probable?":"Your turn: Who's more likely?", ()=>L()==="es"?"Responde las mismas 5":"Answer the same 5"],
+  [/ganó un cupón/i, "🎟️", "#ffe2a8", ()=>L()==="es"?"Ganó un cupón":"Won a coupon", a=>after(a)],
+  [/usó un cupón/i, "✅", "#d6f0d6", ()=>L()==="es"?"Usó un cupón":"Used a coupon", a=>after(a)],
+  [/ganó una moneda/i, "🪙", "#fff0b8", ()=>L()==="es"?"Ganó una moneda":"Won a coin", a=>gameOf(a)],
+  [/Esta vez no ganó/i, "🎲", "#ece7e2", ()=>L()==="es"?"Jugó, sin premio":"Played, no prize", a=>gameOf(a)],
+  [/devolvió tus intentos|intentos nuevos/i, "❤️", "#ffd9de", ()=>L()==="es"?"¡Intentos nuevos!":"New tries!", ()=>L()==="es"?"Ya puedes jugar":"You can play again"],
+  [/sobre de monas/i, "🃏", "#ffe0ec", ()=>L()==="es"?"Abrió un sobre de monas":"Opened a sticker pack", ()=>""],
+  [/secreto escondido/i, "🔍", "#e3e0ff", ()=>L()==="es"?"Encontró un secreto":"Found a secret", a=>(a.es.match(/\((\d+\/\d+)\)/)||[])[1]||""],
+  [/Lenguaje del amor/i, "💌", "#ffd9e6", ()=>L()==="es"?"Preguntas nuevas para ti":"New questions for you", ()=>L()==="es"?"Lenguaje del amor":"Love Language"],
+  [/agregó algo nuevo a tus juegos/i, "✏️", "#dff3ea", ()=>L()==="es"?"Nuevo en tus juegos":"New in your games", a=>((a[L()]||a.en).match(/\(([^)]*)\)/)||[])[1]||""],
+  [/Espera y gana/i, "🎁", "#ffe2cc", a=>/abrió/.test(a.es)?(L()==="es"?"Abrió su regalo":"Opened his gift"):(L()==="es"?"Fecha especial nueva":"New special date"), a=>after(a)],
+  [/pregunta del mes/i, "🎙️", "#e0ecff", ()=>L()==="es"?"Pregunta del mes":"Question of the month", ()=>L()==="es"?"Contéstala con nota de voz":"Answer with a voice note"],
+  [/nota de voz/i, "🎙️", "#e0ecff", ()=>L()==="es"?"Te contestó con nota de voz":"Answered with a voice note", ()=>""],
+  [/nota de terapia/i, "📝", "#f2ecdf", ()=>L()==="es"?"Nota de terapia nueva":"New therapy note", ()=>""],
+  [/check-in/i, "💬", "#e7f0e0", ()=>L()==="es"?"Hizo el check-in del mes":"Did the monthly check-in", ()=>""],
+  [/frasco/i, "🫙", "#fde6d6", ()=>L()==="es"?"Un aprecio en tu frasco":"An appreciation in your jar", ()=>""],
+  [/calmarse/i, "🧘", "#e2f1f4", ()=>L()==="es"?"Actualizó su plan de calma":"Updated the calm-down plan", ()=>""],
+  [/Racha de pareja/i, "🔥", "#ffe0cc", ()=>L()==="es"?"¡Racha de pareja!":"Couple streak!", ()=>L()==="es"?"Los dos ganaron un cupón":"You both won a coupon"],
+  [/^Nota del día/i, "☀️", "#fff3c4", ()=>L()==="es"?"Nota del día":"Today's note", a=>after(a)],
+  [/agregó|escribió|añadió/i, "✏️", "#dff3ea", a=>clip(a), ()=>""],
+];
+const after = a => { const x=(a[L()]||a.en||"").split(":").slice(1).join(":").trim(); return x; };
+const clip = a => (a[L()]||a.en||"").replace(/^(Andrew|Indiana)\s+/,"");
+function gameOf(a){ const x=a[L()]||a.en||""; const m=x.match(/(?:jugó|played)\s+(.+?)(?:\s+y ganó|\s+and won|\.|$)/i); return m?m[1]:""; }
+function feedCard(a){
+  a = {...a, es:a.es||a.en||"", en:a.en||a.es||""};
+  const k = FEED_KINDS.find(k=>k[0].test(a.es||a.en||"")), who = a.from==="her"||a.from==="andrew" ? nameOf(a.from) : "";
+  const ic = k?k[1]:"✨", bg = k?k[2]:"#f4ece4", ti = k?k[3](a.es.match(k[0])||[], a):(a[L()]||a.en), de = k?k[4](a):"";
+  const tm = new Date(a.at).toLocaleTimeString(L()==="es"?"es-MX":"en-US",{hour:"numeric",minute:"2-digit"});
+  return `<li class="fc ${a.seen?"":"new"}"><span class="fi" style="background:${bg}" aria-hidden="true">${ic}</span><span class="ft"><b>${esc(typeof ti==="string"?ti:"")}</b>${de?`<span class="fd">${esc(de)}</span>`:""}<small>${who?esc(who)+" · ":""}${tm}</small></span>${a.seen?"":`<i class="fdot" aria-label="${esc(t("feedNew"))}"></i>`}</li>`;
+}
+function dayLabel(ts){ const d=new Date(ts), n=new Date(), y=new Date(); y.setDate(n.getDate()-1); const same=(a,b)=>a.toDateString()===b.toDateString();
+  return same(d,n)?t("feedToday"):same(d,y)?t("feedYest"):fmt(ts); }
+$("#bell").onclick=()=>{ const mine=S.activity.filter(a=>a.to===me()).slice().sort((a,b)=>b.at-a.at);
+  let last="", html="";
+  mine.forEach(a=>{ const d=dayLabel(a.at); if(d!==last){ if(last) html+="</ul>"; html+=`<h5 class="fday">${esc(d)}</h5><ul class="feed2">`; last=d; } html+=feedCard(a); });
+  if(last) html+="</ul>";
+  openSheet(`<div class="fhead"><span aria-hidden="true">🔔</span><h3>${t("feedTitle")}</h3></div>${html||`<div class="fempty"><span aria-hidden="true">🦆</span><p>${t("feedEmpty")}</p></div>`}`);
   mine.forEach(a=>a.seen=true); save(); };
 $("#gear").onclick=()=>{ tab="andrew"; render(); window.scrollTo(0,0); };
 /* V87: tapping our silhouette goes back to the games (the 5-tap secret still counts) */
@@ -3017,7 +3068,7 @@ Object.assign(T.en, {stkTitle:"Sticker album", tabAlbum:"Album",
   eggBonus:"+1 coin", eggEmpty:"{a} hasn't hidden anything here yet.", surpA:"Surprises for Indiana", surpH:"Surprises for Andrew",
   surpLetter:"Your sealed letter (each line is revealed on its own)", surpSecrets:"Hidden secrets (one per line, found in order)",
   surpStories:"Titles and stories of the stickers", surpStoriesHint:"Grey text is a suggestion. Whatever you type replaces it on both phones.", surpTitlePh:"Short title", surpStoryPh:"The story behind it", soundOn:"Sounds on",
-  whoNone:"Neither", mtLabel:"Pick the same as {n}", mtSaved:"Your answers are saved", mtWait:"When {n} answers the same 5, you'll see how many matched. Every 2 matches gives you both a coin; all 5, a bonus coupon.", mtSame:"Same answer!", mtSameTag:"Same", mtDiff:"{n} picked something else", mtScore:"You matched {n} of {t}", mtResume:"Finish your 5", mtSt1:"matched", mtSt2:"different", mtSt3:"coins", mtSt4:"coupons", mtEach:"Each of you gets the coins and coupons shown.", mtSkip:"{n} weren't played: the round ends at the first different answer.", mtQ:"Question", mtCoins:"+{n} coins for each of you", mtNone:"No coins this time. Every 2 matches gives a coin.", mtBonus:"All 5 matched! You both won a bonus coupon.", mtYourTurn:"Your turn", mtWaitTag:"Waiting for {n}", mtResTag:"Result!", mtDoneTag:"Done this round", mtYou:"You",
+  whoNone:"Neither", mtLabel:"Pick the same as {n}", mtSaved:"Your answers are saved", mtWait:"When {n} answers the same 5, you'll see how many matched. Every 2 matches gives you both a coin; all 5, a bonus coupon.", mtSame:"Same answer!", mtSameTag:"Same", mtDiff:"{n} picked something else", mtScore:"You matched {n} of {t}", feedToday:"Today", feedYest:"Yesterday", feedNew:"New", mtResume:"Finish your 5", mtSt1:"matched", mtSt2:"different", mtSt3:"coins", mtSt4:"coupons", mtEach:"Each of you gets the coins and coupons shown.", mtSkip:"{n} weren't played: the round ends at the first different answer.", mtQ:"Question", mtCoins:"+{n} coins for each of you", mtNone:"No coins this time. Every 2 matches gives a coin.", mtBonus:"All 5 matched! You both won a bonus coupon.", mtYourTurn:"Your turn", mtWaitTag:"Waiting for {n}", mtResTag:"Result!", mtDoneTag:"Done this round", mtYou:"You",
   gq_finish:"Will you both pick the same?", gr_finish:"2 matches = a coin each · 5 = bonus", g_finish_A:"Answer the same 5 as Indiana. If you match, you both win.", sec_finish_s:"Write a situation. You both answer it; there's no right answer, you win if you match", g_finish_s:"Both of you answer the same 5. Every 2 matches = a coin each; all 5 = a bonus coupon.",
   tw1T:"Welcome to Casita Huma!", tw1:"Here you play, earn coins and win coupons you can use whenever you want. They never expire. Let me show you around.", twStart:"Show me",
   tw2T:"Tries, coins and coupons", tw2:"You get 2 tries every 3 days. Every game you win gives you a coin, and every 3 wins, a coupon.",
@@ -3047,7 +3098,7 @@ Object.assign(T.es, {stkTitle:"Álbum de monas", tabAlbum:"Álbum",
   eggBonus:"+1 moneda", eggEmpty:"{a} todavía no esconde nada aquí.", surpA:"Sorpresas para Indiana", surpH:"Sorpresas para Andrew",
   surpLetter:"Tu carta sellada (cada renglón se revela por separado)", surpSecrets:"Secretos escondidos (uno por renglón, salen en orden)",
   surpStories:"Títulos e historias de las monas", surpStoriesHint:"El texto gris es una sugerencia. Lo que escribas la reemplaza en los dos teléfonos.", surpTitlePh:"Título corto", surpStoryPh:"La historia detrás", soundOn:"Sonidos",
-  whoNone:"Ninguno", mtLabel:"Elige igual que {n}", mtSaved:"Tus respuestas quedaron guardadas", mtWait:"Cuando {n} responda las mismas 5, verán en cuántas coincidieron. Cada 2 iguales les da una moneda a los dos; las 5, un cupón de bono.", mtSame:"¡Igualitos!", mtSameTag:"Iguales", mtDiff:"{n} eligió otra cosa", mtScore:"Coincidieron en {n} de {t}", mtResume:"Termina tus 5", mtSt1:"iguales", mtSt2:"distintas", mtSt3:"monedas", mtSt4:"cupones", mtEach:"Cada uno gana las monedas y cupones que ves aquí.", mtSkip:"{n} no se jugaron: la ronda termina en la primera respuesta distinta.", mtQ:"Pregunta", mtCoins:"+{n} monedas para cada uno", mtNone:"Esta vez no hubo monedas. Cada 2 iguales dan una moneda.", mtBonus:"¡Coincidieron en las 5! Los dos ganan un cupón de bono.", mtYourTurn:"Te toca", mtWaitTag:"Esperando a {n}", mtResTag:"¡Resultado!", mtDoneTag:"Listo esta ronda", mtYou:"Tú",
+  whoNone:"Ninguno", mtLabel:"Elige igual que {n}", mtSaved:"Tus respuestas quedaron guardadas", mtWait:"Cuando {n} responda las mismas 5, verán en cuántas coincidieron. Cada 2 iguales les da una moneda a los dos; las 5, un cupón de bono.", mtSame:"¡Igualitos!", mtSameTag:"Iguales", mtDiff:"{n} eligió otra cosa", mtScore:"Coincidieron en {n} de {t}", feedToday:"Hoy", feedYest:"Ayer", feedNew:"Nuevo", mtResume:"Termina tus 5", mtSt1:"iguales", mtSt2:"distintas", mtSt3:"monedas", mtSt4:"cupones", mtEach:"Cada uno gana las monedas y cupones que ves aquí.", mtSkip:"{n} no se jugaron: la ronda termina en la primera respuesta distinta.", mtQ:"Pregunta", mtCoins:"+{n} monedas para cada uno", mtNone:"Esta vez no hubo monedas. Cada 2 iguales dan una moneda.", mtBonus:"¡Coincidieron en las 5! Los dos ganan un cupón de bono.", mtYourTurn:"Te toca", mtWaitTag:"Esperando a {n}", mtResTag:"¡Resultado!", mtDoneTag:"Listo esta ronda", mtYou:"Tú",
   gq_finish:"¿Elegirán lo mismo?", gr_finish:"2 iguales = 1 moneda c/u · 5 = bono", g_finish_A:"Responde las mismas 5 que Indiana. Si coinciden, ganan los dos.", sec_finish_s:"Escribe una situación. Los dos la responden; no hay respuesta correcta, ganan si coinciden", g_finish_s:"Los dos responden las mismas 5. Cada 2 iguales = 1 moneda para cada uno; las 5 = cupón de bono.",
   tw1T:"¡Bienvenida a Casita Huma!", tw1:"Aquí juegas, ganas monedas y cupones que puedes usar cuando quieras. Nunca caducan. Te enseño rapidito.", twStart:"Enséñame",
   tw2T:"Intentos, monedas y cupones", tw2:"Tienes 2 intentos cada 3 días. Cada juego que ganas te da una moneda, y cada 3 victorias, un cupón.",
