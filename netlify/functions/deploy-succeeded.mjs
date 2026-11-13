@@ -5,9 +5,9 @@ import { getStore } from "@netlify/blobs";
 
 // What's new: change the id and the text on each update you want announced (same id = no new push).
 const NOTE = {
-  id: "v91-3dias",
+  id: "v92-mismas",
   title: "Casita Huma se actualizó ✨",
-  body: "Ahora los intentos se renuevan cada 3 días. Mañana (viernes) tienen 2 intentos nuevos.",
+  body: "¿Quién es más probable? ya les da las mismas 5 preguntas a los dos. Andrew: te tocan las que Indiana ya contestó.",
 };
 
 export default async () => {

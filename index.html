@@ -1064,8 +1064,8 @@ html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infi
 </div></div>
 <div id="sheet" class="sheet" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
 
-<script src="content.js?v=169434084f"></script>
-<script src="real.js?v=169434084f"></script>
+<script src="content.js?v=16107afdba"></script>
+<script src="real.js?v=16107afdba"></script>
 <script>/* Andrew's real questions go first; placeholders only fill up to 20 */
 (function(C,R){ if(!R) return; ["trivia","love"].forEach(k=>{ C[k]=[...R[k], ...C[k].slice(R[k].length)]; }); if(R.finish) C.finish=R.finish; C.loveRealN=R.love.length; })(window.CONTENT, window.CONTENT_REAL);</script>
 <script>
@@ -1251,7 +1251,8 @@ function applyPartner(P, partner){
     for(const k in P.match){ const pr=P.match[k], lr=S.match[k]; if(!pr || !pr.qs) continue;
       if(!lr){ S.match[k]=cp(pr); }
       else if(lr.qs.join("|")!==pr.qs.join("|")){ const la=lr.her||lr.andrew, pa=pr.her||pr.andrew;
-        if((pa && !la) || (!!pa===!!la && (pr.at||0) < (lr.at||Infinity))) S.match[k]=cp(pr); }
+        const take = (pa && !la) || (pa && la ? !!pr.her && !lr.her : (pr.at||0) < (lr.at||Infinity));
+        if(take){ if(lr[me()] && k==="P"+periodIdx()){ const w=week(); w.used=Math.max(0,w.used-1); } S.match[k]=cp(pr); } }
       else { if(pr[partner]) lr[partner]=cp(pr[partner]); if(pr.result && !lr.result) lr.result=cp(pr.result); }
       const r=S.match[k];
       if(r.result && r.result.by!==me() && !(r.result.paid||{})[me()]){ (r.result.paid ||= {})[me()]=true; ST().coins += r.result.coins||0; if(r.result.bonus && !awardRaw("regular","match")) ST().coins++; } }
@@ -2312,9 +2313,15 @@ function openQuiz(kind){
 const MATCH = {ask:5, opts:["andrew","her","both","none"]};
 function matchPool(){ return [...C.finish.map(x=>({key:x.en, en:x.en, es:x.es})), ...S.her.finish.map(x=>({key:"h"+x.at, en:x.s, es:x.s}))]; }
 function matchRound(){ S.match ||= {}; S.matchUsed ||= []; const k="P"+periodIdx(); let r=S.match[k];
-  if(!r){ const pool=matchPool(); if(pool.length<MATCH.ask) return null; const used=new Set(S.matchUsed); let fresh=pool.filter(q=>!used.has(q.key)); if(fresh.length<MATCH.ask){ S.matchUsed=[]; fresh=pool; }
-    const qs=shuffle(fresh).slice(0,MATCH.ask).map(q=>q.key); S.matchUsed.push(...qs); r=S.match[k]={qs, her:null, andrew:null, result:null, at:Date.now()}; save(); }
+  if(!r){ const qs=matchQs(periodIdx()); if(!qs) return null; r=S.match[k]={qs, her:null, andrew:null, result:null, at:Date.now()}; save(); }
   return r; }
+/* V92: every period's 5 come from a fixed, seeded walk through the bank, so both phones pick exactly the same ones without talking to each other */
+function seedRand(a){ return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function matchQs(p){ const pool=matchPool().map(q=>q.key); if(pool.length<MATCH.ask) return null; let used=new Set(), pick=[];
+  for(let i=0;i<=p;i++){ let fresh=pool.filter(k=>!used.has(k)); if(fresh.length<MATCH.ask){ used=new Set(); fresh=pool; }
+    const rnd=seedRand(7919*i+2026), a=fresh.slice(); for(let j=a.length-1;j>0;j--){ const x=Math.floor(rnd()*(j+1)); [a[j],a[x]]=[a[x],a[j]]; }
+    pick=a.slice(0,MATCH.ask); pick.forEach(k=>used.add(k)); }
+  return pick; }
 function matchQ(key){ const q=matchPool().find(x=>x.key===key); return q ? (L()==="es"?q.es:q.en) : key; }
 function matchState(){ const r=(S.match||{})["P"+periodIdx()]; if(!r) return "new"; if(r.result) return "done"; if(r[me()]) return "waiting"; if(r[other()]) return "yourTurn"; return "new"; }
 function matchCard(left){ const st=matchState(), r=(S.match||{})["P"+periodIdx()];
