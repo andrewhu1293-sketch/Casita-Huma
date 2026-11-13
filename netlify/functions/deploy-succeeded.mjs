@@ -5,9 +5,9 @@ import { getStore } from "@netlify/blobs";
 
 // What's new: change the id and the text on each update you want announced (same id = no new push).
 const NOTE = {
-  id: "v93-tabla",
+  id: "v94-las5",
   title: "Casita Huma se actualizó ✨",
-  body: "Cuando los dos respondan ¿Quién es más probable?, se abre una tabla con sus respuestas, cuántas coincidieron y lo que ganaron.",
+  body: "¿Quién es más probable? ahora se juega con las 5 preguntas completas. Indiana: puedes terminar tu ronda sin gastar otra vida.",
 };
 
 export default async () => {

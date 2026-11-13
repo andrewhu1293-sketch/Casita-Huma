@@ -1074,8 +1074,8 @@ html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infi
 </div></div>
 <div id="sheet" class="sheet" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
 
-<script src="content.js?v=154254aecc"></script>
-<script src="real.js?v=154254aecc"></script>
+<script src="content.js?v=facdb827a0"></script>
+<script src="real.js?v=facdb827a0"></script>
 <script>/* Andrew's real questions go first; placeholders only fill up to 20 */
 (function(C,R){ if(!R) return; ["trivia","love"].forEach(k=>{ C[k]=[...R[k], ...C[k].slice(R[k].length)]; }); if(R.finish) C.finish=R.finish; C.loveRealN=R.love.length; })(window.CONTENT, window.CONTENT_REAL);</script>
 <script>
@@ -1263,9 +1263,9 @@ function applyPartner(P, partner){
       else if(lr.qs.join("|")!==pr.qs.join("|")){ const la=lr.her||lr.andrew, pa=pr.her||pr.andrew;
         const take = (pa && !la) || (pa && la ? !!pr.her && !lr.her : (pr.at||0) < (lr.at||Infinity));
         if(take){ if(lr[me()] && k==="P"+periodIdx()){ const w=week(); w.used=Math.max(0,w.used-1); } S.match[k]=cp(pr); } }
-      else { if(pr[partner]) lr[partner]=cp(pr[partner]); if(pr.result && !lr.result) lr.result=cp(pr.result); }
+      else { if(pr[partner] && (!lr[partner] || (pr[partner].ans||[]).length>=(lr[partner].ans||[]).length)) lr[partner]=cp(pr[partner]); if(pr.result && !lr.result && fullRes(Object.assign({},lr,{result:pr.result}))) lr.result=cp(pr.result); }
       const r=S.match[k];
-      if(r.result && r.result.by!==me() && !(r.result.paid||{})[me()]){ (r.result.paid ||= {})[me()]=true; ST().coins += r.result.coins||0; if(r.result.bonus && !awardRaw("regular","match")) ST().coins++; } }
+      if(fullRes(r) && r.result.by!==me() && !(r.result.paid||{})[me()]){ (r.result.paid ||= {})[me()]=true; ST().coins += r.result.coins||0; if(r.result.bonus && !awardRaw("regular","match")) ST().coins++; } }
     S.matchUsed=[...new Set([...(S.matchUsed||[]), ...(P.matchUsed||[])])]; }
 }
 let syncBusy=false, partnerAt=0;
@@ -2332,26 +2332,34 @@ function matchQs(p){ const pool=matchPool().map(q=>q.key); if(pool.length<MATCH.
     const rnd=seedRand(7919*i+2026), a=fresh.slice(); for(let j=a.length-1;j>0;j--){ const x=Math.floor(rnd()*(j+1)); [a[j],a[x]]=[a[x],a[j]]; }
     pick=a.slice(0,MATCH.ask); pick.forEach(k=>used.add(k)); }
   return pick; }
+/* V94: all 5 are always played. A result only counts once both answered all 5; old cut-short results are undone so the round can be finished */
+const fullAns = (r,p) => !!(r && r[p] && r[p].ans && r[p].ans.length>=r.qs.length);
+const fullRes = r => !!(r && r.result && fullAns(r,"her") && fullAns(r,"andrew"));
+function cleanMatch(){ let ch=false; for(const k in (S.match||{})){ const r=S.match[k]; if(r && r.result && !fullRes(r)){
+    if((r.result.paid||{})[me()]){ ST().coins=Math.max(0, ST().coins-(r.result.coins||0)); }
+    delete r.result; ch=true; } } return ch; }
 function matchQ(key){ const q=matchPool().find(x=>x.key===key); return q ? (L()==="es"?q.es:q.en) : key; }
-function matchState(){ const r=(S.match||{})["P"+periodIdx()]; if(!r) return "new"; if(r.result) return "done"; if(r[me()]) return "waiting"; if(r[other()]) return "yourTurn"; return "new"; }
+function matchState(){ const r=(S.match||{})["P"+periodIdx()]; if(!r) return "new"; if(fullRes(r)) return "done"; if(fullAns(r,me())) return "waiting"; if(r[me()]) return "resume"; if(fullAns(r,other())) return "yourTurn"; return "new"; }
 function matchCard(left){ const st=matchState(), r=(S.match||{})["P"+periodIdx()];
   if(st==="waiting") return {off:false, tag:t("mtWaitTag",{n:nameOf(other())})};
   if(st==="done") return {off:false, tag:r.result.seen?.[me()] ? t("mtDoneTag") : t("mtResTag")};
+  if(st==="resume") return {off:false, tag:t("mtResume")};
   if(st==="yourTurn") return {off:left<=0, tag:left<=0 ? t("locked") : t("mtYourTurn")};
   return {off:left<=0, tag:left<=0 ? t("locked") : ""}; }
 function asPlayer(p, fn){ const prev=S.player; S.player=p; try{ return fn(); } finally{ S.player=prev; } }
 function openMatch(){
   const r = matchRound(); if(!r) return toast(t("needHer"));
-  if(r.result) return matchResult(r, false);
-  if(r[me()]) return matchSaved();
-  if(triesLeft()<=0) return toast(t("weekNext",{d:nextReset()}));
-  const theirs = r[other()] ? r[other()].ans : null, mine=[], marks=[]; let i=0, started=false;
+  if(fullRes(r)) return matchResult(r, false);
+  if(fullAns(r,me())) return matchSaved();
+  const prev = (r[me()]||{}).ans || [];   // a round left halfway: carry on with no new try
+  if(!prev.length && triesLeft()<=0) return toast(t("weekNext",{d:nextReset()}));
+  const theirs = fullAns(r,other()) ? r[other()].ans : null, mine=prev.slice(), marks=mine.map((a,k)=>theirs ? a===theirs[k] : "saved"); let i=mine.length, started=prev.length>0;
   const step = () => {
     openSheet(`${stageHTML("finish", i, r.qs.length, marks, matchQ(r.qs[i]))}
       <div class="opts2">${MATCH.opts.map((k,n)=>`<button class="opt opt2" type="button" data-w="${k}" style="--d:${.06*n}s"><span class="ol">${"ABCD"[n]}</span><span class="ot">${esc(whoLabel(k))}</span><span class="os"></span></button>`).join("")}</div>`);
     document.querySelectorAll("#panel .opt").forEach(b=>b.onclick=()=>{
       if(!started){ started=true; useTry("finish",false); }
-      const pick=b.dataset.w; mine[i]=pick;
+      const pick=b.dataset.w; mine[i]=pick; r[me()]={ans:mine.slice(), at:Date.now()}; save();
       document.querySelectorAll("#panel .opt").forEach(x=>x.disabled=true); b.classList.add("picked");
       if(!theirs){ marks[i]="saved"; sfx("new"); return setTimeout(()=>{ i++; if(i<r.qs.length) step(); else done(); }, 450); }
       const same = pick===theirs[i]; marks[i]=same;
@@ -2359,7 +2367,7 @@ function openMatch(){
       else { b.classList.add("wrong"); b.querySelector(".os").textContent=t("yourPick");
         const o=$(`#panel .opt[data-w="${theirs[i]}"]`); if(o){ o.classList.add("picked"); o.querySelector(".os").textContent=nameOf(other()); } }
       stageReact(same, same ? t("mtSame") : t("mtDiff",{n:nameOf(other())}));
-      setTimeout(()=>{ i++; if(same && i<r.qs.length) step(); else done(); }, same?1100:1700);
+      setTimeout(()=>{ i++; if(i<r.qs.length) step(); else done(); }, same?1100:1700);
     });
   };
   const done = () => {
@@ -2394,9 +2402,10 @@ function matchResult(r, fresh){
   if(fresh){ if(coins){ sfx("win"); setTimeout(()=>sfx("coin"),450); confetti(); } else sfx("lose"); }
 }
 /* when the other one finishes, the comparison opens by itself the next time you're in the app */
+setTimeout(()=>{ if(cleanMatch()){ save(); if($("#sheet").hidden) render(); } }, 1500);
 function maybeMatchPopup(){
   if(document.visibilityState!=="visible" || !$("#sheet").hidden || document.getElementById("splash") || document.getElementById("tour") || !S.device) return;
-  const list=Object.values(S.match||{}).filter(r=>r && r.result && r.result.by!==me() && !(r.result.seen||{})[me()]).sort((a,b)=>(b.result.at||0)-(a.result.at||0));
+  const list=Object.values(S.match||{}).filter(r=>r && r.result && fullRes(r) && r.result.by!==me() && !(r.result.seen||{})[me()]).sort((a,b)=>(b.result.at||0)-(a.result.at||0));
   if(list.length) matchResult(list[0], true);
 }
 setInterval(maybeMatchPopup, 3000);
@@ -3001,8 +3010,8 @@ Object.assign(T.en, {stkTitle:"Sticker album", tabAlbum:"Album",
   eggBonus:"+1 coin", eggEmpty:"{a} hasn't hidden anything here yet.", surpA:"Surprises for Indiana", surpH:"Surprises for Andrew",
   surpLetter:"Your sealed letter (each line is revealed on its own)", surpSecrets:"Hidden secrets (one per line, found in order)",
   surpStories:"Titles and stories of the stickers", surpStoriesHint:"Grey text is a suggestion. Whatever you type replaces it on both phones.", surpTitlePh:"Short title", surpStoryPh:"The story behind it", soundOn:"Sounds on",
-  whoNone:"Neither", mtLabel:"Pick the same as {n}", mtSaved:"Your answers are saved", mtWait:"When {n} answers the same 5, you'll see how many matched. Every 2 matches in a row gives you both a coin.", mtSame:"Same answer!", mtSameTag:"Same", mtDiff:"{n} picked something else", mtScore:"You matched {n} of {t}", mtSt1:"matched", mtSt2:"different", mtSt3:"coins", mtSt4:"coupons", mtEach:"Each of you gets the coins and coupons shown.", mtSkip:"{n} weren't played: the round ends at the first different answer.", mtQ:"Question", mtCoins:"+{n} coins for each of you", mtNone:"No coins this time. You need 2 matches in a row for a coin.", mtBonus:"All 5 matched! You both won a bonus coupon.", mtYourTurn:"Your turn", mtWaitTag:"Waiting for {n}", mtResTag:"Result!", mtDoneTag:"Done this round", mtYou:"You",
-  gq_finish:"Will you both pick the same?", gr_finish:"2 matches = a coin each · 5 = bonus", g_finish_A:"Answer the same 5 as Indiana. If you match, you both win.", sec_finish_s:"Write a situation. You both answer it; there's no right answer, you win if you match", g_finish_s:"Both of you answer the same 5. Every 2 matches in a row = a coin each; all 5 = a bonus coupon. One miss ends it.",
+  whoNone:"Neither", mtLabel:"Pick the same as {n}", mtSaved:"Your answers are saved", mtWait:"When {n} answers the same 5, you'll see how many matched. Every 2 matches gives you both a coin; all 5, a bonus coupon.", mtSame:"Same answer!", mtSameTag:"Same", mtDiff:"{n} picked something else", mtScore:"You matched {n} of {t}", mtResume:"Finish your 5", mtSt1:"matched", mtSt2:"different", mtSt3:"coins", mtSt4:"coupons", mtEach:"Each of you gets the coins and coupons shown.", mtSkip:"{n} weren't played: the round ends at the first different answer.", mtQ:"Question", mtCoins:"+{n} coins for each of you", mtNone:"No coins this time. Every 2 matches gives a coin.", mtBonus:"All 5 matched! You both won a bonus coupon.", mtYourTurn:"Your turn", mtWaitTag:"Waiting for {n}", mtResTag:"Result!", mtDoneTag:"Done this round", mtYou:"You",
+  gq_finish:"Will you both pick the same?", gr_finish:"2 matches = a coin each · 5 = bonus", g_finish_A:"Answer the same 5 as Indiana. If you match, you both win.", sec_finish_s:"Write a situation. You both answer it; there's no right answer, you win if you match", g_finish_s:"Both of you answer the same 5. Every 2 matches = a coin each; all 5 = a bonus coupon.",
   tw1T:"Welcome to Casita Huma!", tw1:"Here you play, earn coins and win coupons you can use whenever you want. They never expire. Let me show you around.", twStart:"Show me",
   tw2T:"Tries, coins and coupons", tw2:"You get 2 tries every 3 days. Every game you win gives you a coin, and every 3 wins, a coupon.",
   tw3:"5 questions about Andrew with 4 options. Get 3 right and you win.", tw4:"Write what Andrew would want in each situation. You get 5 tries per question.",
@@ -3031,8 +3040,8 @@ Object.assign(T.es, {stkTitle:"Álbum de monas", tabAlbum:"Álbum",
   eggBonus:"+1 moneda", eggEmpty:"{a} todavía no esconde nada aquí.", surpA:"Sorpresas para Indiana", surpH:"Sorpresas para Andrew",
   surpLetter:"Tu carta sellada (cada renglón se revela por separado)", surpSecrets:"Secretos escondidos (uno por renglón, salen en orden)",
   surpStories:"Títulos e historias de las monas", surpStoriesHint:"El texto gris es una sugerencia. Lo que escribas la reemplaza en los dos teléfonos.", surpTitlePh:"Título corto", surpStoryPh:"La historia detrás", soundOn:"Sonidos",
-  whoNone:"Ninguno", mtLabel:"Elige igual que {n}", mtSaved:"Tus respuestas quedaron guardadas", mtWait:"Cuando {n} responda las mismas 5, verán en cuántas coincidieron. Cada 2 iguales seguidas les da una moneda a los dos.", mtSame:"¡Igualitos!", mtSameTag:"Iguales", mtDiff:"{n} eligió otra cosa", mtScore:"Coincidieron en {n} de {t}", mtSt1:"iguales", mtSt2:"distintas", mtSt3:"monedas", mtSt4:"cupones", mtEach:"Cada uno gana las monedas y cupones que ves aquí.", mtSkip:"{n} no se jugaron: la ronda termina en la primera respuesta distinta.", mtQ:"Pregunta", mtCoins:"+{n} monedas para cada uno", mtNone:"Esta vez no hubo monedas. Necesitan 2 iguales seguidas para una.", mtBonus:"¡Coincidieron en las 5! Los dos ganan un cupón de bono.", mtYourTurn:"Te toca", mtWaitTag:"Esperando a {n}", mtResTag:"¡Resultado!", mtDoneTag:"Listo esta ronda", mtYou:"Tú",
-  gq_finish:"¿Elegirán lo mismo?", gr_finish:"2 iguales = 1 moneda c/u · 5 = bono", g_finish_A:"Responde las mismas 5 que Indiana. Si coinciden, ganan los dos.", sec_finish_s:"Escribe una situación. Los dos la responden; no hay respuesta correcta, ganan si coinciden", g_finish_s:"Los dos responden las mismas 5. Cada 2 iguales seguidas = 1 moneda para cada uno; las 5 = cupón de bono. Si una no coincide, se acaba.",
+  whoNone:"Ninguno", mtLabel:"Elige igual que {n}", mtSaved:"Tus respuestas quedaron guardadas", mtWait:"Cuando {n} responda las mismas 5, verán en cuántas coincidieron. Cada 2 iguales les da una moneda a los dos; las 5, un cupón de bono.", mtSame:"¡Igualitos!", mtSameTag:"Iguales", mtDiff:"{n} eligió otra cosa", mtScore:"Coincidieron en {n} de {t}", mtResume:"Termina tus 5", mtSt1:"iguales", mtSt2:"distintas", mtSt3:"monedas", mtSt4:"cupones", mtEach:"Cada uno gana las monedas y cupones que ves aquí.", mtSkip:"{n} no se jugaron: la ronda termina en la primera respuesta distinta.", mtQ:"Pregunta", mtCoins:"+{n} monedas para cada uno", mtNone:"Esta vez no hubo monedas. Cada 2 iguales dan una moneda.", mtBonus:"¡Coincidieron en las 5! Los dos ganan un cupón de bono.", mtYourTurn:"Te toca", mtWaitTag:"Esperando a {n}", mtResTag:"¡Resultado!", mtDoneTag:"Listo esta ronda", mtYou:"Tú",
+  gq_finish:"¿Elegirán lo mismo?", gr_finish:"2 iguales = 1 moneda c/u · 5 = bono", g_finish_A:"Responde las mismas 5 que Indiana. Si coinciden, ganan los dos.", sec_finish_s:"Escribe una situación. Los dos la responden; no hay respuesta correcta, ganan si coinciden", g_finish_s:"Los dos responden las mismas 5. Cada 2 iguales = 1 moneda para cada uno; las 5 = cupón de bono.",
   tw1T:"¡Bienvenida a Casita Huma!", tw1:"Aquí juegas, ganas monedas y cupones que puedes usar cuando quieras. Nunca caducan. Te enseño rapidito.", twStart:"Enséñame",
   tw2T:"Intentos, monedas y cupones", tw2:"Tienes 2 intentos cada 3 días. Cada juego que ganas te da una moneda, y cada 3 victorias, un cupón.",
   tw3:"5 preguntas sobre Andrew con 4 opciones. Acierta 3 y ganas.", tw4:"Escribe lo que Andrew querría en cada situación. Tienes 5 intentos por pregunta.",
