@@ -1074,8 +1074,8 @@ html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infi
 </div></div>
 <div id="sheet" class="sheet" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
 
-<script src="content.js?v=facdb827a0"></script>
-<script src="real.js?v=facdb827a0"></script>
+<script src="content.js?v=5cc38169a5"></script>
+<script src="real.js?v=5cc38169a5"></script>
 <script>/* Andrew's real questions go first; placeholders only fill up to 20 */
 (function(C,R){ if(!R) return; ["trivia","love"].forEach(k=>{ C[k]=[...R[k], ...C[k].slice(R[k].length)]; }); if(R.finish) C.finish=R.finish; C.loveRealN=R.love.length; })(window.CONTENT, window.CONTENT_REAL);</script>
 <script>
@@ -1244,6 +1244,10 @@ function mergeBy(local, remote, partner, newestFirst){
   const mine=(local||[]).filter(x=>authorOf(x)!==partner), theirs=(remote||[]).filter(x=>authorOf(x)===partner && !x.priv);
   return [...mine, ...theirs].sort((a,b)=>newestFirst ? (b.at||0)-(a.at||0) : (a.at||0)-(b.at||0)); }
 function applyPartner(P, partner){
+  /* V95: "Reiniciar intentos" for Indiana is pressed on Andrew's phone, so her phone applies it here; Andrew's phone keeps her real tries to show them */
+  if(partner==="andrew" && P.triesGift && P.triesGift.p==="P"+periodIdx() && P.triesGift.at>(S.triesGiftSeen||0)){
+    S.triesGiftSeen=P.triesGift.at; S.pers ||= {}; (S.pers[P.triesGift.p] ||= {used:0,extra:0,log:[]}).used=0; }
+  if(partner==="her"){ if(P.pers) S.herPers=P.pers; S.herGiftSeen=P.triesGiftSeen||0; }
   if(partner==="her"){ if(P.her) S.her=Object.assign({}, S.her, P.her); S.letter.her=(P.letter||{}).her||""; S.secrets.her=(P.secrets||{}).her||""; }
   else { S.letter.andrew=(P.letter||{}).andrew||""; S.secrets.andrew=(P.secrets||{}).andrew||""; S.stkMeta=Object.assign({}, S.stkMeta, P.stkMeta||{}); S.custom=P.custom||S.custom||[]; if(P.aLove) S.aLove=P.aLove;
     if(P.tripUnlocked) S.tripUnlocked=true;
@@ -1271,7 +1275,7 @@ function applyPartner(P, partner){
 let syncBusy=false, partnerAt=0;
 async function syncPartner(){ if(!HOSTED || !S.device || syncBusy) return; syncBusy=true;
   try{ const partner=S.device==="her"?"andrew":"her", r=await fetch("/api/state?who="+partner,{cache:"no-store"}).then(r=>r.json());
-    if(r && r.state && r.at!==partnerAt){ const snap=()=>JSON.stringify([S.her,S.letter,S.secrets,S.stkMeta,S.custom,S.calm,S.notes,S.agreements,S.wins,S.checkins,S.jar,S.ex,S.wallet,S.tripUnlocked,S.match,S.stk,S.aLove]), before=snap();
+    if(r && r.state && r.at!==partnerAt){ const snap=()=>JSON.stringify([S.her,S.letter,S.secrets,S.stkMeta,S.custom,S.calm,S.notes,S.agreements,S.wins,S.checkins,S.jar,S.ex,S.wallet,S.tripUnlocked,S.match,S.stk,S.aLove,S.pers,S.triesGiftSeen,S.herPers,S.herGiftSeen]), before=snap();
       applyPartner(r.state, partner); partnerAt=r.at;
       const changed = snap()!==before;
       if(!changed){ syncBusy=false; return; }   // only real changes are saved (no back-and-forth between the phones)
@@ -2945,12 +2949,13 @@ function renderAndrew(){
   }
   const w = week(), per = () => { S.pers ||= {}; S.aPers ||= {}; const k="P"+periodIdx(); return {her:(S.pers[k] ||= {used:0,extra:0,log:[]}), andrew:(S.aPers[k] ||= {used:0,extra:0,log:[]})}; };
   const curG = AGRP.find(x=>x.k===aTab) || AGRP[0];
-  const leftOf = o => `${Math.max(0, TRIES + o.extra - o.used)}/${TRIES + o.extra}`;
+  const leftOf = o => `${Math.max(0, TRIES + o.extra - o.used)}/${TRIES + o.extra}`, herNow = () => { if(!HOSTED || !S.herPers) return per().her; const k="P"+periodIdx(), g=S.triesGift, hp=S.herPers[k]||{used:0,extra:0};
+      return (g && g.p===k && (S.herGiftSeen||0) < g.at) ? {...hp, used:0} : hp; };
   $("#view").innerHTML = `${cloudTitle(t("aTitle"))}
     ${planetTop()}<div class="throw" role="tablist">${AGRP.map(x=>`<button type="button" role="tab" class="thtile" data-agrp="${x.k}" aria-pressed="${aTab===x.k}" aria-selected="${aTab===x.k}" style="--c:${x.c};--cd:${x.cd}"><img src="${duck(x.d)}" alt=""><span>${t("ag_"+x.k)}</span></button>`).join("")}</div>
     <div class="thwrap" style="--c:${curG.c};--cd:${curG.cd}"><h3 class="thhead2">${t("ag_"+curG.k)}</h3>
     <section class="agrp" data-grp="game" ${aTab!=="game"?"hidden":""}>
-    <div class="card"><h4>${t("aResetT")}</h4><p class="hint">${t("aResetNow",{h:leftOf(per().her),a:leftOf(per().andrew)})}</p>
+    <div class="card"><h4>${t("aResetT")}</h4><p class="hint">${t("aResetNow",{h:leftOf(herNow()),a:leftOf(per().andrew)})}</p>
       <div class="row-btns"><button class="btn small" type="button" data-rtries="her">Indiana</button><button class="btn small" type="button" data-rtries="andrew">Andrew</button><button class="btn small" type="button" data-rtries="both">${t("whoBoth")}</button></div></div>
     <div class="card"><h4>${t("aWeek")}</h4><p class="hint">${w.log.map(l=>`${t("g_"+l.game)}: ${l.won?"✓":"✗"}`).join(" · ")||"–"}</p></div>
     <div class="card"><h4>${t("aGive")}</h4><div class="field"><select id="aGiveSel">${C.coupons.map(c=>`<option value="${c.id}">${esc(t(c.tier))}: ${esc(tx(c))}</option>`).join("")}</select></div>
@@ -2988,6 +2993,8 @@ function renderAndrew(){
   };
   document.querySelectorAll("[data-rtries]").forEach(b=>b.onclick=()=>{ const who=b.dataset.rtries, P=per();
     (who==="both"?["her","andrew"]:[who]).forEach(k=>{ P[k].used=0; });
+    if(who!=="andrew"){ const k="P"+periodIdx(); S.triesGift={p:k, at:Date.now()};
+      notify("Andrew gave you your tries back 🎟️ You can play again.", "Andrew te devolvió tus intentos 🎟️ Ya puedes volver a jugar."); }
     save(); toast(t("aResetOk",{n:who==="both"?t("whoBoth"):whoLabel(who)})); render(); });
   $("#aTrip").onclick=()=>{ S.tripUnlocked=true; save(); toast(t("aTripDone")); render(); };
   $("#aGive").onclick=()=>{ const id=$("#aGiveSel").value; S.wallet.unshift({uid:"w"+Date.now(),cid:id,at:Date.now(),from:"andrew",usedAt:null}); save(); toast(t("aGiven")); badge(); };
