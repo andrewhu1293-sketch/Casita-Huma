@@ -1086,8 +1086,8 @@ html.psy body{animation:psyHue .7s linear infinite, psyWob 1.4s ease-in-out infi
 </div></div>
 <div id="sheet" class="sheet" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
 
-<script src="content.js?v=58603bc470"></script>
-<script src="real.js?v=58603bc470"></script>
+<script src="content.js?v=7c08e71e71"></script>
+<script src="real.js?v=7c08e71e71"></script>
 <script>/* Andrew's real questions go first; placeholders only fill up to 20 */
 (function(C,R){ if(!R) return; ["trivia","love"].forEach(k=>{ C[k]=[...R[k], ...C[k].slice(R[k].length)]; }); if(R.finish) C.finish=R.finish; C.loveRealN=R.love.length; })(window.CONTENT, window.CONTENT_REAL);</script>
 <script>
@@ -2343,6 +2343,14 @@ function stageReact(ok, msg){
 }
 
 /* quiz (trivia + love language) */
+/* V98: a question never shows the same answer twice (e.g. a wrong answer typed twice, or equal to the right one); missing spots are filled with answers from other questions */
+function uniqOpts(item, kind, q){
+  if(!item.options || kind==="finish") return item;
+  const seen=new Set(), out=[]; const nk=l=>qNorm(l||"");
+  [...item.options].sort((a,b)=>(b.ok?1:0)-(a.ok?1:0)).forEach(o=>{ const k=nk(o.label); if(!k || seen.has(k)) return; seen.add(k); out.push(o); });
+  if(out.length<4){ const extra = isA() && kind==="trivia" ? (S.her.trivia||[]).map(x=>x.a) : isA() ? [] : C[kind].map(x=>x.opts ? tx(x.opts[x.a]||x.opts[0]) : "");
+    for(const l of shuffle(extra)){ if(out.length>=4) break; const k=nk(l); if(!k || seen.has(k)) continue; seen.add(k); out.push({label:l, ok:false}); } }
+  item.options = shuffle(out); return item; }
 function openQuiz(kind){
   const rule = kind==="trivia" ? C.triviaRule : C.loveRule;
   const loveItem = (text, a) => { const others = shuffle(Object.keys(C.loveOptions).filter(k=>k!==a)).slice(0,3);
@@ -2354,7 +2362,7 @@ function openQuiz(kind){
     if(kind==="finish"){ const a=q.a, text=isA()?q.s:tx(q); item={text, options:["andrew","her","both"].map(k=>({label:whoLabel(k), ok:k===a}))}; }
     else if(isA()) item = kind==="trivia" ? {text:q.q, options:shuffle([{label:q.a,ok:true},...[q.w1,q.w2,q.w3].map(l=>({label:l,ok:false}))])} : loveItem(q.s, q.a);
     else item = (kind==="trivia" || q.opts) ? {text:tx(q), options:shuffle(q.opts.map((o,k)=>({label:tx(o), ok:k===q.a}))), bonus:q.bonus||0} : loveItem(tx(q), q.a);
-    item.key = q.key; return item; });
+    item.key = q.key; return uniqOpts(item, kind, q); });
   const need = !isA() && pool.length>=rule.ask ? rule.need : Math.ceil(pool.length*0.6);
   const marks = []; let i = 0; let started=false;
   const step = () => {
