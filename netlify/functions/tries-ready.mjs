@@ -12,8 +12,8 @@ function laDay(now = new Date()) {
 const isResetDay = (now) => { const { n } = laDay(now); return n >= FIRST && (n - FIRST) % PERIOD === 0; };
 
 const MSG = {
-  her:    { title: "¡Ya puedes jugar! 🎟️", body: "Tienes 2 intentos nuevos en Casita Huma. ¡A ganar cupones!" },
-  andrew: { title: "¡Ya puedes jugar! 🎟️", body: "Tienes 2 intentos nuevos en Casita Huma." },
+  her:    { title: "¡Ya puedes jugar! 🎟️", body: "Tienes 3 intentos nuevos en Casita Huma. ¡A ganar cupones!" },
+  andrew: { title: "¡Ya puedes jugar! 🎟️", body: "Tienes 3 intentos nuevos en Casita Huma." },
 };
 
 export default async () => {
